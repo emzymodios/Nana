@@ -1,4 +1,4 @@
--- Speed Control GUI Script - Mini Version
+-- Speed Control GUI Script - CÓ THỂ KÉO
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -14,10 +14,10 @@ screenGui.Name = "SpeedGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Panel chính (NHỎ HƠN)
+-- Panel chính
 local panel = Instance.new("Frame")
 panel.Name = "Panel"
-panel.Size = UDim2.new(0, 140, 0, 130)  -- Nhỏ hơn
+panel.Size = UDim2.new(0, 140, 0, 130)
 panel.Position = UDim2.new(0.05, 0, 0.3, 0)
 panel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 panel.BorderSizePixel = 0
@@ -28,10 +28,10 @@ local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 8)
 corner.Parent = panel
 
--- Tiêu đề
+-- Tiêu đề (dùng để kéo)
 local title = Instance.new("TextLabel")
 title.Name = "Title"
-title.Size = UDim2.new(1, 0, 0, 25)
+title.Size = UDim2.new(1, 0, 0, 30)
 title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
 title.TextColor3 = Color3.fromRGB(255, 200, 0)
 title.TextSize = 11
@@ -43,39 +43,38 @@ local titleCorner = Instance.new("UICorner")
 titleCorner.CornerRadius = UDim.new(0, 8)
 titleCorner.Parent = title
 
--- TextBox nhập số (lớn hơn một chút để dễ nhập)
+-- TextBox nhập số
 local speedInput = Instance.new("TextBox")
 speedInput.Name = "SpeedInput"
-speedInput.Size = UDim2.new(0.9, 0, 0, 25)
-speedInput.Position = UDim2.new(0.05, 0, 0.25, 0)
+speedInput.Size = UDim2.new(0.9, 0, 0, 22)
+speedInput.Position = UDim2.new(0.05, 0, 0.28, 0)
 speedInput.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 speedInput.TextColor3 = Color3.fromRGB(100, 200, 255)
 speedInput.TextSize = 12
 speedInput.Font = Enum.Font.GothamBold
-speedInput.PlaceholderText = "50"
 speedInput.Text = "50"
 speedInput.Parent = panel
 
--- Button Apply (nửa trái)
+-- Button Apply
 local applyButton = Instance.new("TextButton")
 applyButton.Name = "ApplyButton"
-applyButton.Size = UDim2.new(0.44, 0, 0, 22)
-applyButton.Position = UDim2.new(0.05, 0, 0.58, 0)
+applyButton.Size = UDim2.new(0.44, 0, 0, 20)
+applyButton.Position = UDim2.new(0.05, 0, 0.62, 0)
 applyButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
 applyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-applyButton.TextSize = 10
+applyButton.TextSize = 9
 applyButton.Font = Enum.Font.GothamBold
 applyButton.Text = "✓ Apply"
 applyButton.Parent = panel
 
--- Button Reset (nửa phải)
+-- Button Reset
 local resetButton = Instance.new("TextButton")
 resetButton.Name = "ResetButton"
-resetButton.Size = UDim2.new(0.44, 0, 0, 22)
-resetButton.Position = UDim2.new(0.51, 0, 0.58, 0)
+resetButton.Size = UDim2.new(0.44, 0, 0, 20)
+resetButton.Position = UDim2.new(0.51, 0, 0.62, 0)
 resetButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 resetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-resetButton.TextSize = 10
+resetButton.TextSize = 9
 resetButton.Font = Enum.Font.GothamBold
 resetButton.Text = "✕ Reset"
 resetButton.Parent = panel
@@ -92,26 +91,23 @@ local function updateSpeed(newSpeed)
     speedInput.Text = tostring(currentSpeed)
 end
 
--- ✅ KÉO PANEL (FIX)
-title.InputBegan:Connect(function(input, gameProcessed)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isDragging = true
-        dragStart = input.Position
-        startPos = panel.Position
+-- ✅ KÉO PANEL - FIXED
+local mouse = player:GetMouse()
+
+title.MouseButton1Down:Connect(function()
+    isDragging = true
+    dragStart = mouse.Hit.Position
+    startPos = panel.Position
+    
+    while isDragging do
+        local mouseDelta = mouse.Hit.Position - dragStart
+        panel.Position = startPos + UDim2.new(0, mouseDelta.X, 0, mouseDelta.Y)
+        RunService.RenderStepped:Wait()
     end
 end)
 
-UserInputService.InputChanged:Connect(function(input, gameProcessed)
-    if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        panel.Position = startPos + UDim2.new(0, delta.X, 0, delta.Y)
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input, gameProcessed)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isDragging = false
-    end
+title.MouseButton1Up:Connect(function()
+    isDragging = false
 end)
 
 -- Button Events
