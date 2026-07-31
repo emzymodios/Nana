@@ -4,16 +4,6 @@
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Xóa UI cũ nếu có, tránh bị trùng khi chạy lại
-if player.PlayerGui:FindFirstChild("SimpleToggleGui") then
-    player.PlayerGui.SimpleToggleGui:Destroy()
-end
-
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "SimpleToggleGui"
-screenGui.ResetOnSpawn = false
-screenGui.Parent = player:WaitForChild("PlayerGui")
-
 -- Nút bấm để mở/đóng bảng (dạng ô vuông có icon)
 local toggleButton = Instance.new("TextButton")
 toggleButton.Name = "ToggleButton"
