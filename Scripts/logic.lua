@@ -3,6 +3,7 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
+local speedEnabled = false
 local flyEnabled = false
 local noclipEnabled = false
 local currentSpeed = 16
@@ -11,9 +12,16 @@ local flySpeed = 50
 local bg, bv
 local noclipConnection, flyConnection
 
+function Logic.ToggleSpeed(state)
+    speedEnabled = state
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+        LocalPlayer.Character.Humanoid.WalkSpeed = speedEnabled and currentSpeed or 16
+    end
+end
+
 function Logic.SetSpeed(speed)
     currentSpeed = speed
-    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+    if speedEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         LocalPlayer.Character.Humanoid.WalkSpeed = currentSpeed
     end
 end
@@ -49,7 +57,6 @@ function Logic.ToggleFly(state)
             local moveDir = humanoid.MoveDirection
             
             if moveDir.Magnitude > 0 then
-                -- Đồng bộ hướng di chuyển theo góc nhìn Camera và Joystick trên Mobile
                 local camCF = camera.CFrame
                 local relativeDir = camCF:VectorToObjectSpace(moveDir)
                 bv.velocity = camCF:VectorToWorldSpace(Vector3.new(relativeDir.X, moveDir.Y, relativeDir.Z)) * flySpeed
@@ -88,6 +95,7 @@ function Logic.ToggleNoClip(state)
 end
 
 function Logic.ResetConfig()
+    Logic.ToggleSpeed(false)
     Logic.ToggleFly(false)
     Logic.ToggleNoClip(false)
     Logic.SetSpeed(16)
@@ -95,9 +103,9 @@ end
 
 LocalPlayer.CharacterAdded:Connect(function(newCharacter)
     task.wait(1)
+    if speedEnabled then Logic.ToggleSpeed(true) end
     if flyEnabled then Logic.ToggleFly(true) end
     if noclipEnabled then Logic.ToggleNoClip(true) end
-    Logic.SetSpeed(currentSpeed)
 end)
 
 return Logic
