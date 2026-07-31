@@ -1,331 +1,303 @@
--- Nana 1.0 by phuoc - UI WITH TOGGLE SWITCH
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
-
-local player = Players.LocalPlayer
+-- Nana 1.0 - SIMPLE TEST
+local player = game:GetService("Players").LocalPlayer
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "NanaGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- ✅ NÚT TOGGLE NHỎ (BẬT/TẮT MENU)
-local toggleIconButton = Instance.new("Frame")
-toggleIconButton.Name = "ToggleIconButton"
-toggleIconButton.Size = UDim2.new(0, 50, 0, 50)
-toggleIconButton.Position = UDim2.new(0.02, 0, 0.05, 0)
-toggleIconButton.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
-toggleIconButton.BorderSizePixel = 0
-toggleIconButton.Draggable = true
-toggleIconButton.Active = true
-toggleIconButton.Parent = screenGui
+-- ✅ NÚT ICON
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Name = "ToggleBtn"
+toggleBtn.Size = UDim2.new(0, 50, 0, 50)
+toggleBtn.Position = UDim2.new(0.02, 0, 0.05, 0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.TextSize = 20
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.Text = "⚡"
+toggleBtn.BorderSizePixel = 0
+toggleBtn.Draggable = true
+toggleBtn.Active = true
+toggleBtn.Parent = screenGui
 
-local iconCorner = Instance.new("UICorner")
-iconCorner.CornerRadius = UDim.new(0, 10)
-iconCorner.Parent = toggleIconButton
+local btnCorner = Instance.new("UICorner")
+btnCorner.CornerRadius = UDim.new(0, 10)
+btnCorner.Parent = toggleBtn
 
-local iconLabel = Instance.new("TextLabel")
-iconLabel.Name = "IconLabel"
-iconLabel.Size = UDim2.new(1, 0, 1, 0)
-iconLabel.BackgroundTransparency = 1
-iconLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-iconLabel.TextSize = 20
-iconLabel.Font = Enum.Font.GothamBold
-iconLabel.Text = "⚡"
-iconLabel.Parent = toggleIconButton
+-- ✅ BẢNG MENU (Ban đầu ẩn)
+local menu = Instance.new("Frame")
+menu.Name = "Menu"
+menu.Size = UDim2.new(0, 400, 0, 450)
+menu.Position = UDim2.new(0.1, 0, 0.15, 0)
+menu.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+menu.BorderSizePixel = 0
+menu.Draggable = true
+menu.Active = true
+menu.Visible = false  -- ẨN LÚC ĐẦU
+menu.Parent = screenGui
 
--- ✅ MAIN PANEL (MENU)
-local mainPanel = Instance.new("Frame")
-mainPanel.Name = "MainPanel"
-mainPanel.Size = UDim2.new(0, 400, 0, 450)
-mainPanel.Position = UDim2.new(0.1, 0, 0.15, 0)
-mainPanel.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-mainPanel.BorderSizePixel = 0
-mainPanel.Draggable = true
-mainPanel.Active = true
-mainPanel.Parent = screenGui
-mainPanel.Visible = false
+local menuCorner = Instance.new("UICorner")
+menuCorner.CornerRadius = UDim.new(0, 15)
+menuCorner.Parent = menu
 
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 15)
-mainCorner.Parent = mainPanel
-
--- ✅ HEADER
-local header = Instance.new("Frame")
-header.Name = "Header"
+-- Header
+local header = Instance.new("TextLabel")
 header.Size = UDim2.new(1, 0, 0, 50)
 header.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
+header.TextColor3 = Color3.fromRGB(255, 255, 255)
+header.TextSize = 18
+header.Font = Enum.Font.GothamBold
+header.Text = "Nana 1.0 by phuoc"
 header.BorderSizePixel = 0
-header.Parent = mainPanel
+header.Parent = menu
 
 local headerCorner = Instance.new("UICorner")
 headerCorner.CornerRadius = UDim.new(0, 15)
 headerCorner.Parent = header
 
-local headerTitle = Instance.new("TextLabel")
-headerTitle.Name = "Title"
-headerTitle.Size = UDim2.new(1, 0, 1, 0)
-headerTitle.BackgroundTransparency = 1
-headerTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-headerTitle.TextSize = 18
-headerTitle.Font = Enum.Font.GothamBold
-headerTitle.Text = "Nana 1.0 by phuoc"
-headerTitle.Parent = header
-
--- ✅ CLOSE BUTTON (X)
-local closeButton = Instance.new("TextButton")
-closeButton.Name = "CloseButton"
-closeButton.Size = UDim2.new(0, 40, 0, 40)
-closeButton.Position = UDim2.new(1, -45, 0, 5)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.TextSize = 16
-closeButton.Font = Enum.Font.GothamBold
-closeButton.Text = "✕"
-closeButton.BorderSizePixel = 0
-closeButton.Parent = mainPanel
+-- Close Button
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 40, 0, 40)
+closeBtn.Position = UDim2.new(1, -45, 0, 5)
+closeBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.TextSize = 16
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.Text = "✕"
+closeBtn.BorderSizePixel = 0
+closeBtn.Parent = header
 
 local closeCorner = Instance.new("UICorner")
 closeCorner.CornerRadius = UDim.new(0, 8)
-closeCorner.Parent = closeButton
+closeCorner.Parent = closeBtn
 
--- ✅ SIDEBAR (MENU BÊN TRÁI)
-local sidebar = Instance.new("Frame")
-sidebar.Name = "Sidebar"
-sidebar.Size = UDim2.new(0, 110, 0, 400)
-sidebar.Position = UDim2.new(0, 0, 0, 50)
-sidebar.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-sidebar.BorderSizePixel = 0
-sidebar.Parent = mainPanel
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 10, 0, 60)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(100, 200, 255)
+title.TextSize = 14
+title.Font = Enum.Font.GothamBold
+title.Text = "🏃 Run Speed"
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = menu
 
--- Menu items
-local menuItems = {
-    {name = "Home", icon = "🏠"},
-    {name = "Run Speed", icon = "🏃"},
-    {name = "Fly", icon = "✈️"},
-    {name = "NoClip", icon = "👻"},
-}
+-- Toggle 1
+local toggle1Bg = Instance.new("Frame")
+toggle1Bg.Size = UDim2.new(0.9, 0, 0, 50)
+toggle1Bg.Position = UDim2.new(0.05, 0, 0, 110)
+toggle1Bg.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+toggle1Bg.BorderSizePixel = 0
+toggle1Bg.Parent = menu
 
-for i, item in ipairs(menuItems) do
-    local menuButton = Instance.new("TextButton")
-    menuButton.Name = item.name
-    menuButton.Size = UDim2.new(1, 0, 0, 50)
-    menuButton.Position = UDim2.new(0, 0, 0, (i-1) * 50)
-    menuButton.BackgroundColor3 = (i == 1) and Color3.fromRGB(50, 100, 255) or Color3.fromRGB(20, 20, 30)
-    menuButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    menuButton.TextSize = 11
-    menuButton.Font = Enum.Font.GothamBold
-    menuButton.Text = item.icon .. "\n" .. item.name
-    menuButton.BorderSizePixel = 0
-    menuButton.Parent = sidebar
-    
-    -- Onclick select
-    menuButton.MouseButton1Click:Connect(function()
-        for _, btn in ipairs(sidebar:GetChildren()) do
-            if btn:IsA("TextButton") then
-                btn.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
-            end
-        end
-        menuButton.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
-    end)
-end
+local t1Corner = Instance.new("UICorner")
+t1Corner.CornerRadius = UDim.new(0, 8)
+t1Corner.Parent = toggle1Bg
 
--- ✅ CONTENT AREA (BÊN PHẢI)
-local contentArea = Instance.new("Frame")
-contentArea.Name = "ContentArea"
-contentArea.Size = UDim2.new(0, 290, 0, 400)
-contentArea.Position = UDim2.new(0, 110, 0, 50)
-contentArea.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-contentArea.BorderSizePixel = 0
-contentArea.Parent = mainPanel
+local t1Label = Instance.new("TextLabel")
+t1Label.Size = UDim2.new(0.6, 0, 1, 0)
+t1Label.BackgroundTransparency = 1
+t1Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+t1Label.TextSize = 12
+t1Label.Font = Enum.Font.GothamBold
+t1Label.Text = "🏃 Run Speed"
+t1Label.TextXAlignment = Enum.TextXAlignment.Left
+t1Label.Parent = toggle1Bg
 
--- Content Title
-local contentTitle = Instance.new("TextLabel")
-contentTitle.Name = "ContentTitle"
-contentTitle.Size = UDim2.new(1, 0, 0, 40)
-contentTitle.Position = UDim2.new(0, 0, 0, 10)
-contentTitle.BackgroundTransparency = 1
-contentTitle.TextColor3 = Color3.fromRGB(100, 200, 255)
-contentTitle.TextSize = 16
-contentTitle.Font = Enum.Font.GothamBold
-contentTitle.Text = "🏃 Run Speed"
-contentTitle.Parent = contentArea
+local t1Switch = Instance.new("Frame")
+t1Switch.Size = UDim2.new(0, 50, 0, 30)
+t1Switch.Position = UDim2.new(0.65, 0, 0.1, 0)
+t1Switch.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
+t1Switch.BorderSizePixel = 0
+t1Switch.Parent = toggle1Bg
 
--- ✅ FUNCTION TẠO TOGGLE SWITCH
-local function createToggleSwitch(parent, yPos, label)
-    local container = Instance.new("Frame")
-    container.Name = "ToggleContainer"
-    container.Size = UDim2.new(0.9, 0, 0, 50)
-    container.Position = UDim2.new(0.05, 0, 0, yPos)
-    container.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-    container.BorderSizePixel = 0
-    container.Parent = parent
-    
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
-    corner.Parent = container
-    
-    -- Label
-    local labelText = Instance.new("TextLabel")
-    labelText.Name = "Label"
-    labelText.Size = UDim2.new(0.6, 0, 1, 0)
-    labelText.BackgroundTransparency = 1
-    labelText.TextColor3 = Color3.fromRGB(255, 255, 255)
-    labelText.TextSize = 12
-    labelText.Font = Enum.Font.GothamBold
-    labelText.Text = label
-    labelText.TextXAlignment = Enum.TextXAlignment.Left
-    labelText.Parent = container
-    
-    -- Toggle Background
-    local toggleBg = Instance.new("Frame")
-    toggleBg.Name = "ToggleBg"
-    toggleBg.Size = UDim2.new(0, 50, 0, 30)
-    toggleBg.Position = UDim2.new(0.65, 0, 0.1, 0)
-    toggleBg.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
-    toggleBg.BorderSizePixel = 0
-    toggleBg.Parent = container
-    
-    local bgCorner = Instance.new("UICorner")
-    bgCorner.CornerRadius = UDim.new(0, 15)
-    bgCorner.Parent = toggleBg
-    
-    -- Toggle Circle (hình tròn trượt)
-    local toggleCircle = Instance.new("Frame")
-    toggleCircle.Name = "ToggleCircle"
-    toggleCircle.Size = UDim2.new(0, 26, 0, 26)
-    toggleCircle.Position = UDim2.new(0, 2, 0.5, -13)
-    toggleCircle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    toggleCircle.BorderSizePixel = 0
-    toggleCircle.Parent = toggleBg
-    
-    local circleCorner = Instance.new("UICorner")
-    circleCorner.CornerRadius = UDim.new(1, 0)
-    circleCorner.Parent = toggleCircle
-    
-    -- Toggle state
-    local isToggled = false
-    
-    -- Click để toggle
-    toggleBg.MouseButton1Click:Connect(function()
-        isToggled = not isToggled
-        
-        if isToggled then
-            -- Bật - hình tròn sang phải, nền xanh
-            toggleCircle:TweenPosition(UDim2.new(0, 22, 0.5, -13), "Out", "Quad", 0.2, true)
-            toggleBg:TweenColor3(Color3.fromRGB(50, 150, 255), "Out", "Quad", 0.2, true)
-        else
-            -- Tắt - hình tròn sang trái, nền xám
-            toggleCircle:TweenPosition(UDim2.new(0, 2, 0.5, -13), "Out", "Quad", 0.2, true)
-            toggleBg:TweenColor3(Color3.fromRGB(100, 100, 120), "Out", "Quad", 0.2, true)
-        end
-    end)
-    
-    -- Make toggleBg clickable
-    toggleBg.Selectable = true
-    toggleBg.Active = true
-    
-    return container, isToggled
-end
+local t1SwitchCorner = Instance.new("UICorner")
+t1SwitchCorner.CornerRadius = UDim.new(0, 15)
+t1SwitchCorner.Parent = t1Switch
 
--- ✅ TẠO 3 TOGGLE SWITCHES
-local toggle1, state1 = createToggleSwitch(contentArea, 60, "🏃 Run Speed")
-local toggle2, state2 = createToggleSwitch(contentArea, 130, "✈️ Fly")
-local toggle3, state3 = createToggleSwitch(contentArea, 200, "👻 NoClip")
+local t1Circle = Instance.new("Frame")
+t1Circle.Size = UDim2.new(0, 26, 0, 26)
+t1Circle.Position = UDim2.new(0, 2, 0.5, -13)
+t1Circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+t1Circle.BorderSizePixel = 0
+t1Circle.Parent = t1Switch
 
--- ✅ SPEED CONTROL BOX (SẼ HIỂN THỊ KHI BẬT CHỨC NĂNG)
-local speedControlBox = Instance.new("Frame")
-speedControlBox.Name = "SpeedControl"
-speedControlBox.Size = UDim2.new(0.9, 0, 0, 80)
-speedControlBox.Position = UDim2.new(0.05, 0, 0, 280)
-speedControlBox.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-speedControlBox.BorderSizePixel = 0
-speedControlBox.Parent = contentArea
+local t1CircleCorner = Instance.new("UICorner")
+t1CircleCorner.CornerRadius = UDim.new(1, 0)
+t1CircleCorner.Parent = t1Circle
 
-local speedCorner = Instance.new("UICorner")
-speedCorner.CornerRadius = UDim.new(0, 8)
-speedCorner.Parent = speedControlBox
+local t1State = false
+local t1ClickArea = Instance.new("TextButton")
+t1ClickArea.Size = UDim2.new(1, 0, 1, 0)
+t1ClickArea.BackgroundTransparency = 1
+t1ClickArea.Text = ""
+t1ClickArea.Parent = t1Switch
 
--- Speed Label
-local speedLabel = Instance.new("TextLabel")
-speedLabel.Name = "SpeedLabel"
-speedLabel.Size = UDim2.new(1, 0, 0, 20)
-speedLabel.Position = UDim2.new(0, 10, 0, 5)
-speedLabel.BackgroundTransparency = 1
-speedLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
-speedLabel.TextSize = 10
-speedLabel.Font = Enum.Font.Gotham
-speedLabel.Text = "Speed:"
-speedLabel.TextXAlignment = Enum.TextXAlignment.Left
-speedLabel.Parent = speedControlBox
+t1ClickArea.MouseButton1Click:Connect(function()
+    t1State = not t1State
+    if t1State then
+        t1Circle:TweenPosition(UDim2.new(0, 22, 0.5, -13), "Out", "Quad", 0.2, true)
+        t1Switch:TweenColor3(Color3.fromRGB(50, 150, 255), "Out", "Quad", 0.2, true)
+        print("✅ Run Speed ON")
+    else
+        t1Circle:TweenPosition(UDim2.new(0, 2, 0.5, -13), "Out", "Quad", 0.2, true)
+        t1Switch:TweenColor3(Color3.fromRGB(100, 100, 120), "Out", "Quad", 0.2, true)
+        print("❌ Run Speed OFF")
+    end
+end)
 
--- Speed Input
-local speedInput = Instance.new("TextBox")
-speedInput.Name = "SpeedInput"
-speedInput.Size = UDim2.new(0.9, 0, 0, 25)
-speedInput.Position = UDim2.new(0.05, 0, 0, 28)
-speedInput.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-speedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedInput.TextSize = 12
-speedInput.Font = Enum.Font.GothamBold
-speedInput.Text = "50"
-speedInput.Parent = speedControlBox
+-- Toggle 2
+local toggle2Bg = Instance.new("Frame")
+toggle2Bg.Size = UDim2.new(0.9, 0, 0, 50)
+toggle2Bg.Position = UDim2.new(0.05, 0, 0, 170)
+toggle2Bg.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+toggle2Bg.BorderSizePixel = 0
+toggle2Bg.Parent = menu
 
-local inputCorner = Instance.new("UICorner")
-inputCorner.CornerRadius = UDim.new(0, 6)
-inputCorner.Parent = speedInput
+local t2Corner = Instance.new("UICorner")
+t2Corner.CornerRadius = UDim.new(0, 8)
+t2Corner.Parent = toggle2Bg
 
--- Apply Button
-local applyButton = Instance.new("TextButton")
-applyButton.Name = "ApplyButton"
-applyButton.Size = UDim2.new(0.9, 0, 0, 20)
-applyButton.Position = UDim2.new(0.05, 0, 0, 55)
-applyButton.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
-applyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-applyButton.TextSize = 10
-applyButton.Font = Enum.Font.GothamBold
-applyButton.Text = "✓ Apply"
-applyButton.BorderSizePixel = 0
-applyButton.Parent = speedControlBox
+local t2Label = Instance.new("TextLabel")
+t2Label.Size = UDim2.new(0.6, 0, 1, 0)
+t2Label.BackgroundTransparency = 1
+t2Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+t2Label.TextSize = 12
+t2Label.Font = Enum.Font.GothamBold
+t2Label.Text = "✈️ Fly"
+t2Label.TextXAlignment = Enum.TextXAlignment.Left
+t2Label.Parent = toggle2Bg
 
-local applyCorner = Instance.new("UICorner")
-applyCorner.CornerRadius = UDim.new(0, 6)
-applyCorner.Parent = applyButton
+local t2Switch = Instance.new("Frame")
+t2Switch.Size = UDim2.new(0, 50, 0, 30)
+t2Switch.Position = UDim2.new(0.65, 0, 0.1, 0)
+t2Switch.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
+t2Switch.BorderSizePixel = 0
+t2Switch.Parent = toggle2Bg
 
--- ✅ TOGGLE MENU BẰNG NÚT ICON
+local t2SwitchCorner = Instance.new("UICorner")
+t2SwitchCorner.CornerRadius = UDim.new(0, 15)
+t2SwitchCorner.Parent = t2Switch
+
+local t2Circle = Instance.new("Frame")
+t2Circle.Size = UDim2.new(0, 26, 0, 26)
+t2Circle.Position = UDim2.new(0, 2, 0.5, -13)
+t2Circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+t2Circle.BorderSizePixel = 0
+t2Circle.Parent = t2Switch
+
+local t2CircleCorner = Instance.new("UICorner")
+t2CircleCorner.CornerRadius = UDim.new(1, 0)
+t2CircleCorner.Parent = t2Circle
+
+local t2State = false
+local t2ClickArea = Instance.new("TextButton")
+t2ClickArea.Size = UDim2.new(1, 0, 1, 0)
+t2ClickArea.BackgroundTransparency = 1
+t2ClickArea.Text = ""
+t2ClickArea.Parent = t2Switch
+
+t2ClickArea.MouseButton1Click:Connect(function()
+    t2State = not t2State
+    if t2State then
+        t2Circle:TweenPosition(UDim2.new(0, 22, 0.5, -13), "Out", "Quad", 0.2, true)
+        t2Switch:TweenColor3(Color3.fromRGB(50, 150, 255), "Out", "Quad", 0.2, true)
+        print("✅ Fly ON")
+    else
+        t2Circle:TweenPosition(UDim2.new(0, 2, 0.5, -13), "Out", "Quad", 0.2, true)
+        t2Switch:TweenColor3(Color3.fromRGB(100, 100, 120), "Out", "Quad", 0.2, true)
+        print("❌ Fly OFF")
+    end
+end)
+
+-- Toggle 3
+local toggle3Bg = Instance.new("Frame")
+toggle3Bg.Size = UDim2.new(0.9, 0, 0, 50)
+toggle3Bg.Position = UDim2.new(0.05, 0, 0, 230)
+toggle3Bg.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+toggle3Bg.BorderSizePixel = 0
+toggle3Bg.Parent = menu
+
+local t3Corner = Instance.new("UICorner")
+t3Corner.CornerRadius = UDim.new(0, 8)
+t3Corner.Parent = toggle3Bg
+
+local t3Label = Instance.new("TextLabel")
+t3Label.Size = UDim2.new(0.6, 0, 1, 0)
+t3Label.BackgroundTransparency = 1
+t3Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+t3Label.TextSize = 12
+t3Label.Font = Enum.Font.GothamBold
+t3Label.Text = "👻 NoClip"
+t3Label.TextXAlignment = Enum.TextXAlignment.Left
+t3Label.Parent = toggle3Bg
+
+local t3Switch = Instance.new("Frame")
+t3Switch.Size = UDim2.new(0, 50, 0, 30)
+t3Switch.Position = UDim2.new(0.65, 0, 0.1, 0)
+t3Switch.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
+t3Switch.BorderSizePixel = 0
+t3Switch.Parent = toggle3Bg
+
+local t3SwitchCorner = Instance.new("UICorner")
+t3SwitchCorner.CornerRadius = UDim.new(0, 15)
+t3SwitchCorner.Parent = t3Switch
+
+local t3Circle = Instance.new("Frame")
+t3Circle.Size = UDim2.new(0, 26, 0, 26)
+t3Circle.Position = UDim2.new(0, 2, 0.5, -13)
+t3Circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+t3Circle.BorderSizePixel = 0
+t3Circle.Parent = t3Switch
+
+local t3CircleCorner = Instance.new("UICorner")
+t3CircleCorner.CornerRadius = UDim.new(1, 0)
+t3CircleCorner.Parent = t3Circle
+
+local t3State = false
+local t3ClickArea = Instance.new("TextButton")
+t3ClickArea.Size = UDim2.new(1, 0, 1, 0)
+t3ClickArea.BackgroundTransparency = 1
+t3ClickArea.Text = ""
+t3ClickArea.Parent = t3Switch
+
+t3ClickArea.MouseButton1Click:Connect(function()
+    t3State = not t3State
+    if t3State then
+        t3Circle:TweenPosition(UDim2.new(0, 22, 0.5, -13), "Out", "Quad", 0.2, true)
+        t3Switch:TweenColor3(Color3.fromRGB(50, 150, 255), "Out", "Quad", 0.2, true)
+        print("✅ NoClip ON")
+    else
+        t3Circle:TweenPosition(UDim2.new(0, 2, 0.5, -13), "Out", "Quad", 0.2, true)
+        t3Switch:TweenColor3(Color3.fromRGB(100, 100, 120), "Out", "Quad", 0.2, true)
+        print("❌ NoClip OFF")
+    end
+end)
+
+-- ✅ TOGGLE MENU
 local menuOpen = false
-toggleIconButton.InputBegan:Connect(function(input, gameProcessed)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or 
-       input.UserInputType == Enum.UserInputType.Touch then
-        menuOpen = not menuOpen
-        mainPanel.Visible = menuOpen
-        
-        if menuOpen then
-            toggleIconButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-            iconLabel.Text = "✓"
-        else
-            toggleIconButton.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
-            iconLabel.Text = "⚡"
-        end
+toggleBtn.MouseButton1Click:Connect(function()
+    menuOpen = not menuOpen
+    menu.Visible = menuOpen
+    
+    if menuOpen then
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        toggleBtn.Text = "✓"
+        print("📋 Menu ON")
+    else
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
+        toggleBtn.Text = "⚡"
+        print("📋 Menu OFF")
     end
 end)
 
 -- ✅ CLOSE BUTTON
-closeButton.MouseButton1Click:Connect(function()
-    mainPanel.Visible = false
+closeBtn.MouseButton1Click:Connect(function()
+    menu.Visible = false
     menuOpen = false
-    toggleIconButton.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
-    iconLabel.Text = "⚡"
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
+    toggleBtn.Text = "⚡"
 end)
 
--- ✅ APPLY BUTTON EVENT
-applyButton.MouseButton1Click:Connect(function()
-    local val = tonumber(speedInput.Text)
-    if val then
-        speedInput.Text = tostring(math.max(10, math.min(val, 200)))
-        applyButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-        wait(0.3)
-        applyButton.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
-    end
-end)
-
-print("✅ Nana 1.0 UI loaded!")
+print("✅ Nana 1.0 loaded - Bấm nút ⚡ để mở menu!")
