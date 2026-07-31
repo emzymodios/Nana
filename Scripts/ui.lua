@@ -1,352 +1,308 @@
--- Nana 1.0 - FULL VERSION (UI + Chức năng)
+-- Nana Hub UI (ui.lua) - FULL VERSION
 local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
-local rootPart = character:WaitForChild("HumanoidRootPart")
+local playerGui = player:WaitForChild("PlayerGui")
 
--- ✅ BIẾN TRẠNG THÁI
-local speedEnabled = false
-local flyEnabled = false
-local noclipEnabled = false
-local currentSpeed = 50
-local currentFlySpeed = 50
-local flyConnection = nil
-local noclipConnection = nil
+-- ✅ Chống trùng lặp: Xóa UI cũ nếu đã tồn tại trước đó
+if playerGui:FindFirstChild("NanaHubUI") then
+    playerGui.NanaHubUI:Destroy()
+end
 
--- ✅ GUI
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "NanaGui"
+screenGui.Name = "NanaHubUI"
 screenGui.ResetOnSpawn = false
-screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.Parent = playerGui
 
--- ✅ NÚT ICON
+-- ✅ Nút icon mở/đóng Hub góc màn hình
 local toggleBtn = Instance.new("TextButton")
 toggleBtn.Name = "ToggleBtn"
-toggleBtn.Size = UDim2.new(0, 50, 0, 50)
-toggleBtn.Position = UDim2.new(0.02, 0, 0.05, 0)
-toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
-toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.Size = UDim2.new(0, 45, 0, 45)
+toggleBtn.Position = UDim2.new(0.02, 0, 0.1, 0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+toggleBtn.TextColor3 = Color3.fromRGB(0, 255, 128)
 toggleBtn.TextSize = 20
 toggleBtn.Font = Enum.Font.GothamBold
 toggleBtn.Text = "⚡"
-toggleBtn.BorderSizePixel = 0
 toggleBtn.Draggable = true
 toggleBtn.Active = true
 toggleBtn.Parent = screenGui
 
-local btnCorner = Instance.new("UICorner")
-btnCorner.CornerRadius = UDim.new(0, 10)
-btnCorner.Parent = toggleBtn
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0, 8)
+toggleCorner.Parent = toggleBtn
 
--- ✅ BẢNG MENU
-local menu = Instance.new("Frame")
-menu.Name = "Menu"
-menu.Size = UDim2.new(0, 400, 0, 450)
-menu.Position = UDim2.new(0.1, 0, 0.15, 0)
-menu.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-menu.BorderSizePixel = 0
-menu.Draggable = true
-menu.Active = true
-menu.Visible = false
-menu.Parent = screenGui
+-- ✅ Khung chính của Hub
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 520, 0, 320)
+mainFrame.Position = UDim2.new(0.5, -260, 0.5, -160)
+mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Visible = false -- Mặc định ẩn lúc đầu
+mainFrame.Parent = screenGui
 
-local menuCorner = Instance.new("UICorner")
-menuCorner.CornerRadius = UDim.new(0, 15)
-menuCorner.Parent = menu
+local mainCorner = Instance.new("UICorner")
+mainCorner.CornerRadius = UDim.new(0, 10)
+mainCorner.Parent = mainFrame
 
--- Header
-local header = Instance.new("TextLabel")
-header.Size = UDim2.new(1, 0, 0, 50)
-header.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
-header.TextColor3 = Color3.fromRGB(255, 255, 255)
-header.TextSize = 18
-header.Font = Enum.Font.GothamBold
-header.Text = "Nana 1.0 by phuoc"
-header.BorderSizePixel = 0
-header.Parent = menu
+-- Topbar (Tiêu đề + Nút đóng)
+local topBar = Instance.new("Frame")
+topBar.Size = UDim2.new(1, 0, 0, 35)
+topBar.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
+topBar.BorderSizePixel = 0
+topBar.Parent = mainFrame
 
-local headerCorner = Instance.new("UICorner")
-headerCorner.CornerRadius = UDim.new(0, 15)
-headerCorner.Parent = header
+local topCorner = Instance.new("UICorner")
+topCorner.CornerRadius = UDim.new(0, 10)
+topCorner.Parent = topBar
 
--- Close Button
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Size = UDim2.new(0.8, 0, 1, 0)
+titleLabel.Position = UDim2.new(0.03, 0, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.TextColor3 = Color3.fromRGB(240, 240, 255)
+titleLabel.TextSize = 14
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.Text = "Nana Hub | Main Menu"
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = topBar
+
 local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 40, 0, 40)
-closeBtn.Position = UDim2.new(1, -45, 0, 5)
-closeBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.Size = UDim2.new(0, 30, 0, 30)
+closeBtn.Position = UDim2.new(1, -35, 0, 2)
+closeBtn.BackgroundTransparency = 1
+closeBtn.TextColor3 = Color3.fromRGB(200, 50, 50)
 closeBtn.TextSize = 16
 closeBtn.Font = Enum.Font.GothamBold
 closeBtn.Text = "✕"
-closeBtn.BorderSizePixel = 0
-closeBtn.Parent = header
+closeBtn.Parent = topBar
 
-local closeCorner = Instance.new("UICorner")
-closeCorner.CornerRadius = UDim.new(0, 8)
-closeCorner.Parent = closeBtn
+-- ✅ Xử lý ẩn/hiện bảng mượt mà
+closeBtn.MouseButton1Click:Connect(function()
+    mainFrame.Visible = false
+end)
 
--- Title
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 40)
-title.Position = UDim2.new(0, 10, 0, 60)
-title.BackgroundTransparency = 1
-title.TextColor3 = Color3.fromRGB(100, 200, 255)
-title.TextSize = 14
-title.Font = Enum.Font.GothamBold
-title.Text = "🏃 Run Speed"
-title.TextXAlignment = Enum.TextXAlignment.Left
-title.Parent = menu
+toggleBtn.MouseButton1Click:Connect(function()
+    mainFrame.Visible = not mainFrame.Visible
+end)
 
--- ✅ HÀM TẠO TOGGLE
-local function createToggle(yPos, label, onToggle)
-    local bg = Instance.new("Frame")
-    bg.Size = UDim2.new(0.9, 0, 0, 50)
-    bg.Position = UDim2.new(0.05, 0, 0, yPos)
-    bg.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-    bg.BorderSizePixel = 0
-    bg.Parent = menu
-    
-    local bgCorner = Instance.new("UICorner")
-    bgCorner.CornerRadius = UDim.new(0, 8)
-    bgCorner.Parent = bg
-    
+-- Sidebar bên trái (Menu)
+local sideBar = Instance.new("Frame")
+sideBar.Size = UDim2.new(0, 130, 1, -35)
+sideBar.Position = UDim2.new(0, 0, 0, 35)
+sideBar.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+sideBar.BorderSizePixel = 0
+sideBar.Parent = mainFrame
+
+local mainTabBtn = Instance.new("TextButton")
+mainTabBtn.Size = UDim2.new(0.9, 0, 0, 35)
+mainTabBtn.Position = UDim2.new(0.05, 0, 0.05, 0)
+mainTabBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+mainTabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+mainTabBtn.TextSize = 13
+mainTabBtn.Font = Enum.Font.GothamBold
+mainTabBtn.Text = "🏠 Main"
+mainTabBtn.Parent = sideBar
+
+local tabCorner = Instance.new("UICorner")
+tabCorner.CornerRadius = UDim.new(0, 6)
+tabCorner.Parent = mainTabBtn
+
+-- Container chứa nội dung bên phải
+local container = Instance.new("ScrollingFrame")
+container.Size = UDim2.new(1, -135, 1, -45)
+container.Position = UDim2.new(0, 135, 0, 40)
+container.BackgroundTransparency = 1
+container.BorderSizePixel = 0
+container.CanvasSize = UDim2.new(0, 0, 0, 260)
+container.ScrollBarThickness = 4
+container.Parent = mainFrame
+
+-- Hàm tạo hàng Slider (Speed & Fly)
+local function createSlider(posY, titleText, minVal, maxVal, defaultVal, callback)
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0.6, 0, 1, 0)
+    lbl.Size = UDim2.new(0.9, 0, 0, 20)
+    lbl.Position = UDim2.new(0.05, 0, 0, posY)
     lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-    lbl.TextSize = 12
+    lbl.TextColor3 = Color3.fromRGB(220, 220, 240)
+    lbl.TextSize = 13
     lbl.Font = Enum.Font.GothamBold
-    lbl.Text = label
+    lbl.Text = titleText .. ": " .. tostring(defaultVal)
     lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.Parent = bg
-    
-    local switchBg = Instance.new("Frame")
-    switchBg.Size = UDim2.new(0, 50, 0, 30)
-    switchBg.Position = UDim2.new(0.65, 0, 0.1, 0)
-    switchBg.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
-    switchBg.BorderSizePixel = 0
-    switchBg.Parent = bg
-    
-    local switchCorner = Instance.new("UICorner")
-    switchCorner.CornerRadius = UDim.new(0, 15)
-    switchCorner.Parent = switchBg
-    
-    local circle = Instance.new("Frame")
-    circle.Size = UDim2.new(0, 26, 0, 26)
-    circle.Position = UDim2.new(0, 2, 0.5, -13)
-    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    circle.BorderSizePixel = 0
-    circle.Parent = switchBg
-    
-    local circleCorner = Instance.new("UICorner")
-    circleCorner.CornerRadius = UDim.new(1, 0)
-    circleCorner.Parent = circle
-    
-    local state = false
-    
-    local clickBtn = Instance.new("TextButton")
-    clickBtn.Size = UDim2.new(1, 0, 1, 0)
-    clickBtn.BackgroundTransparency = 1
-    clickBtn.Text = ""
-    clickBtn.Parent = switchBg
-    
-    clickBtn.MouseButton1Click:Connect(function()
-        state = not state
-        if state then
-            circle:TweenPosition(UDim2.new(0, 22, 0.5, -13), "Out", "Quad", 0.2, true)
-            switchBg:TweenColor3(Color3.fromRGB(50, 150, 255), "Out", "Quad", 0.2, true)
-        else
-            circle:TweenPosition(UDim2.new(0, 2, 0.5, -13), "Out", "Quad", 0.2, true)
-            switchBg:TweenColor3(Color3.fromRGB(100, 100, 120), "Out", "Quad", 0.2, true)
+    lbl.Parent = container
+
+    local sliderBg = Instance.new("Frame")
+    sliderBg.Size = UDim2.new(0.9, 0, 0, 10)
+    sliderBg.Position = UDim2.new(0.05, 0, 0, posY + 22)
+    sliderBg.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    sliderBg.BorderSizePixel = 0
+    sliderBg.Parent = container
+
+    local sCorner = Instance.new("UICorner")
+    sCorner.CornerRadius = UDim.new(1, 0)
+    sCorner.Parent = sliderBg
+
+    local sliderFill = Instance.new("Frame")
+    sliderFill.Size = UDim2.new((defaultVal - minVal) / (maxVal - minVal), 0, 1, 0)
+    sliderFill.BackgroundColor3 = Color3.fromRGB(80, 120, 255)
+    sliderFill.BorderSizePixel = 0
+    sliderFill.Parent = sliderBg
+
+    local fCorner = Instance.new("UICorner")
+    fCorner.CornerRadius = UDim.new(1, 0)
+    fCorner.Parent = sliderFill
+
+    local sliding = false
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, 0, 1, 0)
+    btn.BackgroundTransparency = 1
+    btn.Text = ""
+    btn.Parent = sliderBg
+
+    local function update(input)
+        local pos = math.clamp((input.Position.X - sliderBg.AbsolutePosition.X) / sliderBg.AbsoluteSize.X, 0, 1)
+        sliderFill.Size = UDim2.new(pos, 0, 1, 0)
+        local val = math.floor(minVal + (maxVal - minVal) * pos)
+        lbl.Text = titleText .. ": " .. tostring(val)
+        callback(val)
+    end
+
+    btn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            sliding = true
+            update(input)
         end
-        onToggle(state)
     end)
-    
-    return state
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            sliding = false
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            update(input)
+        end
+    end)
 end
 
--- ✅ TOGGLE 1 - RUN SPEED
-local t1State = createToggle(110, "🏃 Run Speed", function(state)
-    speedEnabled = state
-    if state then
-        print("✅ Run Speed ON")
-    else
-        print("❌ Run Speed OFF")
-        humanoid.WalkSpeed = 16
-    end
-end)
+-- Hàm tạo hàng Toggle (NoClip)
+local function createToggleRow(posY, titleText, callback)
+    local lbl = Instance.new("TextLabel")
+    lbl.Size = UDim2.new(0.7, 0, 0, 35)
+    lbl.Position = UDim2.new(0.05, 0, 0, posY)
+    lbl.BackgroundTransparency = 1
+    lbl.TextColor3 = Color3.fromRGB(220, 220, 240)
+    lbl.TextSize = 13
+    lbl.Font = Enum.Font.GothamBold
+    lbl.Text = titleText
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.Parent = container
 
--- ✅ TOGGLE 2 - FLY
-local t2State = createToggle(170, "✈️ Fly", function(state)
-    flyEnabled = state
-    if state then
-        print("✅ Fly ON - WASD để di chuyển, Space lên, Ctrl xuống")
-        
-        if flyConnection then flyConnection:Disconnect() end
-        
-        local bodyVelocity = Instance.new("BodyVelocity")
-        bodyVelocity.Velocity = Vector3.new(0, 0, 0)
-        bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
-        bodyVelocity.Parent = rootPart
-        
-        flyConnection = RunService.RenderStepped:Connect(function()
-            if not flyEnabled then 
-                if bodyVelocity then bodyVelocity:Destroy() end
-                return 
-            end
-            
-            local moveDir = Vector3.new(0, 0, 0)
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then 
-                moveDir = moveDir + rootPart.CFrame.LookVector 
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then 
-                moveDir = moveDir - rootPart.CFrame.LookVector 
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then 
-                moveDir = moveDir - rootPart.CFrame.RightVector 
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then 
-                moveDir = moveDir + rootPart.CFrame.RightVector 
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then 
-                moveDir = moveDir + Vector3.new(0, 1, 0) 
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then 
-                moveDir = moveDir - Vector3.new(0, 1, 0) 
-            end
-            
-            bodyVelocity.Velocity = moveDir * currentFlySpeed
-        end)
-    else
-        print("❌ Fly OFF")
-        if flyConnection then
-            flyConnection:Disconnect()
-            flyConnection = nil
+    local toggleBox = Instance.new("TextButton")
+    toggleBox.Size = UDim2.new(0, 45, 0, 22)
+    toggleBox.Position = UDim2.new(0.8, 0, 0, posY + 6)
+    toggleBox.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
+    toggleBox.Text = ""
+    toggleBox.Parent = container
+
+    local tCorner = Instance.new("UICorner")
+    tCorner.CornerRadius = UDim.new(1, 0)
+    tCorner.Parent = toggleBox
+
+    local circle = Instance.new("Frame")
+    circle.Size = UDim2.new(0, 18, 0, 18)
+    circle.Position = UDim2.new(0, 2, 0.5, -9)
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.Parent = toggleBox
+
+    local cCorner = Instance.new("UICorner")
+    cCorner.CornerRadius = UDim.new(1, 0)
+    cCorner.Parent = circle
+
+    local active = false
+    toggleBox.MouseButton1Click:Connect(function()
+        active = not active
+        if active then
+            circle:TweenPosition(UDim2.new(1, -20, 0.5, -9), "Out", "Quad", 0.15, true)
+            toggleBox.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        else
+            circle:TweenPosition(UDim2.new(0, 2, 0.5, -9), "Out", "Quad", 0.15, true)
+            toggleBox.BackgroundColor3 = Color3.fromRGB(50, 50, 65)
         end
-        
-        local bv = rootPart:FindFirstChildOfClass("BodyVelocity")
-        if bv then bv:Destroy() end
+        callback(active)
+    end)
+end
+
+-- 📌 Hàng 1: Run Speed Slider (16 đến 200)
+createSlider(10, "🏃 Run Speed", 16, 200, 50, function(val)
+    print("UI Speed set to:", val)
+end)
+
+-- 📌 Hàng 2: Fly Speed Slider (10 đến 300)
+createSlider(75, "✈️ Fly Speed", 10, 300, 50, function(val)
+    print("UI Fly Speed set to:", val)
+end)
+
+-- 📌 Hàng 3: NoClip Toggle
+createToggleRow(140, "👻 NoClip Mode", function(state)
+    print("UI NoClip state:", state)
+end)
+
+-- 📌 Hàng 4: Reset Config Button
+local resetBtn = Instance.new("TextButton")
+resetBtn.Size = UDim2.new(0.9, 0, 0, 35)
+resetBtn.Position = UDim2.new(0.05, 0, 0, 195)
+resetBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+resetBtn.TextSize = 13
+resetBtn.Font = Enum.Font.GothamBold
+resetBtn.Text = "🔄 Reset Config"
+resetBtn.Parent = container
+
+local rCorner = Instance.new("UICorner")
+rCorner.CornerRadius = UDim.new(0, 6)
+rCorner.Parent = resetBtn
+
+resetBtn.MouseButton1Click:Connect(function()
+    print("UI Reset Config clicked!")
+end)
+
+-- ✅ Tính năng kéo giãn (Resize) góc phải dưới bảng
+local resizeBtn = Instance.new("TextButton")
+resizeBtn.Size = UDim2.new(0, 15, 0, 15)
+resizeBtn.Position = UDim2.new(1, -15, 1, -15)
+resizeBtn.BackgroundTransparency = 1
+resizeBtn.Text = "◢"
+resizeBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
+resizeBtn.TextSize = 12
+resizeBtn.Parent = mainFrame
+
+local resizing = false
+local dragStart, startSize
+
+resizeBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        resizing = true
+        dragStart = input.Position
+        startSize = mainFrame.AbsoluteSize
     end
 end)
 
--- ✅ TOGGLE 3 - NOCLIP
-local t3State = createToggle(230, "👻 NoClip", function(state)
-    noclipEnabled = state
-    if state then
-        print("✅ NoClip ON")
-        
-        if noclipConnection then noclipConnection:Disconnect() end
-        
-        noclipConnection = RunService.RenderStepped:Connect(function()
-            if not noclipEnabled then return end
-            for _, part in pairs(character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
-                end
-            end
-        end)
-    else
-        print("❌ NoClip OFF")
-        if noclipConnection then
-            noclipConnection:Disconnect()
-            noclipConnection = nil
-        end
-        for _, part in pairs(character:GetDescendants()) do
-            if part:IsA("BasePart") then
-                part.CanCollide = true
-            end
-        end
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        resizing = false
     end
 end)
 
--- ✅ SPEED CONTROL
-local speedLabel = Instance.new("TextLabel")
-speedLabel.Size = UDim2.new(0.9, 0, 0, 20)
-speedLabel.Position = UDim2.new(0.05, 0, 0, 290)
-speedLabel.BackgroundTransparency = 1
-speedLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
-speedLabel.TextSize = 10
-speedLabel.Font = Enum.Font.Gotham
-speedLabel.Text = "Speed:"
-speedLabel.Parent = menu
-
-local speedInput = Instance.new("TextBox")
-speedInput.Size = UDim2.new(0.9, 0, 0, 25)
-speedInput.Position = UDim2.new(0.05, 0, 0, 315)
-speedInput.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-speedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
-speedInput.TextSize = 12
-speedInput.Font = Enum.Font.GothamBold
-speedInput.Text = "50"
-speedInput.Parent = menu
-
-local inputCorner = Instance.new("UICorner")
-inputCorner.CornerRadius = UDim.new(0, 6)
-inputCorner.Parent = speedInput
-
-local applyBtn = Instance.new("TextButton")
-applyBtn.Size = UDim2.new(0.9, 0, 0, 25)
-applyBtn.Position = UDim2.new(0.05, 0, 0, 355)
-applyBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
-applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-applyBtn.TextSize = 11
-applyBtn.Font = Enum.Font.GothamBold
-applyBtn.Text = "✓ Apply"
-applyBtn.BorderSizePixel = 0
-applyBtn.Parent = menu
-
-local applyCorner = Instance.new("UICorner")
-applyCorner.CornerRadius = UDim.new(0, 6)
-applyCorner.Parent = applyBtn
-
--- ✅ APPLY BUTTON
-applyBtn.MouseButton1Click:Connect(function()
-    local val = tonumber(speedInput.Text)
-    if val then
-        if speedEnabled then
-            currentSpeed = math.max(10, math.min(val, 200))
-        elseif flyEnabled then
-            currentFlySpeed = math.max(10, math.min(val, 200))
-        end
-        speedInput.Text = tostring(val)
-        applyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-        wait(0.3)
-        applyBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
+UserInputService.InputChanged:Connect(function(input)
+    if resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        mainFrame.Size = UDim2.new(0, math.clamp(startSize.X + delta.X, 400, 800), 0, math.clamp(startSize.Y + delta.Y, 250, 600))
     end
 end)
-
--- ✅ TOGGLE MENU
-local menuOpen = false
-toggleBtn.MouseButton1Click:Connect(function()
-    menuOpen = not menuOpen
-    menu.Visible = menuOpen
-    
-    if menuOpen then
-        toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-        toggleBtn.Text = "✓"
-    else
-        toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
-        toggleBtn.Text = "⚡"
-    end
-end)
-
--- ✅ CLOSE BUTTON
-closeBtn.MouseButton1Click:Connect(function()
-    menu.Visible = false
-    menuOpen = false
-    toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
-    toggleBtn.Text = "⚡"
-end)
-
--- ✅ UPDATE SPEED REALTIME
-RunService.RenderStepped:Connect(function()
-    if speedEnabled and character and humanoid then
-        humanoid.WalkSpeed = currentSpeed
-    end
-end)
-
-print("✅ Nana 1.0 loaded! Bấm nút ⚡ để mở menu")
