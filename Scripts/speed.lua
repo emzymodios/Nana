@@ -1,287 +1,352 @@
+-- Nana 1.0 - FULL VERSION (UI + Chức năng)
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local rootPart = character:WaitForChild("HumanoidRootPart")
 
--- Dọn sạch tất cả UI cũ có thể bị kẹt
-if playerGui:FindFirstChild("RedzHubBloxFruits") then
-    playerGui.RedzHubBloxFruits:Destroy()
-end
-if game.CoreGui:FindFirstChild("RedzHubBloxFruits") then
-    game.CoreGui.RedzHubBloxFruits:Destroy()
-end
+-- ✅ BIẾN TRẠNG THÁI
+local speedEnabled = false
+local flyEnabled = false
+local noclipEnabled = false
+local currentSpeed = 50
+local currentFlySpeed = 50
+local flyConnection = nil
+local noclipConnection = nil
 
+-- ✅ GUI
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "RedzHubBloxFruits"
+screenGui.Name = "NanaGui"
 screenGui.ResetOnSpawn = false
--- Thử đưa vào CoreGui nếu executor hỗ trợ, nếu không sẽ về PlayerGui
-pcall(function()
-    screenGui.Parent = game:GetService("CoreGui")
-end)
-if not screenGui.Parent then
-    screenGui.Parent = playerGui
-end
+screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Nút mở/đóng Hub (Nút tròn nhỏ có chữ F)
-local toggleButton = Instance.new("TextButton")
-toggleButton.Name = "ToggleButton"
-toggleButton.Size = UDim2.new(0, 45, 0, 45)
-toggleButton.Position = UDim2.new(0.02, 0, 0.08, 0)
-toggleButton.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.TextSize = 20
-toggleButton.Font = Enum.Font.GothamBold
-toggleButton.Text = "⚡"
-toggleButton.BorderSizePixel = 0
-toggleButton.Active = true
-toggleButton.Draggable = true
-toggleButton.Parent = screenGui
+-- ✅ NÚT ICON
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Name = "ToggleBtn"
+toggleBtn.Size = UDim2.new(0, 50, 0, 50)
+toggleBtn.Position = UDim2.new(0.02, 0, 0.05, 0)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.TextSize = 20
+toggleBtn.Font = Enum.Font.GothamBold
+toggleBtn.Text = "⚡"
+toggleBtn.BorderSizePixel = 0
+toggleBtn.Draggable = true
+toggleBtn.Active = true
+toggleBtn.Parent = screenGui
 
 local btnCorner = Instance.new("UICorner")
 btnCorner.CornerRadius = UDim.new(0, 10)
-btnCorner.Parent = toggleButton
+btnCorner.Parent = toggleBtn
 
--- Khung Hub chính (Giao diện ngang lớn)
-local mainFrame = Instance.new("Frame")
-mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 650, 0, 400)
-mainFrame.Position = UDim2.new(0.5, -325, 0.5, -200)
-mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
-mainFrame.BorderSizePixel = 0
-mainFrame.Visible = false
-mainFrame.Active = true
-mainFrame.Draggable = true
-mainFrame.Parent = screenGui
+-- ✅ BẢNG MENU
+local menu = Instance.new("Frame")
+menu.Name = "Menu"
+menu.Size = UDim2.new(0, 400, 0, 450)
+menu.Position = UDim2.new(0.1, 0, 0.15, 0)
+menu.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+menu.BorderSizePixel = 0
+menu.Draggable = true
+menu.Active = true
+menu.Visible = false
+menu.Parent = screenGui
 
-local mainCorner = Instance.new("UICorner")
-mainCorner.CornerRadius = UDim.new(0, 8)
-mainCorner.Parent = mainFrame
+local menuCorner = Instance.new("UICorner")
+menuCorner.CornerRadius = UDim.new(0, 15)
+menuCorner.Parent = menu
 
--- Thanh tiêu đề trên cùng (Topbar)
-local topBar = Instance.new("Frame")
-topBar.Size = UDim2.new(1, 0, 0, 32)
-topBar.BackgroundColor3 = Color3.fromRGB(24, 24, 30)
-topBar.BorderSizePixel = 0
-topBar.Parent = mainFrame
+-- Header
+local header = Instance.new("TextLabel")
+header.Size = UDim2.new(1, 0, 0, 50)
+header.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
+header.TextColor3 = Color3.fromRGB(255, 255, 255)
+header.TextSize = 18
+header.Font = Enum.Font.GothamBold
+header.Text = "Nana 1.0 by phuoc"
+header.BorderSizePixel = 0
+header.Parent = menu
 
-local topCorner = Instance.new("UICorner")
-topCorner.CornerRadius = UDim.new(0, 8)
-topCorner.Parent = topBar
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 15)
+headerCorner.Parent = header
 
--- Khúc dưới thanh topbar để làm phẳng góc bo tròn
-local fixBar = Instance.new("Frame")
-fixBar.Size = UDim2.new(1, 0, 0, 5)
-fixBar.Position = UDim2.new(0, 0, 1, -5)
-fixBar.BackgroundColor3 = Color3.fromRGB(24, 24, 30)
-fixBar.BorderSizePixel = 0
-fixBar.Parent = topBar
+-- Close Button
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 40, 0, 40)
+closeBtn.Position = UDim2.new(1, -45, 0, 5)
+closeBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.TextSize = 16
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.Text = "✕"
+closeBtn.BorderSizePixel = 0
+closeBtn.Parent = header
 
-local titleLabel = Instance.new("TextLabel")
-titleLabel.Size = UDim2.new(1, -15, 1, 0)
-titleLabel.Position = UDim2.new(0, 12, 0, 0)
-titleLabel.BackgroundTransparency = 1
-titleLabel.TextColor3 = Color3.fromRGB(200, 200, 210)
-titleLabel.TextSize = 12
-titleLabel.Font = Enum.Font.GothamMedium
-titleLabel.Text = "Redz Hub : Blox Fruits  <font color='#888899'>by redz999</font>"
-titleLabel.RichText = true
-titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-titleLabel.Parent = topBar
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 8)
+closeCorner.Parent = closeBtn
 
--- Sidebar (Thanh menu dọc bên trái)
-local sidebar = Instance.new("ScrollingFrame")
-sidebar.Size = UDim2.new(0, 160, 1, -32)
-sidebar.Position = UDim2.new(0, 0, 0, 32)
-sidebar.BackgroundColor3 = Color3.fromRGB(21, 21, 26)
-sidebar.BorderSizePixel = 0
-sidebar.ScrollBarThickness = 2
-sidebar.Parent = mainFrame
+-- Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Position = UDim2.new(0, 10, 0, 60)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(100, 200, 255)
+title.TextSize = 14
+title.Font = Enum.Font.GothamBold
+title.Text = "🏃 Run Speed"
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = menu
 
-local sideLayout = Instance.new("UIListLayout")
-sideLayout.SortOrder = Enum.SortOrder.LayoutOrder
-sideLayout.Padding = UDim.new(0, 3)
-sideLayout.Parent = sidebar
-
-local sidePadding = Instance.new("UIPadding")
-sidePadding.PaddingTop = UDim.new(0, 8)
-sidePadding.PaddingLeft = UDim.new(0, 8)
-sidePadding.PaddingRight = UDim.new(0, 8)
-sidePadding.Parent = sidebar
-
--- Khung chứa nội dung bên phải (Content Area)
-local contentArea = Instance.new("ScrollingFrame")
-contentArea.Size = UDim2.new(1, -168, 1, -38)
-contentArea.Position = UDim2.new(0, 164, 0, 36)
-contentArea.BackgroundTransparency = 1
-contentArea.BorderSizePixel = 0
-contentArea.ScrollBarThickness = 3
-contentArea.Parent = mainFrame
-
-local contentLayout = Instance.new("UIListLayout")
-contentLayout.SortOrder = Enum.SortOrder.LayoutOrder
-contentLayout.Padding = UDim.new(0, 8)
-contentLayout.Parent = contentArea
-
-local contentPadding = Instance.new("UIPadding")
-contentPadding.PaddingRight = UDim.new(0, 10)
-contentPadding.Parent = contentArea
-
--- Hàm tạo tiêu đề nhóm (Ví dụ: Farm, Bones,...)
-local function createHeader(text)
+-- ✅ HÀM TẠO TOGGLE
+local function createToggle(yPos, label, onToggle)
+    local bg = Instance.new("Frame")
+    bg.Size = UDim2.new(0.9, 0, 0, 50)
+    bg.Position = UDim2.new(0.05, 0, 0, yPos)
+    bg.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    bg.BorderSizePixel = 0
+    bg.Parent = menu
+    
+    local bgCorner = Instance.new("UICorner")
+    bgCorner.CornerRadius = UDim.new(0, 8)
+    bgCorner.Parent = bg
+    
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(1, 0, 0, 22)
+    lbl.Size = UDim2.new(0.6, 0, 1, 0)
     lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(170, 170, 185)
-    lbl.TextSize = 13
+    lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
+    lbl.TextSize = 12
     lbl.Font = Enum.Font.GothamBold
-    lbl.Text = text
+    lbl.Text = label
     lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.Parent = contentArea
-end
-
--- Hàm tạo công tắc gạt (Toggle Switch) chuẩn phong cách Hub
-local function createToggle(name, desc, callback)
-    local card = Instance.new("Frame")
-    card.Size = UDim2.new(1, 0, 0, 46)
-    card.BackgroundColor3 = Color3.fromRGB(25, 25, 32)
-    card.BorderSizePixel = 0
-    card.Parent = contentArea
-
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 6)
-    corner.Parent = card
-
-    local nLabel = Instance.new("TextLabel")
-    nLabel.Size = UDim2.new(1, -65, 0, 18)
-    nLabel.Position = UDim2.new(0, 10, 0, 5)
-    nLabel.BackgroundTransparency = 1
-    nLabel.TextColor3 = Color3.fromRGB(230, 230, 240)
-    nLabel.TextSize = 12
-    nLabel.Font = Enum.Font.GothamBold
-    nLabel.Text = name
-    nLabel.TextXAlignment = Enum.TextXAlignment.Left
-    nLabel.Parent = card
-
-    local dLabel = Instance.new("TextLabel")
-    dLabel.Size = UDim2.new(1, -65, 0, 15)
-    dLabel.Position = UDim2.new(0, 10, 0, 23)
-    dLabel.BackgroundTransparency = 1
-    dLabel.TextColor3 = Color3.fromRGB(120, 120, 135)
-    dLabel.TextSize = 10
-    dLabel.Font = Enum.Font.Gotham
-    dLabel.Text = desc
-    dLabel.TextXAlignment = Enum.TextXAlignment.Left
-    dLabel.Parent = card
-
-    -- Nút gạt bên phải
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 38, 0, 20)
-    btn.Position = UDim2.new(1, -46, 0.5, -10)
-    btn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-    btn.Text = ""
-    btn.AutoButtonColor = false
-    btn.BorderSizePixel = 0
-    btn.Parent = card
-
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(1, 0)
-    btnCorner.Parent = btn
-
+    lbl.Parent = bg
+    
+    local switchBg = Instance.new("Frame")
+    switchBg.Size = UDim2.new(0, 50, 0, 30)
+    switchBg.Position = UDim2.new(0.65, 0, 0.1, 0)
+    switchBg.BackgroundColor3 = Color3.fromRGB(100, 100, 120)
+    switchBg.BorderSizePixel = 0
+    switchBg.Parent = bg
+    
+    local switchCorner = Instance.new("UICorner")
+    switchCorner.CornerRadius = UDim.new(0, 15)
+    switchCorner.Parent = switchBg
+    
     local circle = Instance.new("Frame")
-    circle.Size = UDim2.new(0, 14, 0, 14)
-    circle.Position = UDim2.new(0, 3, 0.5, -7)
-    circle.BackgroundColor3 = Color3.fromRGB(140, 140, 150)
+    circle.Size = UDim2.new(0, 26, 0, 26)
+    circle.Position = UDim2.new(0, 2, 0.5, -13)
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     circle.BorderSizePixel = 0
-    circle.Parent = btn
-
+    circle.Parent = switchBg
+    
     local circleCorner = Instance.new("UICorner")
     circleCorner.CornerRadius = UDim.new(1, 0)
     circleCorner.Parent = circle
-
-    local active = false
-    btn.MouseButton1Click:Connect(function()
-        active = not active
-        if active then
-            btn.BackgroundColor3 = Color3.fromRGB(80, 100, 255)
-            circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            circle:TweenPosition(UDim2.new(1, -17, 0.5, -7), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15, true)
+    
+    local state = false
+    
+    local clickBtn = Instance.new("TextButton")
+    clickBtn.Size = UDim2.new(1, 0, 1, 0)
+    clickBtn.BackgroundTransparency = 1
+    clickBtn.Text = ""
+    clickBtn.Parent = switchBg
+    
+    clickBtn.MouseButton1Click:Connect(function()
+        state = not state
+        if state then
+            circle:TweenPosition(UDim2.new(0, 22, 0.5, -13), "Out", "Quad", 0.2, true)
+            switchBg:TweenColor3(Color3.fromRGB(50, 150, 255), "Out", "Quad", 0.2, true)
         else
-            btn.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-            circle.BackgroundColor3 = Color3.fromRGB(140, 140, 150)
-            circle:TweenPosition(UDim2.new(0, 3, 0.5, -7), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.15, true)
+            circle:TweenPosition(UDim2.new(0, 2, 0.5, -13), "Out", "Quad", 0.2, true)
+            switchBg:TweenColor3(Color3.fromRGB(100, 100, 120), "Out", "Quad", 0.2, true)
         end
-        if callback then callback(active) end
+        onToggle(state)
     end)
+    
+    return state
 end
 
--- Hàm tạo các mục chọn ở menu bên trái
-local function createTab(name)
-    local tab = Instance.new("TextButton")
-    tab.Size = UDim2.new(1, 0, 0, 32)
-    tab.BackgroundColor3 = Color3.fromRGB(21, 21, 26)
-    tab.TextColor3 = Color3.fromRGB(150, 150, 165)
-    tab.TextSize = 12
-    tab.Font = Enum.Font.GothamMedium
-    tab.Text = "   " .. name
-    tab.TextXAlignment = Enum.TextXAlignment.Left
-    tab.BorderSizePixel = 0
-    tab.AutoButtonColor = false
-    tab.Parent = sidebar
-
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 5)
-    corner.Parent = tab
-    return tab
-end
-
--- Tạo các danh mục menu trái
-createTab("📁  Farm")
-createTab("💀  Bones")
-createTab("⚡  Speed Control")
-
--- Thêm các tính năng chức năng vào bảng điều khiển
-createHeader("Farm Settings")
-createToggle("Auto Farm Level", "Tự động đánh quái luyện cấp tối ưu", function(state)
-    print("Auto Farm Level:", state)
+-- ✅ TOGGLE 1 - RUN SPEED
+local t1State = createToggle(110, "🏃 Run Speed", function(state)
+    speedEnabled = state
+    if state then
+        print("✅ Run Speed ON")
+    else
+        print("❌ Run Speed OFF")
+        humanoid.WalkSpeed = 16
+    end
 end)
 
-createToggle("Auto Farm Mastery", "Tự động farm thông thạo kiếm/súng/trái cây", function(state)
-    print("Auto Farm Mastery:", state)
+-- ✅ TOGGLE 2 - FLY
+local t2State = createToggle(170, "✈️ Fly", function(state)
+    flyEnabled = state
+    if state then
+        print("✅ Fly ON - WASD để di chuyển, Space lên, Ctrl xuống")
+        
+        if flyConnection then flyConnection:Disconnect() end
+        
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+        bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
+        bodyVelocity.Parent = rootPart
+        
+        flyConnection = RunService.RenderStepped:Connect(function()
+            if not flyEnabled then 
+                if bodyVelocity then bodyVelocity:Destroy() end
+                return 
+            end
+            
+            local moveDir = Vector3.new(0, 0, 0)
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then 
+                moveDir = moveDir + rootPart.CFrame.LookVector 
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then 
+                moveDir = moveDir - rootPart.CFrame.LookVector 
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then 
+                moveDir = moveDir - rootPart.CFrame.RightVector 
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then 
+                moveDir = moveDir + rootPart.CFrame.RightVector 
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then 
+                moveDir = moveDir + Vector3.new(0, 1, 0) 
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then 
+                moveDir = moveDir - Vector3.new(0, 1, 0) 
+            end
+            
+            bodyVelocity.Velocity = moveDir * currentFlySpeed
+        end)
+    else
+        print("❌ Fly OFF")
+        if flyConnection then
+            flyConnection:Disconnect()
+            flyConnection = nil
+        end
+        
+        local bv = rootPart:FindFirstChildOfClass("BodyVelocity")
+        if bv then bv:Destroy() end
+    end
 end)
 
-createHeader("Bones Options")
-createToggle("Auto Farm Bones", "Tự động thu thập xương tại vùng lạnh/ma ám", function(state)
-    print("Auto Farm Bones:", state)
-end)
-
-createHeader("Player Enhancements")
--- Logic tốc độ tích hợp sẵn
-local currentSpeed = 16
-RunService.RenderStepped:Connect(function()
-    local char = player.Character
-    if char then
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if hum and hum.Health > 0 then
-            hum.WalkSpeed = currentSpeed
+-- ✅ TOGGLE 3 - NOCLIP
+local t3State = createToggle(230, "👻 NoClip", function(state)
+    noclipEnabled = state
+    if state then
+        print("✅ NoClip ON")
+        
+        if noclipConnection then noclipConnection:Disconnect() end
+        
+        noclipConnection = RunService.RenderStepped:Connect(function()
+            if not noclipEnabled then return end
+            for _, part in pairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end)
+    else
+        print("❌ NoClip OFF")
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
+            end
         end
     end
 end)
 
-createToggle("Super Speed (100)", "Bật tốc độ di chuyển nhanh vượt trội", function(state)
-    if state then
-        currentSpeed = 100
-    else
-        currentSpeed = 16
+-- ✅ SPEED CONTROL
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(0.9, 0, 0, 20)
+speedLabel.Position = UDim2.new(0.05, 0, 0, 290)
+speedLabel.BackgroundTransparency = 1
+speedLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
+speedLabel.TextSize = 10
+speedLabel.Font = Enum.Font.Gotham
+speedLabel.Text = "Speed:"
+speedLabel.Parent = menu
+
+local speedInput = Instance.new("TextBox")
+speedInput.Size = UDim2.new(0.9, 0, 0, 25)
+speedInput.Position = UDim2.new(0.05, 0, 0, 315)
+speedInput.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+speedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedInput.TextSize = 12
+speedInput.Font = Enum.Font.GothamBold
+speedInput.Text = "50"
+speedInput.Parent = menu
+
+local inputCorner = Instance.new("UICorner")
+inputCorner.CornerRadius = UDim.new(0, 6)
+inputCorner.Parent = speedInput
+
+local applyBtn = Instance.new("TextButton")
+applyBtn.Size = UDim2.new(0.9, 0, 0, 25)
+applyBtn.Position = UDim2.new(0.05, 0, 0, 355)
+applyBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
+applyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+applyBtn.TextSize = 11
+applyBtn.Font = Enum.Font.GothamBold
+applyBtn.Text = "✓ Apply"
+applyBtn.BorderSizePixel = 0
+applyBtn.Parent = menu
+
+local applyCorner = Instance.new("UICorner")
+applyCorner.CornerRadius = UDim.new(0, 6)
+applyCorner.Parent = applyBtn
+
+-- ✅ APPLY BUTTON
+applyBtn.MouseButton1Click:Connect(function()
+    local val = tonumber(speedInput.Text)
+    if val then
+        if speedEnabled then
+            currentSpeed = math.max(10, math.min(val, 200))
+        elseif flyEnabled then
+            currentFlySpeed = math.max(10, math.min(val, 200))
+        end
+        speedInput.Text = tostring(val)
+        applyBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        wait(0.3)
+        applyBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 255)
     end
 end)
 
--- Nút mở/đóng giao diện chính
-local isOpen = false
-toggleButton.MouseButton1Click:Connect(function()
-    isOpen = not isOpen
-    mainFrame.Visible = isOpen
-    toggleButton.BackgroundColor3 = isOpen and Color3.fromRGB(80, 100, 255) or Color3.fromRGB(25, 25, 30)
+-- ✅ TOGGLE MENU
+local menuOpen = false
+toggleBtn.MouseButton1Click:Connect(function()
+    menuOpen = not menuOpen
+    menu.Visible = menuOpen
+    
+    if menuOpen then
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        toggleBtn.Text = "✓"
+    else
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
+        toggleBtn.Text = "⚡"
+    end
 end)
 
-print("✅ Redz Hub Blox Fruits UI đã tải thành công!")
+-- ✅ CLOSE BUTTON
+closeBtn.MouseButton1Click:Connect(function()
+    menu.Visible = false
+    menuOpen = false
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
+    toggleBtn.Text = "⚡"
+end)
+
+-- ✅ UPDATE SPEED REALTIME
+RunService.RenderStepped:Connect(function()
+    if speedEnabled and character and humanoid then
+        humanoid.WalkSpeed = currentSpeed
+    end
+end)
+
+print("✅ Nana 1.0 loaded! Bấm nút ⚡ để mở menu")
