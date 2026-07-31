@@ -1,15 +1,39 @@
--- Khoi tao dich vu Roblox
+local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
--- Tao ScreenGui chính
+local LocalPlayer = Players.LocalPlayer or Players.PlayerAdded:Wait()
+
+-- Tự động xác định nơi đặt GUI tương thích
+local TargetParent
+if gethui then
+    TargetParent = gethui()
+else
+    local success = pcall(function()
+        local test = Instance.new("Folder")
+        test.Parent = CoreGui
+        test:Destroy()
+    end)
+    if success then
+        TargetParent = CoreGui
+    else
+        TargetParent = LocalPlayer:WaitForChild("PlayerGui")
+    end
+end
+
+-- Xóa GUI cũ nếu đã tồn tại trước đó
+if TargetParent:FindFirstChild("MiniMenu_UI") then
+    TargetParent["MiniMenu_UI"]:Destroy()
+end
+
+-- 1. Tạo ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "MiniMenu_UI"
-ScreenGui.Parent = (gethui and gethui()) or CoreGui
 ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = TargetParent
 
--- 1. Khung Main Menu
+-- 2. Khung Main Frame
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.fromOffset(300, 150)
@@ -25,7 +49,7 @@ local MainStroke = Instance.new("UIStroke", MainFrame)
 MainStroke.Color = Color3.fromRGB(45, 45, 45)
 MainStroke.Thickness = 1.5
 
--- Fast Dragging (Kéo thả menu)
+-- Kéo thả Menu (Drag)
 local dragging, dragInput, dragStart, startPos
 MainFrame.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -47,7 +71,7 @@ UserInputService.InputChanged:Connect(function(input)
     end
 end)
 
--- 2. Thanh Tieude (Header)
+-- 3. Header & Tiêu đề
 local Header = Instance.new("Frame", MainFrame)
 Header.Size = UDim2.new(1, 0, 0, 35)
 Header.BackgroundTransparency = 1
@@ -62,15 +86,13 @@ Title.Font = Enum.Font.BuilderSansBold
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.BackgroundTransparency = 1
 
--- 3. Container chứa duy nhất 1 mục
+-- 4. Container chứa nút bấm
 local Container = Instance.new("Frame", MainFrame)
 Container.Size = UDim2.new(1, -20, 1, -45)
 Container.Position = UDim2.fromOffset(10, 38)
 Container.BackgroundTransparency = 1
 
--- ========================================================
--- [ MỤC DUY NHẤT: TOGGLE BẬT / TẮT ]
--- ========================================================
+-- 5. Nút Bật / Tắt (Toggle)
 local ToggleButton = Instance.new("TextButton", Container)
 ToggleButton.Name = "SingleToggle"
 ToggleButton.Size = UDim2.new(1, 0, 0, 40)
@@ -91,7 +113,6 @@ ToggleTitle.Font = Enum.Font.BuilderSansMedium
 ToggleTitle.TextXAlignment = Enum.TextXAlignment.Left
 ToggleTitle.BackgroundTransparency = 1
 
--- Nút công tắc Bật/Tắt (Switch)
 local SwitchFrame = Instance.new("Frame", ToggleButton)
 SwitchFrame.Size = UDim2.fromOffset(36, 18)
 SwitchFrame.Position = UDim2.new(1, -10, 0.5, 0)
@@ -110,11 +131,10 @@ Dot.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
 local DotCorner = Instance.new("UICorner", Dot)
 DotCorner.CornerRadius = UDim.new(0.5, 0)
 
--- Logic Bật/Tắt & Hiệu ứng Chuyển động (Tween)
+-- Logic chuyển trạng thái
 local IsToggled = false
-
-local function ToggleState(State)
-    IsToggled = State
+ToggleButton.Activated:Connect(function()
+    IsToggled = not IsToggled
     
     local TargetDotPos = IsToggled and UDim2.new(1, -3, 0.5, 0) or UDim2.new(0, 3, 0.5, 0)
     local TargetDotAnchor = IsToggled and Vector2.new(1, 0.5) or Vector2.new(0, 0.5)
@@ -126,14 +146,9 @@ local function ToggleState(State)
         BackgroundColor3 = TargetDotColor
     }):Play()
 
-    -- [CODE HACK / CHỨC NĂNG CỦA BẠN ĐẶT Ở ĐÂY]
     if IsToggled then
         print(">>> Tính năng đã BẬT!")
     else
         print(">>> Tính năng đã TẮT!")
     end
-end
-
-ToggleButton.Activated:Connect(function()
-    ToggleState(not IsToggled)
 end)
