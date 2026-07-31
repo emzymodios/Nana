@@ -1,4 +1,4 @@
--- Speed Control GUI Script
+-- Speed Control GUI Script - Mini Version
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -14,16 +14,16 @@ screenGui.Name = "SpeedGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Panel chính (có thể kéo)
+-- Panel chính (NHỎ HƠN)
 local panel = Instance.new("Frame")
 panel.Name = "Panel"
-panel.Size = UDim2.new(0, 250, 0, 150)
-panel.Position = UDim2.new(0.5, -125, 0.5, -75)
+panel.Size = UDim2.new(0, 140, 0, 130)  -- Nhỏ hơn
+panel.Position = UDim2.new(0.05, 0, 0.3, 0)
 panel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 panel.BorderSizePixel = 0
 panel.Parent = screenGui
 
--- UICorner cho bo góc
+-- UICorner
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 8)
 corner.Parent = panel
@@ -31,92 +31,78 @@ corner.Parent = panel
 -- Tiêu đề
 local title = Instance.new("TextLabel")
 title.Name = "Title"
-title.Size = UDim2.new(1, 0, 0, 30)
+title.Size = UDim2.new(1, 0, 0, 25)
 title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.TextSize = 14
+title.TextColor3 = Color3.fromRGB(255, 200, 0)
+title.TextSize = 11
 title.Font = Enum.Font.GothamBold
-title.Text = "⚡ SPEED CONTROL"
+title.Text = "⚡ SPEED"
 title.Parent = panel
 
--- UICorner cho title
 local titleCorner = Instance.new("UICorner")
 titleCorner.CornerRadius = UDim.new(0, 8)
 titleCorner.Parent = title
 
--- Label tốc độ hiện tại
-local speedLabel = Instance.new("TextLabel")
-speedLabel.Name = "SpeedLabel"
-speedLabel.Size = UDim2.new(0.8, 0, 0, 25)
-speedLabel.Position = UDim2.new(0.1, 0, 0.22, 0)
-speedLabel.BackgroundTransparency = 1
-speedLabel.TextColor3 = Color3.fromRGB(100, 200, 255)
-speedLabel.TextSize = 12
-speedLabel.Font = Enum.Font.Gotham
-speedLabel.Text = "Speed: 50"
-speedLabel.Parent = panel
-
--- TextBox nhập số
+-- TextBox nhập số (lớn hơn một chút để dễ nhập)
 local speedInput = Instance.new("TextBox")
 speedInput.Name = "SpeedInput"
-speedInput.Size = UDim2.new(0.8, 0, 0, 25)
-speedInput.Position = UDim2.new(0.1, 0, 0.42, 0)
+speedInput.Size = UDim2.new(0.9, 0, 0, 25)
+speedInput.Position = UDim2.new(0.05, 0, 0.25, 0)
 speedInput.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-speedInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedInput.TextColor3 = Color3.fromRGB(100, 200, 255)
 speedInput.TextSize = 12
-speedInput.Font = Enum.Font.Gotham
-speedInput.PlaceholderText = "Nhập số..."
+speedInput.Font = Enum.Font.GothamBold
+speedInput.PlaceholderText = "50"
 speedInput.Text = "50"
 speedInput.Parent = panel
 
--- Button áp dụng
+-- Button Apply (nửa trái)
 local applyButton = Instance.new("TextButton")
 applyButton.Name = "ApplyButton"
-applyButton.Size = UDim2.new(0.35, 0, 0, 25)
-applyButton.Position = UDim2.new(0.1, 0, 0.62, 0)
+applyButton.Size = UDim2.new(0.44, 0, 0, 22)
+applyButton.Position = UDim2.new(0.05, 0, 0.58, 0)
 applyButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
 applyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-applyButton.TextSize = 11
+applyButton.TextSize = 10
 applyButton.Font = Enum.Font.GothamBold
 applyButton.Text = "✓ Apply"
 applyButton.Parent = panel
 
--- Button Reset
+-- Button Reset (nửa phải)
 local resetButton = Instance.new("TextButton")
 resetButton.Name = "ResetButton"
-resetButton.Size = UDim2.new(0.35, 0, 0, 25)
-resetButton.Position = UDim2.new(0.55, 0, 0.62, 0)
+resetButton.Size = UDim2.new(0.44, 0, 0, 22)
+resetButton.Position = UDim2.new(0.51, 0, 0.58, 0)
 resetButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
 resetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-resetButton.TextSize = 11
+resetButton.TextSize = 10
 resetButton.Font = Enum.Font.GothamBold
 resetButton.Text = "✕ Reset"
 resetButton.Parent = panel
 
--- Biến tốc độ hiện tại
+-- Biến tốc độ
 local currentSpeed = 50
-local isMoving = false
+local isDragging = false
 local dragStart = nil
 local startPos = nil
 
 -- Hàm cập nhật tốc độ
 local function updateSpeed(newSpeed)
-    currentSpeed = math.max(0, math.min(newSpeed, 200)) -- Giới hạn 0-200
-    speedLabel.Text = "Speed: " .. currentSpeed
+    currentSpeed = math.max(0, math.min(newSpeed, 200))
     speedInput.Text = tostring(currentSpeed)
 end
 
--- Kéo panel
-panel.InputBegan:Connect(function(input, gameProcessed)
+-- ✅ KÉO PANEL (FIX)
+title.InputBegan:Connect(function(input, gameProcessed)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isMoving = true
+        isDragging = true
         dragStart = input.Position
         startPos = panel.Position
     end
 end)
 
 UserInputService.InputChanged:Connect(function(input, gameProcessed)
-    if isMoving and input.UserInputType == Enum.UserInputType.MouseMovement then
+    if isDragging and input.UserInputType == Enum.UserInputType.MouseMovement then
         local delta = input.Position - dragStart
         panel.Position = startPos + UDim2.new(0, delta.X, 0, delta.Y)
     end
@@ -124,7 +110,7 @@ end)
 
 UserInputService.InputEnded:Connect(function(input, gameProcessed)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        isMoving = false
+        isDragging = false
     end
 end)
 
@@ -134,7 +120,7 @@ applyButton.MouseButton1Click:Connect(function()
     if inputValue then
         updateSpeed(inputValue)
         applyButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-        wait(0.3)
+        wait(0.2)
         applyButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
     end
 end)
@@ -143,14 +129,9 @@ resetButton.MouseButton1Click:Connect(function()
     updateSpeed(50)
 end)
 
--- Áp dụng tốc độ vào game
+-- Áp dụng tốc độ
 RunService.RenderStepped:Connect(function()
     if character and humanoid and humanoid.Health > 0 then
         humanoid.WalkSpeed = currentSpeed
     end
-end)
-
--- Xử lý khi nhân vật chết
-humanoid.Died:Connect(function()
-    print("Script dừng - nhân vật chết")
 end)
