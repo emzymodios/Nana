@@ -49,7 +49,10 @@ function Logic.ToggleFly(state)
             local moveDir = humanoid.MoveDirection
             
             if moveDir.Magnitude > 0 then
-                bv.velocity = camera.CFrame:VectorToWorldSpace(Vector3.new(moveDir.X, 0, moveDir.Z)) * flySpeed
+                -- Lấy trực tiếp hướng di chuyển dựa trên góc nhìn thực tế của Camera để không bị lệch trái/phải trên mobile
+                local camCF = camera.CFrame
+                local relativeDir = camCF:VectorToObjectSpace(moveDir)
+                bv.velocity = camCF:VectorToWorldSpace(Vector3.new(relativeDir.X, moveDir.Y, relativeDir.Z)) * flySpeed
             else
                 bv.velocity = Vector3.new(0, 0, 0)
             end
