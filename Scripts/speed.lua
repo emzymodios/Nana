@@ -4,9 +4,8 @@ local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
-local character = player.Character or player.CharacterAdded:Wait()
-local humanoid = character:WaitForChild("Humanoid")
 
+-- Xóa UI cũ nếu tồn tại để tránh bị nhân đôi
 if playerGui:FindFirstChild("TogglePanelUI") then
     playerGui:FindFirstChild("TogglePanelUI"):Destroy()
 end
@@ -35,7 +34,7 @@ local btnCorner = Instance.new("UICorner")
 btnCorner.CornerRadius = UDim.new(0, 12)
 btnCorner.Parent = toggleButton
 
--- Panel chính (lớn hơn, đẹp hơn)
+-- Panel chính
 local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.Size = UDim2.new(0, 350, 0, 320)
@@ -80,7 +79,7 @@ separator.BackgroundColor3 = Color3.fromRGB(60, 130, 255)
 separator.BorderSizePixel = 0
 separator.Parent = panel
 
--- Speed display (to hơn)
+-- Speed display
 local speedLabel = Instance.new("TextLabel")
 speedLabel.Name = "SpeedLabel"
 speedLabel.Size = UDim2.new(1, -20, 0, 45)
@@ -210,17 +209,24 @@ resetButton.MouseButton1Click:Connect(function()
     statusLabel.Text = "Reset về 50"
 end)
 
--- Áp dụng tốc độ vào game
-RunService.RenderStepped:Connect(function()
-    if character and humanoid and humanoid.Health > 0 then
-        humanoid.WalkSpeed = currentSpeed
+-- Xử lý gán tốc độ an toàn theo từng nhân vật
+local function setupCharacter(char)
+    local humanoid = char:WaitForChild("Humanoid", 5)
+    if humanoid then
+        RunService.RenderStepped:Connect(function()
+            if char and char.Parent and humanoid and humanoid.Health > 0 then
+                humanoid.WalkSpeed = currentSpeed
+            end
+        end)
     end
-end)
+end
 
--- Respawn character
-player.CharacterAdded:Connect(function(newCharacter)
-    character = newCharacter
-    humanoid = character:WaitForChild("Humanoid")
-end)
+-- Khởi chạy cho nhân vật hiện tại
+if player.Character then
+    setupCharacter(player.Character)
+end
 
-print("✅ Speed Control UI đã load!")
+-- Lắng nghe sự kiện hồi sinh
+player.CharacterAdded:Connect(setupCharacter)
+
+print("✅ Speed Control UI đã load thành công!")
