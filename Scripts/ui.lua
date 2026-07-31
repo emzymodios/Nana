@@ -1,4 +1,4 @@
--- Nana Hub UI (ui.lua) - FULL VERSION
+-- Nana Hub UI (ui.lua) - UPDATED WITH SPEED TOGGLE
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
@@ -8,7 +8,6 @@ local playerGui = player:WaitForChild("PlayerGui")
 local UI = {}
 
 function UI.Init()
-    -- ✅ Chống trùng lặp: Xóa UI cũ nếu đã tồn tại trước đó
     if playerGui:FindFirstChild("NanaHubUI") then
         playerGui.NanaHubUI:Destroy()
     end
@@ -18,7 +17,6 @@ function UI.Init()
     screenGui.ResetOnSpawn = false
     screenGui.Parent = playerGui
 
-    -- ✅ Nút icon mở/đóng Hub góc màn hình
     local toggleBtn = Instance.new("TextButton")
     toggleBtn.Name = "ToggleBtn"
     toggleBtn.Size = UDim2.new(0, 45, 0, 45)
@@ -36,11 +34,10 @@ function UI.Init()
     toggleCorner.CornerRadius = UDim.new(0, 8)
     toggleCorner.Parent = toggleBtn
 
-    -- ✅ Khung chính của Hub
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
-    mainFrame.Size = UDim2.new(0, 520, 0, 320)
-    mainFrame.Position = UDim2.new(0.5, -260, 0.5, -160)
+    mainFrame.Size = UDim2.new(0, 520, 0, 350)
+    mainFrame.Position = UDim2.new(0.5, -260, 0.5, -175)
     mainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
     mainFrame.BorderSizePixel = 0
     mainFrame.Active = true
@@ -52,7 +49,6 @@ function UI.Init()
     mainCorner.CornerRadius = UDim.new(0, 10)
     mainCorner.Parent = mainFrame
 
-    -- Topbar
     local topBar = Instance.new("Frame")
     topBar.Size = UDim2.new(1, 0, 0, 35)
     topBar.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
@@ -92,7 +88,6 @@ function UI.Init()
         mainFrame.Visible = not mainFrame.Visible
     end)
 
-    -- Sidebar
     local sideBar = Instance.new("Frame")
     sideBar.Size = UDim2.new(0, 130, 1, -35)
     sideBar.Position = UDim2.new(0, 0, 0, 35)
@@ -114,13 +109,12 @@ function UI.Init()
     tabCorner.CornerRadius = UDim.new(0, 6)
     tabCorner.Parent = mainTabBtn
 
-    -- Container
     local container = Instance.new("ScrollingFrame")
     container.Size = UDim2.new(1, -135, 1, -45)
     container.Position = UDim2.new(0, 135, 0, 40)
     container.BackgroundTransparency = 1
     container.BorderSizePixel = 0
-    container.CanvasSize = UDim2.new(0, 0, 0, 260)
+    container.CanvasSize = UDim2.new(0, 0, 0, 340)
     container.ScrollBarThickness = 4
     container.Parent = mainFrame
 
@@ -239,26 +233,30 @@ function UI.Init()
         end)
     end
 
-    -- Khởi tạo các sự kiện kết nối ra ngoài
-    createSlider(10, "🏃 Run Speed", 16, 200, 16, function(val)
+    -- Khởi tạo các thành phần giao diện theo thứ tự mới
+    createToggleRow(10, "⚡ Speed Mode", function(state)
+        if UI.OnSpeedToggled then UI.OnSpeedToggled(state) end
+    end)
+
+    createSlider(55, "🏃 Run Speed", 16, 200, 16, function(val)
         if UI.OnSpeedChanged then UI.OnSpeedChanged(val) end
     end)
 
-    createSlider(75, "✈️ Fly Speed", 10, 300, 50, function(val)
+    createSlider(120, "✈️ Fly Speed", 10, 300, 50, function(val)
         if UI.OnFlySpeedChanged then UI.OnFlySpeedChanged(val) end
     end)
 
-    createToggleRow(140, "✈️ Fly Mode", function(state)
+    createToggleRow(185, "✈️ Fly Mode", function(state)
         if UI.OnFlyToggled then UI.OnFlyToggled(state) end
     end)
 
-    createToggleRow(185, "👻 NoClip Mode", function(state)
+    createToggleRow(230, "👻 NoClip Mode", function(state)
         if UI.OnNoClipToggled then UI.OnNoClipToggled(state) end
     end)
 
     local resetBtn = Instance.new("TextButton")
     resetBtn.Size = UDim2.new(0.9, 0, 0, 35)
-    resetBtn.Position = UDim2.new(0.05, 0, 0, 230)
+    resetBtn.Position = UDim2.new(0.05, 0, 0, 285)
     resetBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
     resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     resetBtn.TextSize = 13
@@ -274,7 +272,6 @@ function UI.Init()
         if UI.OnResetClicked then UI.OnResetClicked() end
     end)
 
-    -- Resize button
     local resizeBtn = Instance.new("TextButton")
     resizeBtn.Size = UDim2.new(0, 15, 0, 15)
     resizeBtn.Position = UDim2.new(1, -15, 1, -15)
@@ -309,7 +306,7 @@ function UI.Init()
     end)
 end
 
--- Callback hooks khai báo sẵn
+UI.OnSpeedToggled = nil
 UI.OnSpeedChanged = nil
 UI.OnFlySpeedChanged = nil
 UI.OnFlyToggled = nil
