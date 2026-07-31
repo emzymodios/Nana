@@ -1,20 +1,19 @@
--- Speed Control GUI Script - CÓ THỂ KÉO
+-- Speed Control - ĐIỆN THOẠI + PC
 local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
-local rootPart = character:WaitForChild("HumanoidRootPart")
 
--- Tạo ScreenGui
+-- GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "SpeedGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Panel chính
+-- Panel
 local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.Size = UDim2.new(0, 140, 0, 130)
@@ -23,12 +22,11 @@ panel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 panel.BorderSizePixel = 0
 panel.Parent = screenGui
 
--- UICorner
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 8)
 corner.Parent = panel
 
--- Tiêu đề (dùng để kéo)
+-- Title (dùng để chạm/click)
 local title = Instance.new("TextLabel")
 title.Name = "Title"
 title.Size = UDim2.new(1, 0, 0, 30)
@@ -39,11 +37,7 @@ title.Font = Enum.Font.GothamBold
 title.Text = "⚡ SPEED"
 title.Parent = panel
 
-local titleCorner = Instance.new("UICorner")
-titleCorner.CornerRadius = UDim.new(0, 8)
-titleCorner.Parent = title
-
--- TextBox nhập số
+-- Input
 local speedInput = Instance.new("TextBox")
 speedInput.Name = "SpeedInput"
 speedInput.Size = UDim2.new(0.9, 0, 0, 22)
@@ -55,7 +49,7 @@ speedInput.Font = Enum.Font.GothamBold
 speedInput.Text = "50"
 speedInput.Parent = panel
 
--- Button Apply
+-- Apply Button
 local applyButton = Instance.new("TextButton")
 applyButton.Name = "ApplyButton"
 applyButton.Size = UDim2.new(0.44, 0, 0, 20)
@@ -67,7 +61,7 @@ applyButton.Font = Enum.Font.GothamBold
 applyButton.Text = "✓ Apply"
 applyButton.Parent = panel
 
--- Button Reset
+-- Reset Button
 local resetButton = Instance.new("TextButton")
 resetButton.Name = "ResetButton"
 resetButton.Size = UDim2.new(0.44, 0, 0, 20)
@@ -79,53 +73,57 @@ resetButton.Font = Enum.Font.GothamBold
 resetButton.Text = "✕ Reset"
 resetButton.Parent = panel
 
--- Biến tốc độ
 local currentSpeed = 50
 local isDragging = false
 local dragStart = nil
 local startPos = nil
 
--- Hàm cập nhật tốc độ
-local function updateSpeed(newSpeed)
-    currentSpeed = math.max(0, math.min(newSpeed, 200))
-    speedInput.Text = tostring(currentSpeed)
-end
-
--- ✅ KÉO PANEL - FIXED
-local mouse = player:GetMouse()
-
-title.MouseButton1Down:Connect(function()
-    isDragging = true
-    dragStart = mouse.Hit.Position
-    startPos = panel.Position
+-- ✅ KÉO CHO ĐIỆN THOẠI VÀ PC
+title.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
     
-    while isDragging do
-        local mouseDelta = mouse.Hit.Position - dragStart
-        panel.Position = startPos + UDim2.new(0, mouseDelta.X, 0, mouseDelta.Y)
-        RunService.RenderStepped:Wait()
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+       input.UserInputType == Enum.UserInputType.Touch then
+        isDragging = true
+        dragStart = input.Position
+        startPos = panel.Position
     end
 end)
 
-title.MouseButton1Up:Connect(function()
-    isDragging = false
+UserInputService.InputChanged:Connect(function(input, gameProcessed)
+    if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or 
+                       input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        panel.Position = startPos + UDim2.new(0, delta.X, 0, delta.Y)
+    end
 end)
 
--- Button Events
+UserInputService.InputEnded:Connect(function(input, gameProcessed)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+       input.UserInputType == Enum.UserInputType.Touch then
+        isDragging = false
+    end
+end)
+
+-- Apply
 applyButton.MouseButton1Click:Connect(function()
-    local inputValue = tonumber(speedInput.Text)
-    if inputValue then
-        updateSpeed(inputValue)
+    local val = tonumber(speedInput.Text)
+    if val then
+        currentSpeed = math.max(0, math.min(val, 200))
+        speedInput.Text = tostring(currentSpeed)
         applyButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
         wait(0.2)
         applyButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
     end
 end)
 
+-- Reset
 resetButton.MouseButton1Click:Connect(function()
-    updateSpeed(50)
+    currentSpeed = 50
+    speedInput.Text = "50"
 end)
 
--- Áp dụng tốc độ
+-- Update Speed
 RunService.RenderStepped:Connect(function()
     if character and humanoid and humanoid.Health > 0 then
         humanoid.WalkSpeed = currentSpeed
