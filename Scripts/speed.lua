@@ -1,14 +1,18 @@
--- Simple Toggle Panel UI
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
 
--- Tạo ScreenGui chứa toàn bộ UI
+-- Kiểm tra xem UI đã tồn tại chưa
+if playerGui:FindFirstChild("TogglePanelUI") then
+    playerGui:FindFirstChild("TogglePanelUI"):Destroy()
+end
+
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "TogglePanelUI"
 screenGui.ResetOnSpawn = false
-screenGui.Parent = player:WaitForChild("PlayerGui")
+screenGui.Parent = playerGui
 
--- Nút bấm để mở/đóng bảng
+-- Nút bấm
 local toggleButton = Instance.new("TextButton")
 toggleButton.Name = "ToggleButton"
 toggleButton.Size = UDim2.new(0, 50, 0, 50)
@@ -27,7 +31,7 @@ local btnCorner = Instance.new("UICorner")
 btnCorner.CornerRadius = UDim.new(0, 10)
 btnCorner.Parent = toggleButton
 
--- Bảng (panel) sẽ hiện/ẩn khi bấm nút
+-- Panel
 local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.Size = UDim2.new(0, 300, 0, 200)
@@ -52,12 +56,10 @@ panelTitle.Font = Enum.Font.GothamBold
 panelTitle.Text = "Đây là bảng của bạn"
 panelTitle.Parent = panel
 
--- Logic bật/tắt
+-- Logic toggle
 local isOpen = false
 toggleButton.MouseButton1Click:Connect(function()
     isOpen = not isOpen
     panel.Visible = isOpen
     toggleButton.BackgroundColor3 = isOpen and Color3.fromRGB(0, 200, 100) or Color3.fromRGB(50, 100, 255)
 end)
-
-print("Toggle UI đã load xong!")
