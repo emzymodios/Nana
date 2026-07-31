@@ -1,4 +1,4 @@
--- Speed Control - Nút nhỏ + Có hình
+-- Speed Control - Nút to + Bấm được
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
@@ -12,10 +12,10 @@ screenGui.Name = "SpeedGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- ✅ NÚT TOGGLE NHỎ (35x35)
+-- ✅ NÚT TOGGLE TO HƠN (50x50)
 local toggleButton = Instance.new("Frame")
 toggleButton.Name = "ToggleButton"
-toggleButton.Size = UDim2.new(0, 35, 0, 35)  -- NHỎ HƠN
+toggleButton.Size = UDim2.new(0, 50, 0, 50)  -- TO HƠN
 toggleButton.Position = UDim2.new(0.02, 0, 0.3, 0)
 toggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
 toggleButton.BorderSizePixel = 0
@@ -24,16 +24,16 @@ toggleButton.Active = true
 toggleButton.Parent = screenGui
 
 local toggleCorner = Instance.new("UICorner")
-toggleCorner.CornerRadius = UDim.new(0, 8)
+toggleCorner.CornerRadius = UDim.new(0, 10)
 toggleCorner.Parent = toggleButton
 
--- ✅ ICON - Dùng TextLabel (emoji)
+-- Icon
 local toggleLabel = Instance.new("TextLabel")
 toggleLabel.Name = "ToggleLabel"
 toggleLabel.Size = UDim2.new(1, 0, 1, 0)
 toggleLabel.BackgroundTransparency = 1
 toggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleLabel.TextSize = 14
+toggleLabel.TextSize = 20
 toggleLabel.Font = Enum.Font.GothamBold
 toggleLabel.Text = "⚡"
 toggleLabel.Parent = toggleButton
@@ -42,7 +42,7 @@ toggleLabel.Parent = toggleButton
 local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.Size = UDim2.new(0, 140, 0, 130)
-panel.Position = UDim2.new(0.08, 0, 0.3, 0)
+panel.Position = UDim2.new(0.10, 0, 0.3, 0)
 panel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 panel.BorderSizePixel = 0
 panel.Draggable = true
@@ -102,19 +102,24 @@ resetButton.Text = "✕ Reset"
 resetButton.Parent = panel
 
 local currentSpeed = 50
-
--- ✅ BẤM NÚT TOGGLE
 local isOpen = false
-toggleButton.MouseButton1Click:Connect(function()
-    isOpen = not isOpen
-    panel.Visible = isOpen
-    
-    if isOpen then
-        toggleButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-        toggleLabel.Text = "✓"
-    else
-        toggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
-        toggleLabel.Text = "⚡"
+
+-- ✅ BẤM NÚT TOGGLE (FIX)
+toggleButton.InputBegan:Connect(function(input, gameProcessed)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+       input.UserInputType == Enum.UserInputType.Touch then
+        isOpen = not isOpen
+        panel.Visible = isOpen
+        
+        print("Toggle: " .. tostring(isOpen))  -- Debug
+        
+        if isOpen then
+            toggleButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+            toggleLabel.Text = "✓"
+        else
+            toggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+            toggleLabel.Text = "⚡"
+        end
     end
 end)
 
