@@ -14,21 +14,23 @@ screenGui.Name = "SimpleToggleGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Nút bấm để mở/đóng bảng
+-- Nút bấm để mở/đóng bảng (dạng ô vuông có icon)
 local toggleButton = Instance.new("TextButton")
 toggleButton.Name = "ToggleButton"
-toggleButton.Size = UDim2.new(0, 120, 0, 40)
+toggleButton.Size = UDim2.new(0, 50, 0, 50)
 toggleButton.Position = UDim2.new(0.05, 0, 0.05, 0)
 toggleButton.BackgroundColor3 = Color3.fromRGB(50, 100, 255)
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.TextSize = 16
+toggleButton.TextSize = 22
 toggleButton.Font = Enum.Font.GothamBold
-toggleButton.Text = "Mở Bảng"
+toggleButton.Text = "⚡" -- Icon, có thể đổi thành icon khác
 toggleButton.BorderSizePixel = 0
+toggleButton.Active = true
+toggleButton.Draggable = true -- Cho phép kéo di chuyển nút
 toggleButton.Parent = screenGui
 
 local btnCorner = Instance.new("UICorner")
-btnCorner.CornerRadius = UDim.new(0, 8)
+btnCorner.CornerRadius = UDim.new(0, 10)
 btnCorner.Parent = toggleButton
 
 -- Bảng (panel) sẽ hiện/ẩn khi bấm nút
@@ -39,6 +41,8 @@ panel.Position = UDim2.new(0.05, 0, 0.15, 0)
 panel.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
 panel.BorderSizePixel = 0
 panel.Visible = false -- Ban đầu ẩn
+panel.Active = true
+panel.Draggable = true -- Cho phép kéo di chuyển bảng
 panel.Parent = screenGui
 
 local panelCorner = Instance.new("UICorner")
@@ -60,7 +64,8 @@ local isOpen = false
 toggleButton.MouseButton1Click:Connect(function()
     isOpen = not isOpen
     panel.Visible = isOpen
-    toggleButton.Text = isOpen and "Đóng Bảng" or "Mở Bảng"
+    -- Đổi màu nút để biết trạng thái đang mở hay đóng, icon giữ nguyên
+    toggleButton.BackgroundColor3 = isOpen and Color3.fromRGB(0, 200, 100) or Color3.fromRGB(50, 100, 255)
 end)
 
 print("Toggle UI đã load xong!")
