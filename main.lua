@@ -1,4 +1,3 @@
--- 1. Tải cả UI và Logic từ trong thư mục Scripts trên GitHub
 local SuccessUI, UI = pcall(function()
     return loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui.lua"))()
 end)
@@ -12,29 +11,28 @@ if not SuccessUI or not SuccessLogic then
     return
 end
 
--- 2. Kết nối các tính năng từ UI sang Logic
-if UI.OnSpeedChanged then
-    UI.OnSpeedChanged(function(value)
-        Logic.SetSpeed(value)
-    end)
+-- Kích hoạt giao diện UI hiển thị
+UI.Init()
+
+-- Móc nối các sự kiện từ UI sang Logic
+UI.OnSpeedChanged = function(value)
+    Logic.SetSpeed(value)
 end
 
-if UI.OnFlyToggled then
-    UI.OnFlyToggled(function(state)
-        Logic.ToggleFly(state)
-    end)
+UI.OnFlySpeedChanged = function(value)
+    Logic.SetFlySpeed(value)
 end
 
-if UI.OnNoClipToggled then
-    UI.OnNoClipToggled(function(state)
-        Logic.ToggleNoClip(state)
-    end)
+UI.OnFlyToggled = function(state)
+    Logic.ToggleFly(state)
 end
 
-if UI.OnResetClicked then
-    UI.OnResetClicked(function()
-        Logic.ResetConfig()
-    end)
+UI.OnNoClipToggled = function(state)
+    Logic.ToggleNoClip(state)
 end
 
-print("Nana Hub loaded successfully on Mobile!")
+UI.OnResetClicked = function()
+    Logic.ResetConfig()
+end
+
+print("Nana Hub loaded successfully with Full UI!")
