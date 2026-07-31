@@ -15,6 +15,10 @@ end
 UI.Init()
 
 -- Móc nối các sự kiện từ UI sang Logic
+UI.OnSpeedToggled = function(state)
+    Logic.ToggleSpeed(state)
+end
+
 UI.OnSpeedChanged = function(value)
     Logic.SetSpeed(value)
 end
