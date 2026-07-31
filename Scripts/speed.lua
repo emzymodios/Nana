@@ -1,7 +1,6 @@
--- Speed Control - ĐIỆN THOẠI + PC
+-- Speed Control - Nút nhỏ + Có hình
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
@@ -13,20 +12,49 @@ screenGui.Name = "SpeedGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = player:WaitForChild("PlayerGui")
 
--- Panel
+-- ✅ NÚT TOGGLE NHỎ (35x35)
+local toggleButton = Instance.new("Frame")
+toggleButton.Name = "ToggleButton"
+toggleButton.Size = UDim2.new(0, 35, 0, 35)  -- NHỎ HƠN
+toggleButton.Position = UDim2.new(0.02, 0, 0.3, 0)
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+toggleButton.BorderSizePixel = 0
+toggleButton.Draggable = true
+toggleButton.Active = true
+toggleButton.Parent = screenGui
+
+local toggleCorner = Instance.new("UICorner")
+toggleCorner.CornerRadius = UDim.new(0, 8)
+toggleCorner.Parent = toggleButton
+
+-- ✅ ICON - Dùng TextLabel (emoji)
+local toggleLabel = Instance.new("TextLabel")
+toggleLabel.Name = "ToggleLabel"
+toggleLabel.Size = UDim2.new(1, 0, 1, 0)
+toggleLabel.BackgroundTransparency = 1
+toggleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleLabel.TextSize = 14
+toggleLabel.Font = Enum.Font.GothamBold
+toggleLabel.Text = "⚡"
+toggleLabel.Parent = toggleButton
+
+-- ✅ BẢNG SPEED
 local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.Size = UDim2.new(0, 140, 0, 130)
-panel.Position = UDim2.new(0.05, 0, 0.3, 0)
+panel.Position = UDim2.new(0.08, 0, 0.3, 0)
 panel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 panel.BorderSizePixel = 0
+panel.Draggable = true
+panel.Active = true
 panel.Parent = screenGui
+panel.Visible = false
 
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 8)
 corner.Parent = panel
 
--- Title (dùng để chạm/click)
+-- Title
 local title = Instance.new("TextLabel")
 title.Name = "Title"
 title.Size = UDim2.new(1, 0, 0, 30)
@@ -74,34 +102,19 @@ resetButton.Text = "✕ Reset"
 resetButton.Parent = panel
 
 local currentSpeed = 50
-local isDragging = false
-local dragStart = nil
-local startPos = nil
 
--- ✅ KÉO CHO ĐIỆN THOẠI VÀ PC
-title.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
+-- ✅ BẤM NÚT TOGGLE
+local isOpen = false
+toggleButton.MouseButton1Click:Connect(function()
+    isOpen = not isOpen
+    panel.Visible = isOpen
     
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or 
-       input.UserInputType == Enum.UserInputType.Touch then
-        isDragging = true
-        dragStart = input.Position
-        startPos = panel.Position
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(input, gameProcessed)
-    if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or 
-                       input.UserInputType == Enum.UserInputType.Touch) then
-        local delta = input.Position - dragStart
-        panel.Position = startPos + UDim2.new(0, delta.X, 0, delta.Y)
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input, gameProcessed)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or 
-       input.UserInputType == Enum.UserInputType.Touch then
-        isDragging = false
+    if isOpen then
+        toggleButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        toggleLabel.Text = "✓"
+    else
+        toggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+        toggleLabel.Text = "⚡"
     end
 end)
 
