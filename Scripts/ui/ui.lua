@@ -152,6 +152,21 @@ function UI.Init()
     toCorner.CornerRadius = UDim.new(0, 8)
     toCorner.Parent = tabOtherBtn
 
+    -- Nút Tab More mới bổ sung
+    local tabMoreBtn = Instance.new("TextButton")
+    tabMoreBtn.Size = UDim2.new(0.9, 0, 0, 38)
+    tabMoreBtn.Position = UDim2.new(0.05, 0, 0.41, 0)
+    tabMoreBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    tabMoreBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+    tabMoreBtn.TextSize = 13
+    tabMoreBtn.Font = Enum.Font.GothamBold
+    tabMoreBtn.Text = "More"
+    tabMoreBtn.Parent = sideBar
+
+    local tmoCorner = Instance.new("UICorner")
+    tmoCorner.CornerRadius = UDim.new(0, 8)
+    tmoCorner.Parent = tabMoreBtn
+
     -- Hàm hỗ trợ tối ưu ScrollingFrame để tránh dính kéo nhầm bảng chính
     local function setupScrollingFrame(container)
         container.ScrollingEnabled = true
@@ -199,40 +214,77 @@ function UI.Init()
     otherContainer.Parent = mainFrame
     setupScrollingFrame(otherContainer)
 
+    -- Container cho Tab More mới
+    local moreContainer = Instance.new("ScrollingFrame")
+    moreContainer.Name = "MoreContainer"
+    moreContainer.Size = UDim2.new(1, -145, 1, -50)
+    moreContainer.Position = UDim2.new(0, 145, 0, 45)
+    moreContainer.BackgroundTransparency = 1
+    moreContainer.BorderSizePixel = 0
+    moreContainer.CanvasSize = UDim2.new(0, 0, 0, 220)
+    moreContainer.ScrollBarThickness = 4
+    moreContainer.Visible = false
+    moreContainer.Parent = mainFrame
+    setupScrollingFrame(moreContainer)
+
     tabMainBtn.MouseButton1Click:Connect(function()
         mainContainer.Visible = true
         combatContainer.Visible = false
         otherContainer.Visible = false
+        moreContainer.Visible = false
         tabMainBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
         tabMainBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
         tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        tabMoreBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabMoreBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
     tabCombatBtn.MouseButton1Click:Connect(function()
         mainContainer.Visible = false
         combatContainer.Visible = true
         otherContainer.Visible = false
+        moreContainer.Visible = false
         tabCombatBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
         tabCombatBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         tabMainBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
         tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        tabMoreBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabMoreBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
     tabOtherBtn.MouseButton1Click:Connect(function()
         mainContainer.Visible = false
         combatContainer.Visible = false
         otherContainer.Visible = true
+        moreContainer.Visible = false
         tabOtherBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
         tabOtherBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         tabMainBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
         tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        tabMoreBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabMoreBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+    end)
+
+    tabMoreBtn.MouseButton1Click:Connect(function()
+        mainContainer.Visible = false
+        combatContainer.Visible = false
+        otherContainer.Visible = false
+        moreContainer.Visible = true
+        tabMoreBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
+        tabMoreBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tabMainBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
     -- Elements tab Main
@@ -259,9 +311,10 @@ function UI.Init()
     Elements.CreateToggleRow(mainContainer, 325, "Infinite Jump", function(state)
         if UI.OnJumpToggled then UI.OnJumpToggled(state) end
     end)
-Elements.CreateToggleRow(mainContainer, 380, "Soru (Click Tele)", function(state)
-    if UI.OnSoruToggled then UI.OnSoruToggled(state) end
-end)
+
+    Elements.CreateToggleRow(mainContainer, 380, "Soru (Click Tele)", function(state)
+        if UI.OnSoruToggled then UI.OnSoruToggled(state) end
+    end)
 
     Elements.CreateToggleRow(mainContainer, 435, "FPS Boost", function(state)
         if UI.OnFPSBoostToggled then UI.OnFPSBoostToggled(state) end
@@ -349,6 +402,86 @@ end)
         if UI.OnESPToggled then UI.OnESPToggled(state) end
     end)
 
+    -- Elements tab More (Lưu vị trí & Teleport)
+    local posBox = Instance.new("TextBox")
+    posBox.Name = "PositionDisplay"
+    posBox.Size = UDim2.new(0.9, 0, 0, 35)
+    posBox.Position = UDim2.new(0.05, 0, 0, 15)
+    posBox.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    posBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    posBox.TextSize = 14
+    posBox.Font = Enum.Font.GothamMedium
+    posBox.Text = "[            ]"
+    posBox.Editable = false
+    posBox.Parent = moreContainer
+
+    local posCorner = Instance.new("UICorner")
+    posCorner.CornerRadius = UDim.new(0, 8)
+    posCorner.Parent = posBox
+
+    -- Nút Save Vị Trí
+    local saveBtn = Instance.new("TextButton")
+    saveBtn.Size = UDim2.new(0.43, 0, 0, 35)
+    saveBtn.Position = UDim2.new(0.05, 0, 0, 60)
+    saveBtn.BackgroundColor3 = Color3.fromRGB(50, 150, 80)
+    saveBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    saveBtn.TextSize = 13
+    saveBtn.Font = Enum.Font.GothamBold
+    saveBtn.Text = "Save"
+    saveBtn.Parent = moreContainer
+
+    local saveCorner = Instance.new("UICorner")
+    saveCorner.CornerRadius = UDim.new(0, 8)
+    saveCorner.Parent = saveBtn
+
+    saveBtn.MouseButton1Click:Connect(function()
+        if UI.OnSavePositionClicked then
+            posBox.Text = UI.OnSavePositionClicked()
+        end
+    end)
+
+    -- Nút Reset Vị Trí (Bên cạnh Save)
+    local resetPosBtn = Instance.new("TextButton")
+    resetPosBtn.Size = UDim2.new(0.43, 0, 0, 35)
+    resetPosBtn.Position = UDim2.new(0.52, 0, 0, 60)
+    resetPosBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 60)
+    resetPosBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    resetPosBtn.TextSize = 13
+    resetPosBtn.Font = Enum.Font.GothamBold
+    resetPosBtn.Text = "Reset"
+    resetPosBtn.Parent = moreContainer
+
+    local resetPosCorner = Instance.new("UICorner")
+    resetPosCorner.CornerRadius = UDim.new(0, 8)
+    resetPosCorner.Parent = resetPosBtn
+
+    resetPosBtn.MouseButton1Click:Connect(function()
+        if UI.OnResetPositionClicked then
+            posBox.Text = UI.OnResetPositionClicked()
+        end
+    end)
+
+    -- Thanh dài Tele Position (Bên dưới)
+    local telePosBtn = Instance.new("TextButton")
+    telePosBtn.Size = UDim2.new(0.9, 0, 0, 40)
+    telePosBtn.Position = UDim2.new(0.05, 0, 0, 105)
+    telePosBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
+    telePosBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    telePosBtn.TextSize = 14
+    telePosBtn.Font = Enum.Font.GothamBold
+    telePosBtn.Text = "Tele Position"
+    telePosBtn.Parent = moreContainer
+
+    local telePosCorner = Instance.new("UICorner")
+    telePosCorner.CornerRadius = UDim.new(0, 8)
+    telePosCorner.Parent = telePosBtn
+
+    telePosBtn.MouseButton1Click:Connect(function()
+        if UI.OnTeleportPositionClicked then
+            UI.OnTeleportPositionClicked()
+        end
+    end)
+
     local resizeBtn = Instance.new("TextButton")
     resizeBtn.Size = UDim2.new(0, 15, 0, 15)
     resizeBtn.Position = UDim2.new(1, -15, 1, -15)
@@ -398,5 +531,8 @@ UI.OnAimbotToggled = nil
 UI.OnAimbotModeChanged = nil
 UI.OnAimbotTargetChanged = nil
 UI.OnFlyToTargetClicked = nil
+UI.OnSavePositionClicked = nil
+UI.OnResetPositionClicked = nil
+UI.OnTeleportPositionClicked = nil
 
 return UI
