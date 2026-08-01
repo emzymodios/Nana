@@ -6,11 +6,10 @@ local function loadModule(name, url)
         return loadstring(game:HttpGet(url))()
     end)
     if success and type(result) == "table" then
-        print("[Nana Hub] Loaded module:", name)
         return result
     else
         warn("[Nana Hub] Failed to load module:", name, "| Error:", result)
-        -- Trả về bảng trống để không bị lỗi crash script
+        -- Trả về bảng trống an toàn để không làm sập toàn bộ Hub nếu thiếu file
         return setmetatable({}, {
             __index = function()
                 return function() end
@@ -38,7 +37,7 @@ function Logic.SetSpeed(val) if SpeedModule.SetSpeed then SpeedModule.SetSpeed(v
 
 -- Cầu nối Fly
 function Logic.ToggleFly(state) FlyModule.Toggle(state) end
-function Logic.SetFlySpeed(val) if FlyModule.SetFlySpeed then FlyModule.SetFlySpeed(val) end end
+function Logic.SetFlySpeed(val) if SpeedModule.SetFlySpeed then SpeedModule.SetFlySpeed(val) end end
 
 -- Cầu nối NoClip
 function Logic.ToggleNoClip(state) NoClipModule.Toggle(state) end
@@ -46,7 +45,7 @@ function Logic.ToggleNoClip(state) NoClipModule.Toggle(state) end
 -- Cầu nối Infinite Jump
 function Logic.ToggleInfiniteJump(state) JumpModule.Toggle(state) end
 
--- Cầu nối Soru
+-- Cầu nối Soru (Thay thế Auto Click ở tab Main)
 function Logic.ToggleSoru(state) SoruModule.Toggle(state) end
 
 -- Cầu nối ESP
@@ -56,7 +55,7 @@ function Logic.SetESPTextSize(size) if ESPModule.SetTextSize then ESPModule.SetT
 -- Cầu nối FPS Boost
 function Logic.ToggleFPSBoost(state) FPSBoostModule.Toggle(state) end
 
--- Cầu nối Aimbot & Teleport
+-- Cầu nối Aimbot & Teleport (Nằm chung ở tab Combat)
 function Logic.ToggleAimbot(state) AimbotModule.Toggle(state) end
 function Logic.SetAimbotMode(mode) if AimbotModule.SetMode then AimbotModule.SetMode(mode) end end
 function Logic.SetAimbotTarget(playerName) 
