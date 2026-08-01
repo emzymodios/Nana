@@ -8,7 +8,7 @@ local playerGui = player:WaitForChild("PlayerGui")
 local UI = {}
 
 -- ⚙️ THAY ĐỔI ID ẢNH NÚT MỞ HUB TẠI ĐÂY (Ví dụ: rbxassetid://6023426915 hoặc để trống nếu dùng icon chữ)
-local ICON_IMAGE_ID = "rbxassetid://140271304965352"
+local ICON_IMAGE_ID = "rbxassetid://72632806624356"
 
 function UI.Init()
     if playerGui:FindFirstChild("NanaHubUI") then
