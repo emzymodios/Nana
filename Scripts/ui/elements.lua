@@ -3,7 +3,6 @@ local UserInputService = game:GetService("UserInputService")
 local Components = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/components.lua"))()
 
 local Elements = {}
--- (Giữ nguyên các hàm CreateSlider và CreateToggleRow phía dưới như cũ)
 
 function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultVal, callback)
     local box = Components.CreateFrameBox(parent, posY, 65, titleText)
@@ -122,6 +121,90 @@ function Elements.CreateToggleRow(parent, posY, titleText, callback)
         end
         callback(active)
     end)
+end
+
+function Elements.CreateDropdown(parent, posY, title, optionsList, callback)
+    local container = Components.CreateFrameBox(parent, posY, 45, nil)
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.4, 0, 1, 0)
+    label.Position = UDim2.new(0.05, 0, 0, 0)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = Color3.fromRGB(220, 220, 240)
+    label.TextSize = 12
+    label.Font = Enum.Font.GothamBold
+    label.Text = title
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = container
+
+    local dropBtn = Instance.new("TextButton")
+    dropBtn.Size = UDim2.new(0.5, 0, 0, 28)
+    dropBtn.Position = UDim2.new(0.45, 0, 0.5, -14)
+    dropBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
+    dropBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    dropBtn.TextSize = 12
+    dropBtn.Font = Enum.Font.Gotham
+    dropBtn.Text = "Select Player ▾"
+    dropBtn.Parent = container
+
+    local dropCorner = Instance.new("UICorner")
+    dropCorner.CornerRadius = UDim.new(0, 6)
+    dropCorner.Parent = dropBtn
+
+    local listFrame = Instance.new("ScrollingFrame")
+    listFrame.Size = UDim2.new(0.5, 0, 0, 0)
+    listFrame.Position = UDim2.new(0.45, 0, 1, 2)
+    listFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    listFrame.BorderSizePixel = 0
+    listFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    listFrame.ScrollBarThickness = 3
+    listFrame.Visible = false
+    listFrame.ZIndex = 5
+    listFrame.Parent = container
+
+    local listLayout = Instance.new("UIListLayout")
+    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    listLayout.Parent = listFrame
+
+    local isOpen = false
+
+    local function updateOptions(items)
+        for _, v in ipairs(listFrame:GetChildren()) do
+            if v:IsA("TextButton") then v:Destroy() end
+        end
+        
+        listFrame.CanvasSize = UDim2.new(0, 0, 0, #items * 28)
+        listFrame.Size = UDim2.new(0.5, 0, 0, math.min(#items * 28, 120))
+
+        for _, itemName in ipairs(items) do
+            local optBtn = Instance.new("TextButton")
+            optBtn.Size = UDim2.new(1, 0, 0, 28)
+            optBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+            optBtn.TextColor3 = Color3.fromRGB(240, 240, 240)
+            optBtn.TextSize = 12
+            optBtn.Font = Enum.Font.Gotham
+            optBtn.Text = itemName
+            optBtn.ZIndex = 6
+            optBtn.Parent = listFrame
+
+            optBtn.MouseButton1Click:Connect(function()
+                dropBtn.Text = itemName .. " ▾"
+                isOpen = false
+                listFrame.Visible = false
+                if callback then callback(itemName) end
+            end)
+        end
+    end
+
+    dropBtn.MouseButton1Click:Connect(function()
+        isOpen = not isOpen
+        listFrame.Visible = isOpen
+        if isOpen and optionsList then
+            updateOptions(optionsList)
+        end
+    end)
+
+    return container, updateOptions
 end
 
 return Elements
