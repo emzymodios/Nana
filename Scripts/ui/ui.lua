@@ -162,7 +162,7 @@ function UI.Init()
     otherContainer.Position = UDim2.new(0, 145, 0, 45)
     otherContainer.BackgroundTransparency = 1
     otherContainer.BorderSizePixel = 0
-    otherContainer.CanvasSize = UDim2.new(0, 0, 0, 100)
+    otherContainer.CanvasSize = UDim2.new(0, 0, 0, 150)
     otherContainer.ScrollBarThickness = 4
     otherContainer.Visible = false
     otherContainer.Parent = mainFrame
@@ -234,12 +234,11 @@ function UI.Init()
         if UI.OnResetClicked then UI.OnResetClicked() end
     end)
 
-    -- Thêm ESP vào Tab ESP
+    -- Thêm các phần tử vào Tab ESP
     Elements.CreateToggleRow(otherContainer, 15, "ESP Player", function(state)
         if UI.OnESPToggled then UI.OnESPToggled(state) end
     end)
 
-    -- Thêm Slider chỉnh kích thước chữ ESP (Giá trị từ 8 đến 30, mặc định là 12)
     Elements.CreateSlider(otherContainer, 80, "ESP Text Size", 8, 30, 12, function(val)
         if UI.OnESPTextSizeChanged then UI.OnESPTextSizeChanged(val) end
     end)
