@@ -1,8 +1,22 @@
 -- Nana Hub Main Loader (main.lua)
 
-local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/ui.lua"))()
-local Logic = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/init.lua"))()
-local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/notification.lua"))()
+-- Tải các module bất đồng bộ song song để không bị nghẽn mạng trên luồng chính
+local UI, Logic, Notification
+
+task.spawn(function()
+    UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/ui.lua"))()
+end)
+
+task.spawn(function()
+    Logic = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/init.lua"))()
+end)
+
+task.spawn(function()
+    Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/notification.lua"))()
+end)
+
+-- Chờ một xíu cực ngắn để đảm bảo các module đã tải xong (hoặc check điều kiện)
+repeat task.wait() until UI and Logic and Notification
 
 UI.Init()
 
