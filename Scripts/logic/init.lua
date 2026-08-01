@@ -9,7 +9,7 @@ local JumpModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/em
 local ESPModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/esp.lua"))()
 local FPSBoostModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fpsboost.lua"))()
 local AimbotModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua"))()
-local AutoClickModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/autoclick.lua"))()
+local SoruModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/soru.lua"))()
 local TeleportModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/teleport.lua"))()
 
 -- Cầu nối Speed
@@ -40,9 +40,9 @@ function Logic.ToggleInfiniteJump(state)
     JumpModule.Toggle(state)
 end
 
--- Cầu nối Auto Click (Nằm ở tab Main)
-function Logic.ToggleAutoClick(state)
-    AutoClickModule.Toggle(state)
+-- Cầu nối Soru (Thay thế Auto Click ở tab Main)
+function Logic.ToggleSoru(state)
+    SoruModule.Toggle(state)
 end
 
 -- Cầu nối ESP
@@ -86,7 +86,7 @@ function Logic.ResetConfig()
     ESPModule.Toggle(false)
     FPSBoostModule.Toggle(false)
     AimbotModule.Toggle(false)
-    AutoClickModule.Toggle(false)
+    SoruModule.Toggle(false) -- Đã cập nhật reset Soru
 end
 
 return Logic
