@@ -9,6 +9,8 @@ local JumpModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/em
 local ESPModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/esp.lua"))()
 local FPSBoostModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fpsboost.lua"))()
 local AimbotModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua"))()
+local TeleportModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/teleport.lua"))()
+local SoruModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/soru.lua"))()
 
 -- Cầu nối Speed
 function Logic.ToggleSpeed(state)
@@ -38,6 +40,22 @@ function Logic.ToggleInfiniteJump(state)
     JumpModule.Toggle(state)
 end
 
+-- Cầu nối Soru (Click Teleport)
+function Logic.ToggleSoru(state)
+    SoruModule.Toggle(state)
+end
+
+-- Cầu nối Teleport qua người chơi
+function Logic.SetAimbotTarget(playerName)
+    -- Đồng thời gán target cho cả Aimbot và Teleport Module
+    AimbotModule.SetTarget(playerName)
+    TeleportModule.SetTarget(playerName)
+end
+
+function Logic.SmoothTeleportToTarget()
+    TeleportModule.FlyToTarget()
+end
+
 -- Cầu nối ESP
 function Logic.ToggleESP(state)
     ESPModule.Toggle(state)
@@ -52,7 +70,7 @@ function Logic.ToggleFPSBoost(state)
     FPSBoostModule.Toggle(state)
 end
 
--- Cầu nối Aimbot mới thêm
+-- Cầu nối Aimbot
 function Logic.ToggleAimbot(state)
     AimbotModule.Toggle(state)
 end
@@ -61,16 +79,13 @@ function Logic.SetAimbotMode(mode)
     AimbotModule.SetMode(mode)
 end
 
-function Logic.SetAimbotTarget(playerName)
-    AimbotModule.SetTarget(playerName)
-end
-
 -- Cầu nối Reset Config tổng thể
 function Logic.ResetConfig()
     SpeedModule.Toggle(false)
     FlyModule.Toggle(false)
     NoClipModule.Toggle(false)
     JumpModule.Toggle(false)
+    SoruModule.Toggle(false)
     ESPModule.Toggle(false)
     FPSBoostModule.Toggle(false)
     AimbotModule.Toggle(false)
