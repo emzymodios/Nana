@@ -152,6 +152,17 @@ function UI.Init()
     toCorner.CornerRadius = UDim.new(0, 8)
     toCorner.Parent = tabOtherBtn
 
+    -- Hàm hỗ trợ tối ưu ScrollingFrame để tránh dính kéo nhầm bảng chính
+    local function setupScrollingFrame(container)
+        container.ScrollingEnabled = true
+        container.Selectable = true
+        container.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                -- Giữ tập trung tương tác cho việc cuộn nội dung con
+            end
+        end)
+    end
+
     local mainContainer = Instance.new("ScrollingFrame")
     mainContainer.Name = "MainContainer"
     mainContainer.Size = UDim2.new(1, -145, 1, -50)
@@ -162,6 +173,7 @@ function UI.Init()
     mainContainer.ScrollBarThickness = 4
     mainContainer.Visible = true
     mainContainer.Parent = mainFrame
+    setupScrollingFrame(mainContainer)
 
     local combatContainer = Instance.new("ScrollingFrame")
     combatContainer.Name = "CombatContainer"
@@ -173,6 +185,7 @@ function UI.Init()
     combatContainer.ScrollBarThickness = 4
     combatContainer.Visible = false
     combatContainer.Parent = mainFrame
+    setupScrollingFrame(combatContainer)
 
     local otherContainer = Instance.new("ScrollingFrame")
     otherContainer.Name = "OtherContainer"
@@ -184,6 +197,7 @@ function UI.Init()
     otherContainer.ScrollBarThickness = 4
     otherContainer.Visible = false
     otherContainer.Parent = mainFrame
+    setupScrollingFrame(otherContainer)
 
     tabMainBtn.MouseButton1Click:Connect(function()
         mainContainer.Visible = true
@@ -221,7 +235,7 @@ function UI.Init()
         tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
-    -- Elements tab Main (Đã thêm Auto Click ở đây)
+    -- Elements tab Main
     Elements.CreateSlider(mainContainer, 10, "Run Speed", 16, 200, 16, function(val)
         if UI.OnSpeedChanged then UI.OnSpeedChanged(val) end
     end)
@@ -277,7 +291,7 @@ function UI.Init()
         if UI.OnResetClicked then UI.OnResetClicked() end
     end)
 
-    -- Elements tab Combat (Chứa Dropdown, nút Fly to Target và Aimbot)
+    -- Elements tab Combat
     local function getPlayerNames()
         local list = {}
         for _, p in ipairs(Players:GetPlayers()) do
