@@ -259,10 +259,9 @@ function UI.Init()
     Elements.CreateToggleRow(mainContainer, 325, "Infinite Jump", function(state)
         if UI.OnJumpToggled then UI.OnJumpToggled(state) end
     end)
-
-    Elements.CreateToggleRow(mainContainer, 380, "Auto Click", function(state)
-        if UI.OnAutoClickToggled then UI.OnAutoClickToggled(state) end
-    end)
+Elements.CreateToggleRow(mainContainer, 380, "Soru (Click Tele)", function(state)
+    if UI.OnSoruToggled then UI.OnSoruToggled(state) end
+end)
 
     Elements.CreateToggleRow(mainContainer, 435, "FPS Boost", function(state)
         if UI.OnFPSBoostToggled then UI.OnFPSBoostToggled(state) end
@@ -390,7 +389,7 @@ UI.OnFlySpeedChanged = nil
 UI.OnFlyToggled = nil
 UI.OnNoClipToggled = nil
 UI.OnJumpToggled = nil
-UI.OnAutoClickToggled = nil
+UI.OnSoruToggled = nil
 UI.OnFPSBoostToggled = nil
 UI.OnESPToggled = nil
 UI.OnESPTextSizeChanged = nil
