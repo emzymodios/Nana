@@ -1,4 +1,11 @@
 -- Nana Hub UI (ui.lua) - FULL CODE HOÀN CHỈNH + FRAME ĐẸP HƠN
+-- ╔════════════════════════════════════════╗
+-- ║   NANA HUB - UI.LUA                     ║
+-- ║   File: Giao diện (GUI - hình ảnh)     ║
+-- ║   Tác giả: emzymodios                   ║
+-- ║   Chứa: Slider, Toggle, Button, ESP    ║
+-- ╚════════════════════════════════════════╝
+
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
@@ -148,7 +155,7 @@ function UI.Init()
     mainContainer.Position = UDim2.new(0, 145, 0, 45)
     mainContainer.BackgroundTransparency = 1
     mainContainer.BorderSizePixel = 0
-    mainContainer.CanvasSize = UDim2.new(0, 0, 0, 380)
+    mainContainer.CanvasSize = UDim2.new(0, 0, 0, 450)
     mainContainer.ScrollBarThickness = 4
     mainContainer.Visible = true
     mainContainer.Parent = mainFrame
@@ -382,6 +389,10 @@ function UI.Init()
         if UI.OnJumpToggled then UI.OnJumpToggled(state) end
     end)
 
+    createToggleRow(mainContainer, 380, "FPS Boost", function(state)
+        if UI.OnFPSBoostToggled then UI.OnFPSBoostToggled(state) end
+    end)
+
     local resetBtn = Instance.new("TextButton")
     resetBtn.Size = UDim2.new(0.9, 0, 0, 35)
     resetBtn.Position = UDim2.new(0.05, 0, 0, 385)
@@ -451,6 +462,7 @@ UI.OnFlySpeedChanged = nil
 UI.OnFlyToggled = nil
 UI.OnNoClipToggled = nil
 UI.OnJumpToggled = nil
+UI.OnFPSBoostToggled = nil
 UI.OnESPToggled = nil
 UI.OnResetClicked = nil
 
