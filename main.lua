@@ -22,9 +22,5 @@ UI.OnAimbotTargetChanged = function(targetName) Logic.SetAimbotTarget(targetName
 UI.OnFlyToTargetClicked = function() Logic.SmoothTeleportToTarget() end
 UI.OnResetClicked = function() Logic.ResetConfig() end
 
-UI.OnSavePositionClicked = function() return Logic.SavePosition() end
-UI.OnResetPositionClicked = function() return Logic.ResetPosition() end
-UI.OnTeleportPositionClicked = function() Logic.TeleportToSaved() end
-
 Notification.Show("NANA HUB", "Đã load! Chúc bạn bay acc:))", 5, "rbxassetid://93925828218201")
 print("Nana Hub loaded successfully")
