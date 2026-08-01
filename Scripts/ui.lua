@@ -333,7 +333,7 @@ function UI.Init()
     resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     resetBtn.TextSize = 13
     resetBtn.Font = Enum.Font.GothamBold
-    resetBtn.Text = "🔄 Reset Config (Main)"
+    resetBtn.Text = " Reset Config "
     resetBtn.Parent = mainContainer
 
     local rCorner = Instance.new("UICorner")
