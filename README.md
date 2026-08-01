@@ -26,3 +26,7 @@ Giao diện phong cách tối màu hiện đại với hiệu ứng kính mờ (
 
 Hệ thống Notification tùy chỉnh riêng biệt ở góc dưới bên phải màn hình kèm hiệu ứng tự động biến mất sau 2 giây.
 loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/main.lua"))()
+### global load
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/main.lua"))()
+```
