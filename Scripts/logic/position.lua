@@ -1,4 +1,4 @@
-local Position = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/position.lua")
+-- Scripts/logic/position.lua
 local PositionModule = {}
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -10,7 +10,6 @@ function PositionModule.TeleportToCoords(x, y, z)
     end
 end
 
--- Hoặc tính năng lấy vị trí hiện tại (Copy Position)
 function PositionModule.GetCurrentPosition()
     local char = LocalPlayer.Character
     if char and char:FindFirstChild("HumanoidRootPart") then
