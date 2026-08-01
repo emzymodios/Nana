@@ -1,5 +1,7 @@
+-- Nana Hub Main Loader (main.lua)
+
 local SuccessUI, UI = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui.lua"))()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/ui.lua"))()
 end)
 
 local SuccessLogic, Logic = pcall(function()
@@ -47,4 +49,4 @@ UI.OnResetClicked = function()
     Logic.ResetConfig()
 end
 
-print("Nana Hub loaded successfully with Tabs & ESP!")
+print("Nana Hub loaded successfully")
