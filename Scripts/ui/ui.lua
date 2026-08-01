@@ -77,7 +77,7 @@ function UI.Init()
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextSize = 16
     titleLabel.Font = Enum.Font.GothamBlack
-    titleLabel.Text = "NANA HUB 1.2"
+    titleLabel.Text = "NANA HUB 1.3"
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
