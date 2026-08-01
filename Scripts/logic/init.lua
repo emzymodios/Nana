@@ -8,6 +8,7 @@ local NoClipModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/
 local JumpModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/jump.lua"))()
 local ESPModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/esp.lua"))()
 local FPSBoostModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fpsboost.lua"))()
+local AimbotModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua"))()
 
 -- Cầu nối Speed
 function Logic.ToggleSpeed(state)
@@ -46,9 +47,22 @@ function Logic.SetESPTextSize(size)
     ESPModule.SetTextSize(size)
 end
 
--- Cầu nối FPS Boost mới thêm
+-- Cầu nối FPS Boost
 function Logic.ToggleFPSBoost(state)
     FPSBoostModule.Toggle(state)
+end
+
+-- Cầu nối Aimbot mới thêm
+function Logic.ToggleAimbot(state)
+    AimbotModule.Toggle(state)
+end
+
+function Logic.SetAimbotMode(mode)
+    AimbotModule.SetMode(mode)
+end
+
+function Logic.SetAimbotTarget(playerName)
+    AimbotModule.SetTarget(playerName)
 end
 
 -- Cầu nối Reset Config tổng thể
@@ -59,6 +73,7 @@ function Logic.ResetConfig()
     JumpModule.Toggle(false)
     ESPModule.Toggle(false)
     FPSBoostModule.Toggle(false)
+    AimbotModule.Toggle(false)
 end
 
 return Logic
