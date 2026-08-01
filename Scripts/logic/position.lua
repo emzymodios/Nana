@@ -5,7 +5,7 @@ local player = Players.LocalPlayer
 
 local savedPosition = nil
 
-function PositionModule.Save()
+function PositionModule.SavePosition()
     local character = player.Character
     if character and character:FindFirstChild("HumanoidRootPart") then
         savedPosition = character.HumanoidRootPart.CFrame
@@ -14,12 +14,12 @@ function PositionModule.Save()
     return "Chưa có vị trí"
 end
 
-function PositionModule.Reset()
+function PositionModule.ResetPosition()
     savedPosition = nil
     return "[            ]"
 end
 
-function PositionModule.Teleport()
+function PositionModule.TeleportToSaved()
     if savedPosition then
         local character = player.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
