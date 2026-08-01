@@ -7,7 +7,7 @@ local espEnabled = false
 local currentTextSize = 12
 local espConnections = {}
 
-local function addBillboard(char)
+local function addBillboard(player, char)
     if char:FindFirstChild("NanaESP") then return end
     local bgGui = Instance.new("BillboardGui")
     bgGui.Name = "NanaESP"
@@ -17,24 +17,28 @@ local function addBillboard(char)
     bgGui.Parent = char:WaitForChild("Head")
 
     local textLbl = Instance.new("TextLabel")
-    textLbl.Name = "ESPText"
+    textLbl.Name = "ESPText" -- Đặt đúng tên để hàm SetTextSize nhận diện
     textLbl.Size = UDim2.new(1, 0, 1, 0)
     textLbl.BackgroundTransparency = 1
     textLbl.TextColor3 = Color3.fromRGB(0, 255, 150)
     textLbl.TextStrokeTransparency = 0
     textLbl.TextSize = currentTextSize
     textLbl.Font = Enum.Font.GothamBold
-    textLbl.Text = char.Parent.Name
+    textLbl.Text = player.Name -- Lấy chính xác tên Player thay vì Workspace
     textLbl.Parent = bgGui
 end
 
 local function createESP(player)
     if player == LocalPlayer then return end
     
-    if player.Character then
-        addBillboard(player.Character)
+    local function onCharacterAdded(char)
+        addBillboard(player, char)
     end
-    table.insert(espConnections, player.CharacterAdded:Connect(addBillboard))
+
+    if player.Character then
+        onCharacterAdded(player.Character)
+    end
+    table.insert(espConnections, player.CharacterAdded:Connect(onCharacterAdded))
 end
 
 local function removeESP()
