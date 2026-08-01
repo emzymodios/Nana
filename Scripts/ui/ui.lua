@@ -143,14 +143,14 @@ function UI.Init()
     toCorner.CornerRadius = UDim.new(0, 8)
     toCorner.Parent = tabOtherBtn
 
-    -- Khung chứa nội dung Tab Main (CanvasSize đã được tăng lên 440)
+-- Khung chứa nội dung Tab Main (Đã tăng CanvasSize lên 500 để không bị che nút Reset)
     local mainContainer = Instance.new("ScrollingFrame")
     mainContainer.Name = "MainContainer"
     mainContainer.Size = UDim2.new(1, -145, 1, -50)
     mainContainer.Position = UDim2.new(0, 145, 0, 45)
     mainContainer.BackgroundTransparency = 1
     mainContainer.BorderSizePixel = 0
-    mainContainer.CanvasSize = UDim2.new(0, 0, 0, 440)
+    mainContainer.CanvasSize = UDim2.new(0, 0, 0, 500)
     mainContainer.ScrollBarThickness = 4
     mainContainer.Visible = true
     mainContainer.Parent = mainFrame
