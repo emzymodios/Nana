@@ -1,7 +1,7 @@
 -- logic/init.lua
 local Logic = {}
 
--- Tải các module logic con
+-- Tải các module logic con cũ và mới
 local SpeedModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/speed.lua"))()
 local FlyModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fly.lua"))()
 local NoClipModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/noclip.lua"))()
@@ -9,6 +9,8 @@ local JumpModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/em
 local ESPModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/esp.lua"))()
 local FPSBoostModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fpsboost.lua"))()
 local AimbotModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua"))()
+local AutoClickModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/autoclick.lua"))()
+local TeleportModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/teleport.lua"))()
 
 -- Cầu nối Speed
 function Logic.ToggleSpeed(state)
@@ -38,6 +40,11 @@ function Logic.ToggleInfiniteJump(state)
     JumpModule.Toggle(state)
 end
 
+-- Cầu nối Auto Click (Nằm ở tab Main)
+function Logic.ToggleAutoClick(state)
+    AutoClickModule.Toggle(state)
+end
+
 -- Cầu nối ESP
 function Logic.ToggleESP(state)
     ESPModule.Toggle(state)
@@ -52,7 +59,7 @@ function Logic.ToggleFPSBoost(state)
     FPSBoostModule.Toggle(state)
 end
 
--- Cầu nối Aimbot mới thêm
+-- Cầu nối Aimbot & Teleport (Nằm chung ở tab Combat)
 function Logic.ToggleAimbot(state)
     AimbotModule.Toggle(state)
 end
@@ -63,6 +70,11 @@ end
 
 function Logic.SetAimbotTarget(playerName)
     AimbotModule.SetTarget(playerName)
+    TeleportModule.SetTarget(playerName) -- Đồng bộ tên người chơi được chọn cho tính năng bay tới mục tiêu
+end
+
+function Logic.SmoothTeleportToTarget()
+    TeleportModule.FlyToTarget()
 end
 
 -- Cầu nối Reset Config tổng thể
@@ -74,6 +86,7 @@ function Logic.ResetConfig()
     ESPModule.Toggle(false)
     FPSBoostModule.Toggle(false)
     AimbotModule.Toggle(false)
+    AutoClickModule.Toggle(false)
 end
 
 return Logic
