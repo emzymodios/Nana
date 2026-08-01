@@ -1,10 +1,3 @@
--- ╔════════════════════════════════════════╗
--- ║   NANA HUB - MAIN.LUA                   ║
--- ║   File: Kết nối UI + Logic              ║
--- ║   Tác giả: emzymodios                   ║
--- ║   Chạy file này để bắt đầu script       ║
--- ╚════════════════════════════════════════╝
-
 local SuccessUI, UI = pcall(function()
     return loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui.lua"))()
 end)
@@ -46,10 +39,6 @@ UI.OnJumpToggled = function(state)
     Logic.ToggleInfiniteJump(state)
 end
 
-UI.OnFPSBoostToggled = function(state)
-    Logic.ToggleFPSBoost(state)
-end
-
 UI.OnESPToggled = function(state)
     Logic.ToggleESP(state)
 end
@@ -58,4 +47,4 @@ UI.OnResetClicked = function()
     Logic.ResetConfig()
 end
 
-print("✅ Nana Hub loaded successfully with Tabs, FPS Boost & ESP!")
+print("Nana Hub loaded successfully with Tabs & ESP!")
