@@ -1,106 +1,97 @@
 -- logic/init.lua
 local Logic = {}
 
--- Tải các module logic con cũ và mới
-local SpeedModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/speed.lua"))()
-local FlyModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fly.lua"))()
-local NoClipModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/noclip.lua"))()
-local JumpModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/jump.lua"))()
-local ESPModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/esp.lua"))()
-local FPSBoostModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fpsboost.lua"))()
-local AimbotModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua"))()
-local SoruModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/soru.lua"))()
-local TeleportModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/teleport.lua"))()
-local PositionModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/position.lua"))()
+local function loadModule(name, url)
+    local success, result = pcall(function()
+        return loadstring(game:HttpGet(url))()
+    end)
+    if success and type(result) == "table" then
+        print("[Nana Hub] Loaded module:", name)
+        return result
+    else
+        warn("[Nana Hub] Failed to load module:", name, "| Error:", result)
+        -- Trả về bảng trống để không bị lỗi crash script
+        return setmetatable({}, {
+            __index = function()
+                return function() end
+            end
+        })
+    end
+end
+
+local baseUrl = "https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/"
+
+local SpeedModule = loadModule("Speed", baseUrl .. "speed.lua")
+local FlyModule = loadModule("Fly", baseUrl .. "fly.lua")
+local NoClipModule = loadModule("NoClip", baseUrl .. "noclip.lua")
+local JumpModule = loadModule("Jump", baseUrl .. "jump.lua")
+local ESPModule = loadModule("ESP", baseUrl .. "esp.lua")
+local FPSBoostModule = loadModule("FPSBoost", baseUrl .. "fpsboost.lua")
+local AimbotModule = loadModule("Aimbot", baseUrl .. "aimbot.lua")
+local SoruModule = loadModule("Soru", baseUrl .. "soru.lua")
+local TeleportModule = loadModule("Teleport", baseUrl .. "teleport.lua")
+local PositionModule = loadModule("Position", baseUrl .. "position.lua")
 
 -- Cầu nối Speed
-function Logic.ToggleSpeed(state)
-    SpeedModule.Toggle(state)
-end
-
-function Logic.SetSpeed(val)
-    SpeedModule.SetSpeed(val)
-end
+function Logic.ToggleSpeed(state) SpeedModule.Toggle(state) end
+function Logic.SetSpeed(val) if SpeedModule.SetSpeed then SpeedModule.SetSpeed(val) end end
 
 -- Cầu nối Fly
-function Logic.ToggleFly(state)
-    FlyModule.Toggle(state)
-end
-
-function Logic.SetFlySpeed(val)
-    FlyModule.SetFlySpeed(val)
-end
+function Logic.ToggleFly(state) FlyModule.Toggle(state) end
+function Logic.SetFlySpeed(val) if FlyModule.SetFlySpeed then FlyModule.SetFlySpeed(val) end end
 
 -- Cầu nối NoClip
-function Logic.ToggleNoClip(state)
-    NoClipModule.Toggle(state)
-end
+function Logic.ToggleNoClip(state) NoClipModule.Toggle(state) end
 
 -- Cầu nối Infinite Jump
-function Logic.ToggleInfiniteJump(state)
-    JumpModule.Toggle(state)
-end
+function Logic.ToggleInfiniteJump(state) JumpModule.Toggle(state) end
 
--- Cầu nối Soru (Thay thế Auto Click ở tab Main)
-function Logic.ToggleSoru(state)
-    SoruModule.Toggle(state)
-end
+-- Cầu nối Soru
+function Logic.ToggleSoru(state) SoruModule.Toggle(state) end
 
 -- Cầu nối ESP
-function Logic.ToggleESP(state)
-    ESPModule.Toggle(state)
-end
-
-function Logic.SetESPTextSize(size)
-    ESPModule.SetTextSize(size)
-end
+function Logic.ToggleESP(state) ESPModule.Toggle(state) end
+function Logic.SetESPTextSize(size) if ESPModule.SetTextSize then ESPModule.SetTextSize(size) end end
 
 -- Cầu nối FPS Boost
-function Logic.ToggleFPSBoost(state)
-    FPSBoostModule.Toggle(state)
-end
+function Logic.ToggleFPSBoost(state) FPSBoostModule.Toggle(state) end
 
--- Cầu nối Aimbot & Teleport (Nằm chung ở tab Combat)
-function Logic.ToggleAimbot(state)
-    AimbotModule.Toggle(state)
+-- Cầu nối Aimbot & Teleport
+function Logic.ToggleAimbot(state) AimbotModule.Toggle(state) end
+function Logic.SetAimbotMode(mode) if AimbotModule.SetMode then AimbotModule.SetMode(mode) end end
+function Logic.SetAimbotTarget(playerName) 
+    if AimbotModule.SetTarget then AimbotModule.SetTarget(playerName) end
+    if TeleportModule.SetTarget then TeleportModule.SetTarget(playerName) end
 end
-
-function Logic.SetAimbotMode(mode)
-    AimbotModule.SetMode(mode)
-end
-
-function Logic.SetAimbotTarget(playerName)
-    AimbotModule.SetTarget(playerName)
-    TeleportModule.SetTarget(playerName)
-end
-
-function Logic.SmoothTeleportToTarget()
-    TeleportModule.FlyToTarget()
-end
+function Logic.SmoothTeleportToTarget() if TeleportModule.FlyToTarget then TeleportModule.FlyToTarget() end end
 
 -- Cầu nối tính năng Position (Tab More)
 function Logic.SavePosition()
-    return PositionModule.Save()
+    if PositionModule.Save then return PositionModule.Save() end
+    return "[ Error ]"
 end
 
 function Logic.ResetPosition()
-    return PositionModule.Reset()
+    if PositionModule.Reset then return PositionModule.Reset() end
+    return "[            ]"
 end
 
 function Logic.TeleportToSaved()
-    PositionModule.Teleport()
+    if PositionModule.Teleport then PositionModule.Teleport() end
 end
 
 -- Cầu nối Reset Config tổng thể
 function Logic.ResetConfig()
-    SpeedModule.Toggle(false)
-    FlyModule.Toggle(false)
-    NoClipModule.Toggle(false)
-    JumpModule.Toggle(false)
-    ESPModule.Toggle(false)
-    FPSBoostModule.Toggle(false)
-    AimbotModule.Toggle(false)
-    SoruModule.Toggle(false)
+    pcall(function()
+        SpeedModule.Toggle(false)
+        FlyModule.Toggle(false)
+        NoClipModule.Toggle(false)
+        JumpModule.Toggle(false)
+        ESPModule.Toggle(false)
+        FPSBoostModule.Toggle(false)
+        AimbotModule.Toggle(false)
+        SoruModule.Toggle(false)
+    end)
 end
 
 return Logic
