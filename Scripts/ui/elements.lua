@@ -1,8 +1,9 @@
 -- Nana Hub Elements (elements.lua)
 local UserInputService = game:GetService("UserInputService")
-local Components = require(script.Parent.components)
+local Components = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/components.lua"))()
 
 local Elements = {}
+-- (Giữ nguyên các hàm CreateSlider và CreateToggleRow phía dưới như cũ)
 
 function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultVal, callback)
     local box = Components.CreateFrameBox(parent, posY, 65, titleText)
