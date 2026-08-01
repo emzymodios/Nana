@@ -45,13 +45,28 @@ function Logic.ToggleSoru(state)
     SoruModule.Toggle(state)
 end
 
--- Cầu nối Teleport qua người chơi
+-- Cầu nối chọn tên người chơi cho Teleport / Aimbot
 function Logic.SetAimbotTarget(playerName)
-    -- Đồng thời gán target cho cả Aimbot và Teleport Module
     AimbotModule.SetTarget(playerName)
     TeleportModule.SetTarget(playerName)
 end
 
+-- Cầu nối Teleport qua người chơi dạng Toggle (Gạt bật/tắt)
+function Logic.ToggleTeleportPlayer(state, targetName)
+    if targetName and targetName ~= "" then
+        TeleportModule.SetTarget(targetName)
+    end
+
+    if state then
+        -- Khi gạt bật: Bắt đầu bay bám sát liên tục theo mục tiêu
+        TeleportModule.StartContinuousFly(100)
+    else
+        -- Khi gạt tắt: Ngưng bay ngay lập tức
+        TeleportModule.StopFly()
+    end
+end
+
+-- Hàm cũ giữ lại phòng trường hợp cần dùng dạng click đơn
 function Logic.SmoothTeleportToTarget()
     TeleportModule.FlyToTarget()
 end
@@ -89,6 +104,7 @@ function Logic.ResetConfig()
     ESPModule.Toggle(false)
     FPSBoostModule.Toggle(false)
     AimbotModule.Toggle(false)
+    TeleportModule.StopFly()
 end
 
 return Logic
