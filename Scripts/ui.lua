@@ -1,4 +1,4 @@
--- Nana Hub UI (ui.lua) - FULL CODE HOÀN CHỈNH
+-- Nana Hub UI (ui.lua) - FULL CODE HOÀN CHỈNH + FRAME ĐẸP HƠN
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
@@ -79,7 +79,7 @@ function UI.Init()
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextSize = 16
     titleLabel.Font = Enum.Font.GothamBlack
-    titleLabel.Text = "NANA HUB 1.1" -- 👈 THAY ĐỔI TÊN HIỂN THỊ TẠI ĐÂY NẾU MUỐN
+    titleLabel.Text = "NANA HUB 1.1"
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
@@ -184,25 +184,79 @@ function UI.Init()
         tabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
-    -- Hàm tạo UI Slider
+    -- ✅ Hàm tạo khung chứa (Frame xung quanh - NỔI LÊN)
+    local function createFrameBox(parent, posY, height, titleText)
+        local box = Instance.new("Frame")
+        box.Size = UDim2.new(0.95, 0, 0, height)
+        box.Position = UDim2.new(0.025, 0, 0, posY)
+        box.BackgroundColor3 = Color3.fromRGB(32, 32, 45)  -- Sáng hơn để nổi
+        box.BorderSizePixel = 0
+        box.Parent = parent
+        
+        local boxCorner = Instance.new("UICorner")
+        boxCorner.CornerRadius = UDim.new(0, 8)
+        boxCorner.Parent = box
+        
+        -- Viền ngoài (tím sáng)
+        local boxStroke = Instance.new("UIStroke")
+        boxStroke.Color = Color3.fromRGB(100, 70, 180)
+        boxStroke.Thickness = 1.5
+        boxStroke.Parent = box
+        
+        -- Shadow effect (nổi lên)
+        local boxShadow = Instance.new("UIStroke")
+        boxShadow.Color = Color3.fromRGB(0, 0, 0)
+        boxShadow.Thickness = 2
+        boxShadow.Transparency = 0.7
+        boxShadow.Parent = box
+        
+        -- Gradient trên khung (nhẹ)
+        local gradient = Instance.new("UIGradient")
+        gradient.Color = ColorSequence.new({
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 55)),
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(28, 28, 40))
+        })
+        gradient.Rotation = 90
+        gradient.Parent = box
+        
+        -- Tiêu đề nhỏ trên khung (chỉ chữ)
+        if titleText then
+            local titleTag = Instance.new("TextLabel")
+            titleTag.Size = UDim2.new(0.4, 0, 0, 16)
+            titleTag.Position = UDim2.new(0.02, 0, 0, -8)
+            titleTag.BackgroundColor3 = Color3.fromRGB(14, 14, 20)
+            titleTag.TextColor3 = Color3.fromRGB(150, 120, 200)
+            titleTag.TextSize = 11
+            titleTag.Font = Enum.Font.GothamBold
+            titleTag.Text = titleText
+            titleTag.TextXAlignment = Enum.TextXAlignment.Left
+            titleTag.Parent = box
+        end
+        
+        return box
+    end
+
+    -- Hàm tạo UI Slider (sử dụng khung chứa)
     local function createSlider(parent, posY, titleText, minVal, maxVal, defaultVal, callback)
+        local box = createFrameBox(parent, posY, 65, titleText)
+        
         local lbl = Instance.new("TextLabel")
         lbl.Size = UDim2.new(0.9, 0, 0, 20)
-        lbl.Position = UDim2.new(0.05, 0, 0, posY)
+        lbl.Position = UDim2.new(0.05, 0, 0, 8)
         lbl.BackgroundTransparency = 1
         lbl.TextColor3 = Color3.fromRGB(220, 220, 240)
-        lbl.TextSize = 13
+        lbl.TextSize = 12
         lbl.Font = Enum.Font.GothamBold
         lbl.Text = titleText .. ": " .. tostring(defaultVal)
         lbl.TextXAlignment = Enum.TextXAlignment.Left
-        lbl.Parent = parent
+        lbl.Parent = box
 
         local sliderBg = Instance.new("Frame")
         sliderBg.Size = UDim2.new(0.9, 0, 0, 10)
-        sliderBg.Position = UDim2.new(0.05, 0, 0, posY + 22)
-        sliderBg.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        sliderBg.Position = UDim2.new(0.05, 0, 0, 32)
+        sliderBg.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
         sliderBg.BorderSizePixel = 0
-        sliderBg.Parent = parent
+        sliderBg.Parent = box
 
         local sCorner = Instance.new("UICorner")
         sCorner.CornerRadius = UDim.new(1, 0)
@@ -253,25 +307,27 @@ function UI.Init()
         end)
     end
 
-    -- Hàm tạo UI Toggle
+    -- Hàm tạo UI Toggle (sử dụng khung chứa)
     local function createToggleRow(parent, posY, titleText, callback)
+        local box = createFrameBox(parent, posY, 45, nil)
+        
         local lbl = Instance.new("TextLabel")
-        lbl.Size = UDim2.new(0.7, 0, 0, 35)
-        lbl.Position = UDim2.new(0.05, 0, 0, posY)
+        lbl.Size = UDim2.new(0.7, 0, 1, 0)
+        lbl.Position = UDim2.new(0.05, 0, 0, 0)
         lbl.BackgroundTransparency = 1
         lbl.TextColor3 = Color3.fromRGB(220, 220, 240)
-        lbl.TextSize = 13
+        lbl.TextSize = 12
         lbl.Font = Enum.Font.GothamBold
         lbl.Text = titleText
         lbl.TextXAlignment = Enum.TextXAlignment.Left
-        lbl.Parent = parent
+        lbl.Parent = box
 
         local toggleBox = Instance.new("TextButton")
         toggleBox.Size = UDim2.new(0, 45, 0, 22)
-        toggleBox.Position = UDim2.new(0.8, 0, 0, posY + 6)
+        toggleBox.Position = UDim2.new(0.75, 0, 0.5, -11)
         toggleBox.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
         toggleBox.Text = ""
-        toggleBox.Parent = parent
+        toggleBox.Parent = box
 
         local tCorner = Instance.new("UICorner")
         tCorner.CornerRadius = UDim.new(1, 0)
@@ -306,29 +362,29 @@ function UI.Init()
         if UI.OnSpeedChanged then UI.OnSpeedChanged(val) end
     end)
 
-    createSlider(mainContainer, 70, "Fly Speed", 10, 300, 50, function(val)
+    createSlider(mainContainer, 85, "Fly Speed", 10, 300, 50, function(val)
         if UI.OnFlySpeedChanged then UI.OnFlySpeedChanged(val) end
     end)
 
-    createToggleRow(mainContainer, 130, "Speed Mode", function(state)
+    createToggleRow(mainContainer, 160, "Speed Mode", function(state)
         if UI.OnSpeedToggled then UI.OnSpeedToggled(state) end
     end)
 
-    createToggleRow(mainContainer, 175, "Fly Mode", function(state)
+    createToggleRow(mainContainer, 215, "Fly Mode", function(state)
         if UI.OnFlyToggled then UI.OnFlyToggled(state) end
     end)
 
-    createToggleRow(mainContainer, 220, "NoClip Mode", function(state)
+    createToggleRow(mainContainer, 270, "NoClip Mode", function(state)
         if UI.OnNoClipToggled then UI.OnNoClipToggled(state) end
     end)
 
-    createToggleRow(mainContainer, 265, "Infinite Jump", function(state)
+    createToggleRow(mainContainer, 325, "Infinite Jump", function(state)
         if UI.OnJumpToggled then UI.OnJumpToggled(state) end
     end)
 
     local resetBtn = Instance.new("TextButton")
     resetBtn.Size = UDim2.new(0.9, 0, 0, 35)
-    resetBtn.Position = UDim2.new(0.05, 0, 0, 315)
+    resetBtn.Position = UDim2.new(0.05, 0, 0, 385)
     resetBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 60)
     resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     resetBtn.TextSize = 13
@@ -339,6 +395,11 @@ function UI.Init()
     local rCorner = Instance.new("UICorner")
     rCorner.CornerRadius = UDim.new(0, 8)
     rCorner.Parent = resetBtn
+    
+    local rStroke = Instance.new("UIStroke")
+    rStroke.Color = Color3.fromRGB(220, 80, 80)
+    rStroke.Thickness = 1
+    rStroke.Parent = resetBtn
 
     resetBtn.MouseButton1Click:Connect(function()
         if UI.OnResetClicked then UI.OnResetClicked() end
@@ -394,3 +455,4 @@ UI.OnESPToggled = nil
 UI.OnResetClicked = nil
 
 return UI
+
