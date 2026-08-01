@@ -7,16 +7,23 @@ local player = players.LocalPlayer
 function Notification.Show(title, text, duration, iconId)
     duration = duration or 2
     local playerGui = player:WaitForChild("PlayerGui")
-    local screenGui = playerGui:FindFirstChild("NanaHubUI")
-    if not screenGui then return end
+    
+    -- Tránh bị phụ thuộc vào NanaHubUI, tạo ScreenGui riêng cho thông báo luôn để đảm bảo luôn hiện
+    local screenGui = playerGui:FindFirstChild("NanaNotificationGui")
+    if not screenGui then
+        screenGui = Instance.new("ScreenGui")
+        screenGui.Name = "NanaNotificationGui"
+        screenGui.ResetOnSpawn = false
+        screenGui.Parent = playerGui
+    end
 
     -- Tạo khung thông báo mờ nhìn xuyên thấu
     local notifFrame = Instance.new("Frame")
     notifFrame.Name = "Notification"
-    notifFrame.Size = UDim2.new(0, 260, 0, 65) -- Tăng chiều rộng lên một chút để chứa icon cho đẹp
+    notifFrame.Size = UDim2.new(0, 260, 0, 65)
     notifFrame.Position = UDim2.new(1, -270, 1, -85) 
     notifFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
-    notifFrame.BackgroundTransparency = 0.35 -- Độ mờ nhìn xuyên thấu
+    notifFrame.BackgroundTransparency = 0.35
     notifFrame.BorderSizePixel = 0
     notifFrame.Parent = screenGui
 
@@ -32,7 +39,7 @@ function Notification.Show(title, text, duration, iconId)
     nStroke.Parent = notifFrame
 
     -- Tạo phần hiển thị Icon bên trái (nếu có truyền ID ảnh)
-    if iconId then
+    if iconId and iconId ~= "" then
         local iconImg = Instance.new("ImageLabel")
         iconImg.Size = UDim2.new(0, 40, 0, 40)
         iconImg.Position = UDim2.new(0, 12, 0, 12)
@@ -41,11 +48,10 @@ function Notification.Show(title, text, duration, iconId)
         iconImg.Parent = notifFrame
     end
 
-    -- Xác định vị trí chữ thụt vào nếu có icon hoặc nằm sát mép nếu không có icon
-    local textOffsetLeft = iconId and 60 or 12
-    local textWidthSize = iconId and -70 or -20
+    local textOffsetLeft = (iconId and iconId ~= "") and 60 or 12
+    local textWidthSize = (iconId and iconId ~= "") and -70 or -20
 
-    -- Tiêu đề (In đậm ở trên)
+    -- Tiêu đề
     local titleLbl = Instance.new("TextLabel")
     titleLbl.Size = UDim2.new(1, textWidthSize, 0, 22)
     titleLbl.Position = UDim2.new(0, textOffsetLeft, 0, 6)
@@ -57,7 +63,7 @@ function Notification.Show(title, text, duration, iconId)
     titleLbl.TextXAlignment = Enum.TextXAlignment.Left
     titleLbl.Parent = notifFrame
 
-    -- Nội dung chi tiết (Ở dưới)
+    -- Nội dung chi tiết
     local descLbl = Instance.new("TextLabel")
     descLbl.Size = UDim2.new(1, textWidthSize, 0, 30)
     descLbl.Position = UDim2.new(0, textOffsetLeft, 0, 28)
@@ -70,9 +76,9 @@ function Notification.Show(title, text, duration, iconId)
     descLbl.TextXAlignment = Enum.TextXAlignment.Left
     descLbl.Parent = notifFrame
 
-    -- Tự động hủy bảng thông báo sau 2 giây
+    -- Tự động hủy bảng thông báo sau thời gian định sẵn
     task.delay(duration, function()
-        if notifFrame then
+        if notifFrame and notifFrame.Parent then
             notifFrame:Destroy()
         end
     end)
