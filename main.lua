@@ -5,7 +5,7 @@ local SuccessUI, UI = pcall(function()
 end)
 
 local SuccessLogic, Logic = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic.lua"))()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/init.lua"))()
 end)
 
 if not SuccessUI or not SuccessLogic then
