@@ -1,3 +1,4 @@
+local Position = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/position.lua")
 local PositionModule = {}
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
