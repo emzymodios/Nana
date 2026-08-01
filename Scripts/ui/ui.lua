@@ -9,6 +9,11 @@ local Config = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymo
 local Components = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/components.lua"))()
 local Elements = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua"))()
 
+-- Tải các module tab con
+local MainTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/main_tab.lua"))()
+local CombatTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/combat_tab.lua"))()
+local ESPTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/esp_tab.lua"))()
+
 local UI = {}
 
 function UI.Init()
@@ -155,10 +160,6 @@ function UI.Init()
     local function setupScrollingFrame(container)
         container.ScrollingEnabled = true
         container.Selectable = true
-        container.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            end
-        end)
     end
 
     local mainContainer = Instance.new("ScrollingFrame")
@@ -233,112 +234,10 @@ function UI.Init()
         tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
-    -- Elements tab Main
-    Elements.CreateSlider(mainContainer, 10, "Run Speed", 16, 200, 16, function(val)
-        if UI.OnSpeedChanged then UI.OnSpeedChanged(val) end
-    end)
-
-    Elements.CreateSlider(mainContainer, 85, "Fly Speed", 10, 300, 50, function(val)
-        if UI.OnFlySpeedChanged then UI.OnFlySpeedChanged(val) end
-    end)
-
-    Elements.CreateToggleRow(mainContainer, 160, "Speed Mode", function(state)
-        if UI.OnSpeedToggled then UI.OnSpeedToggled(state) end
-    end)
-
-    Elements.CreateToggleRow(mainContainer, 215, "Fly Mode", function(state)
-        if UI.OnFlyToggled then UI.OnFlyToggled(state) end
-    end)
-
-    Elements.CreateToggleRow(mainContainer, 270, "NoClip Mode", function(state)
-        if UI.OnNoClipToggled then UI.OnNoClipToggled(state) end
-    end)
-
-    Elements.CreateToggleRow(mainContainer, 325, "Infinite Jump", function(state)
-        if UI.OnJumpToggled then UI.OnJumpToggled(state) end
-    end)
-
-    Elements.CreateToggleRow(mainContainer, 380, "Soru (Click Tele)", function(state)
-        if UI.OnSoruToggled then UI.OnSoruToggled(state) end
-    end)
-
-    Elements.CreateToggleRow(mainContainer, 435, "FPS Boost", function(state)
-        if UI.OnFPSBoostToggled then UI.OnFPSBoostToggled(state) end
-    end)
-
-    local resetBtn = Instance.new("TextButton")
-    resetBtn.Size = UDim2.new(0.9, 0, 0, 35)
-    resetBtn.Position = UDim2.new(0.05, 0, 0, 490)
-    resetBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 60)
-    resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    resetBtn.TextSize = 13
-    resetBtn.Font = Enum.Font.GothamBold
-    resetBtn.Text = "Reset Config"
-    resetBtn.Parent = mainContainer
-
-    local rCorner = Instance.new("UICorner")
-    rCorner.CornerRadius = UDim.new(0, 8)
-    rCorner.Parent = resetBtn
-    
-    local rStroke = Instance.new("UIStroke")
-    rStroke.Color = Color3.fromRGB(220, 80, 80)
-    rStroke.Thickness = 1
-    rStroke.Parent = resetBtn
-
-    resetBtn.MouseButton1Click:Connect(function()
-        if UI.OnResetClicked then UI.OnResetClicked() end
-    end)
-
-    -- Elements tab Combat
-    local function getPlayerNames()
-        local list = {}
-        for _, p in ipairs(Players:GetPlayers()) do
-            if p ~= player then
-                table.insert(list, p.Name)
-            end
-        end
-        return list
-    end
-
-    local currentSelectedTarget = nil
-
-    local dropdownObj, updateDropFunc = Elements.CreateDropdown(combatContainer, 15, "Target Player", getPlayerNames(), function(selectedName)
-        currentSelectedTarget = selectedName
-        if UI.OnAimbotTargetChanged then UI.OnAimbotTargetChanged(selectedName) end
-    end)
-
-    Players.PlayerAdded:Connect(function() updateDropFunc(getPlayerNames()) end)
-    Players.PlayerRemoving:Connect(function() updateDropFunc(getPlayerNames()) end)
-
-    -- THAY THẾ NÚT BẤM CŨ THÀNH TOGGLE ROW CHO BẠN
-    Elements.CreateToggleRow(combatContainer, 65, "Bait & Follow Target", function(state)
-        if UI.OnTeleportPlayerToggled then 
-            UI.OnTeleportPlayerToggled(state, currentSelectedTarget) 
-        end
-    end)
-
-    Elements.CreateToggleRow(combatContainer, 125, "Aimbot Nearest", function(state)
-        if state then
-            if UI.OnAimbotModeChanged then UI.OnAimbotModeChanged("Nearest") end
-        end
-        if UI.OnAimbotToggled then UI.OnAimbotToggled(state) end
-    end)
-
-    Elements.CreateToggleRow(combatContainer, 180, "Aimbot Selected", function(state)
-        if state then
-            if UI.OnAimbotModeChanged then UI.OnAimbotModeChanged("Selected") end
-        end
-        if UI.OnAimbotToggled then UI.OnAimbotToggled(state) end
-    end)
-
-    -- Elements tab ESP
-    Elements.CreateSlider(otherContainer, 15, "ESP Text Size", 8, 30, 12, function(val)
-        if UI.OnESPTextSizeChanged then UI.OnESPTextSizeChanged(val) end
-    end)
-
-    Elements.CreateToggleRow(otherContainer, 80, "ESP Player", function(state)
-        if UI.OnESPToggled then UI.OnESPToggled(state) end
-    end)
+    -- Gọi khởi tạo các Elements từ các file Tab con đã tách
+    MainTab.Create(mainContainer, UI)
+    CombatTab.Create(combatContainer, UI)
+    ESPTab.Create(otherContainer, UI)
 
     local resizeBtn = Instance.new("TextButton")
     resizeBtn.Size = UDim2.new(0, 15, 0, 15)
