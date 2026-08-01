@@ -11,6 +11,7 @@ local FPSBoostModule = loadstring(game:HttpGet("https://raw.githubusercontent.co
 local AimbotModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua"))()
 local SoruModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/soru.lua"))()
 local TeleportModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/teleport.lua"))()
+local PositionModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/position.lua"))()
 
 -- Cầu nối Speed
 function Logic.ToggleSpeed(state)
@@ -70,11 +71,24 @@ end
 
 function Logic.SetAimbotTarget(playerName)
     AimbotModule.SetTarget(playerName)
-    TeleportModule.SetTarget(playerName) -- Đồng bộ tên người chơi được chọn cho tính năng bay tới mục tiêu
+    TeleportModule.SetTarget(playerName)
 end
 
 function Logic.SmoothTeleportToTarget()
     TeleportModule.FlyToTarget()
+end
+
+-- Cầu nối tính năng Position (Tab More)
+function Logic.SavePosition()
+    return PositionModule.Save()
+end
+
+function Logic.ResetPosition()
+    return PositionModule.Reset()
+end
+
+function Logic.TeleportToSaved()
+    PositionModule.Teleport()
 end
 
 -- Cầu nối Reset Config tổng thể
@@ -86,7 +100,7 @@ function Logic.ResetConfig()
     ESPModule.Toggle(false)
     FPSBoostModule.Toggle(false)
     AimbotModule.Toggle(false)
-    SoruModule.Toggle(false) -- Đã cập nhật reset Soru
+    SoruModule.Toggle(false)
 end
 
 return Logic
