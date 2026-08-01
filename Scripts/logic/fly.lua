@@ -4,12 +4,13 @@ local LocalPlayer = Players.LocalPlayer
 
 local FlyModule = {}
 local flyEnabled = false
-local flySpeed = 50 -- Tốc độ mặc định
+local flySpeed = 50 -- Giá trị mặc định
 local bg, bv
 local flyConnection
 
+-- Hàm nhận tốc độ mới từ Slider
 function FlyModule.SetSpeed(speed)
-    flySpeed = speed
+    flySpeed = tonumber(speed) or 50
 end
 
 function FlyModule.Toggle(state)
@@ -47,17 +48,19 @@ function FlyModule.Toggle(state)
             local moveDir = humanoid.MoveDirection
             
             if moveDir.Magnitude > 0 then
-                local camCF = camera.CFrame
-                -- Chuyển đổi hướng di chuyển của Humanoid sang hệ tọa độ của Camera 
-                -- nhưng khóa trục Y của MoveDirection để tránh bị kéo chúi xuống đất khi nhìn thẳng
-                local flatMoveDir = Vector3.new(moveDir.X, 0, moveDir.Z)
-                local relativeDir = camCF:VectorToObjectSpace(flatMoveDir)
+                local camLook = camera.CFrame.LookVector
+                local camRight = camera.CFrame.RightVector
                 
-                -- Kết hợp độ cao nếu nhân vật bay lên/xuống bằng phím nhảy/ngồi (nếu có) hoặc giữ nguyên phẳng
-                bv.velocity = camCF:VectorToWorldSpace(Vector3.new(relativeDir.X, moveDir.Y, relativeDir.Z)) * flySpeed
+                local flatLook = Vector3.new(camLook.X, 0, camLook.Z).Unit
+                local flatRight = Vector3.new(camRight.X, 0, camRight.Z).Unit
+                
+                -- Tính toán vận tốc dựa trên flySpeed hiện tại (sẽ thay đổi ngay khi bạn kéo slider)
+                local velocity = (flatLook * -moveDir.Z + flatRight * moveDir.X) * flySpeed
+                bv.velocity = Vector3.new(velocity.X, moveDir.Y * flySpeed, velocity.Z)
             else
                 bv.velocity = Vector3.new(0, 0, 0)
             end
+            
             bg.cframe = camera.CFrame
         end)
     else
