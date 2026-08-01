@@ -1,4 +1,4 @@
--- logic/init.lua (hoặc logic.lua chính)
+-- logic/init.lua
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
@@ -37,6 +37,11 @@ end
 
 function Logic.ToggleESP(state)
     ESP.Toggle(state)
+end
+
+-- Thêm hàm điều chỉnh kích thước chữ ESP
+function Logic.SetESPTextSize(size)
+    ESP.SetTextSize(size)
 end
 
 function Logic.ResetConfig()
