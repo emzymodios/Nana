@@ -1,16 +1,21 @@
+-- logic/fly.lua
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
 local FlyModule = {}
 local flyEnabled = false
-local flySpeed = 50 -- Giá trị mặc định
+local flySpeed = 50
 local bg, bv
 local flyConnection
 
--- Hàm nhận tốc độ mới từ Slider
+function FlyModule.SetFlySpeed(speed)
+    flySpeed = speed or 50
+end
+
+-- Giữ lại hàm cũ phòng trường hợp code khác gọi nhầm tên
 function FlyModule.SetSpeed(speed)
-    flySpeed = tonumber(speed) or 50
+    FlyModule.SetFlySpeed(speed)
 end
 
 function FlyModule.Toggle(state)
@@ -22,7 +27,9 @@ function FlyModule.Toggle(state)
     local humanoid = character:FindFirstChildOfClass("Humanoid")
 
     if flyEnabled then
-        humanoid.PlatformStand = true
+        if humanoid then
+            humanoid.PlatformStand = true
+        end
         
         if bg then bg:Destroy() end
         if bv then bv:Destroy() end
@@ -38,36 +45,32 @@ function FlyModule.Toggle(state)
         bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
         bv.Parent = hrp
 
+        if flyConnection then flyConnection:Disconnect() end
+
         flyConnection = RunService.RenderStepped:Connect(function()
-            if not flyEnabled or not hrp or not hrp.Parent then 
-                FlyModule.Toggle(false)
-                return 
-            end
-            
+            if not flyEnabled then return end
             local camera = workspace.CurrentCamera
             local moveDir = humanoid.MoveDirection
             
             if moveDir.Magnitude > 0 then
-                local camLook = camera.CFrame.LookVector
-                local camRight = camera.CFrame.RightVector
-                
-                local flatLook = Vector3.new(camLook.X, 0, camLook.Z).Unit
-                local flatRight = Vector3.new(camRight.X, 0, camRight.Z).Unit
-                
-                -- Tính toán vận tốc dựa trên flySpeed hiện tại (sẽ thay đổi ngay khi bạn kéo slider)
-                local velocity = (flatLook * -moveDir.Z + flatRight * moveDir.X) * flySpeed
-                bv.velocity = Vector3.new(velocity.X, moveDir.Y * flySpeed, velocity.Z)
+                local camCF = camera.CFrame
+                local relativeDir = camCF:VectorToObjectSpace(moveDir)
+                bv.velocity = camCF:VectorToWorldSpace(Vector3.new(relativeDir.X, moveDir.Y, relativeDir.Z)) * flySpeed
             else
                 bv.velocity = Vector3.new(0, 0, 0)
             end
-            
             bg.cframe = camera.CFrame
         end)
     else
-        humanoid.PlatformStand = false
-        if bg then bg:Destroy(); bg = nil end
-        if bv then bv:Destroy(); bv = nil end
-        if flyConnection then flyConnection:Disconnect(); flyConnection = nil end
+        if humanoid then
+            humanoid.PlatformStand = false
+        end
+        if bg then bg:Destroy() end
+        if bv then bv:Destroy() end
+        if flyConnection then 
+            flyConnection:Disconnect() 
+            flyConnection = nil
+        end
     end
 end
 
