@@ -5,16 +5,30 @@ local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
-local Config = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/config.lua"))()
-local Components = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/components.lua"))()
-local Elements = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua"))()
+local function safeLoad(url)
+    local success, result = pcall(function()
+        return loadstring(game:HttpGet(url))()
+    end)
+    if not success then
+        warn("NanaHub Load Error at: " .. url .. "\nDetails: " .. tostring(result))
+        return nil
+    end
+    return result
+end
 
--- Tải các module tab con
-local MainTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/main_tab.lua"))()
-local CombatTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/combat_tab.lua"))()
-local ESPTab = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/esp_tab.lua"))()
+-- Tải các module cơ bản và notification an toàn
+local Config = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/config.lua")
+local Components = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/components.lua")
+local Elements = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua")
+local Notification = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/notification.lua")
+
+-- Tải các module tab con nằm trong thư mục tabs/
+local MainTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/main_tab.lua")
+local CombatTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/combat_tab.lua")
+local ESPTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/esp_tab.lua")
 
 local UI = {}
+UI.Notify = Notification -- Đưa notification vào UI để các module khác dễ dàng sử dụng
 
 function UI.Init()
     if playerGui:FindFirstChild("NanaHubUI") then
@@ -31,7 +45,7 @@ function UI.Init()
     toggleBtn.Size = UDim2.new(0, 50, 0, 50)
     toggleBtn.Position = UDim2.new(0.02, 0, 0.1, 0)
     toggleBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    toggleBtn.Image = Config.IconImageId
+    toggleBtn.Image = Config and Config.IconImageId or ""
     toggleBtn.Draggable = true
     toggleBtn.Active = true
     toggleBtn.Parent = screenGui
@@ -234,10 +248,10 @@ function UI.Init()
         tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
-    -- Gọi khởi tạo các Elements từ các file Tab con đã tách
-    MainTab.Create(mainContainer, UI)
-    CombatTab.Create(combatContainer, UI)
-    ESPTab.Create(otherContainer, UI)
+    -- Gọi khởi tạo các module tab con an toàn
+    if MainTab and MainTab.Create then MainTab.Create(mainContainer, UI) end
+    if CombatTab and CombatTab.Create then CombatTab.Create(combatContainer, UI) end
+    if ESPTab and ESPTab.Create then ESPTab.Create(otherContainer, UI) end
 
     local resizeBtn = Instance.new("TextButton")
     resizeBtn.Size = UDim2.new(0, 15, 0, 15)
