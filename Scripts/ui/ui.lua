@@ -143,14 +143,14 @@ function UI.Init()
     toCorner.CornerRadius = UDim.new(0, 8)
     toCorner.Parent = tabOtherBtn
 
-    -- Khung chứa nội dung Tab Main
+    -- Khung chứa nội dung Tab Main (Tăng CanvasSize lên 440 để không bị che nút Reset)
     local mainContainer = Instance.new("ScrollingFrame")
     mainContainer.Name = "MainContainer"
     mainContainer.Size = UDim2.new(1, -145, 1, -50)
     mainContainer.Position = UDim2.new(0, 145, 0, 45)
     mainContainer.BackgroundTransparency = 1
     mainContainer.BorderSizePixel = 0
-    mainContainer.CanvasSize = UDim2.new(0, 0, 0, 380)
+    mainContainer.CanvasSize = UDim2.new(0, 0, 0, 440)
     mainContainer.ScrollBarThickness = 4
     mainContainer.Visible = true
     mainContainer.Parent = mainFrame
@@ -211,9 +211,14 @@ function UI.Init()
         if UI.OnJumpToggled then UI.OnJumpToggled(state) end
     end)
 
+    -- Thêm chức năng FPS Boost vào Tab Main (Tọa độ Y: 380)
+    Elements.CreateToggleRow(mainContainer, 380, "FPS Boost", function(state)
+        if UI.OnFPSBoostToggled then UI.OnFPSBoostToggled(state) end
+    end)
+
     local resetBtn = Instance.new("TextButton")
     resetBtn.Size = UDim2.new(0.9, 0, 0, 35)
-    resetBtn.Position = UDim2.new(0.05, 0, 0, 385)
+    resetBtn.Position = UDim2.new(0.05, 0, 0, 435)
     resetBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 60)
     resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     resetBtn.TextSize = 13
@@ -234,7 +239,7 @@ function UI.Init()
         if UI.OnResetClicked then UI.OnResetClicked() end
     end)
 
-    -- Thêm các phần tử vào Tab ESP (Thanh trượt ở trên, Toggle ở dưới)
+    -- Thêm các phần tử vào Tab ESP
     Elements.CreateSlider(otherContainer, 15, "ESP Text Size", 8, 30, 12, function(val)
         if UI.OnESPTextSizeChanged then UI.OnESPTextSizeChanged(val) end
     end)
@@ -284,6 +289,7 @@ UI.OnFlySpeedChanged = nil
 UI.OnFlyToggled = nil
 UI.OnNoClipToggled = nil
 UI.OnJumpToggled = nil
+UI.OnFPSBoostToggled = nil
 UI.OnESPToggled = nil
 UI.OnESPTextSizeChanged = nil
 UI.OnResetClicked = nil
