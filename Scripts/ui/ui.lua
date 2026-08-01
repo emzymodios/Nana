@@ -143,7 +143,7 @@ function UI.Init()
     toCorner.CornerRadius = UDim.new(0, 8)
     toCorner.Parent = tabOtherBtn
 
-    -- Khung chứa nội dung Tab Main (Tăng CanvasSize lên 440 để không bị che nút Reset)
+    -- Khung chứa nội dung Tab Main (CanvasSize đã được tăng lên 440)
     local mainContainer = Instance.new("ScrollingFrame")
     mainContainer.Name = "MainContainer"
     mainContainer.Size = UDim2.new(1, -145, 1, -50)
@@ -211,7 +211,7 @@ function UI.Init()
         if UI.OnJumpToggled then UI.OnJumpToggled(state) end
     end)
 
-    -- Thêm chức năng FPS Boost vào Tab Main (Tọa độ Y: 380)
+    -- Thêm nút FPS Boost vào tab Main
     Elements.CreateToggleRow(mainContainer, 380, "FPS Boost", function(state)
         if UI.OnFPSBoostToggled then UI.OnFPSBoostToggled(state) end
     end)
