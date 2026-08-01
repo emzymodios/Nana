@@ -1,4 +1,4 @@
-# Nana
+# Nana Hub
 Nana Hub là một hệ thống script Roblox được thiết kế với kiến trúc mô-đun (modular architecture) sạch sẽ, hiện đại và tối ưu hiệu suất, mang đến trải nghiệm điều khiển mượt mà cho các tính năng chiến đấu và tiện ích nâng cao.
 
 🚀 Tính năng nổi bật
