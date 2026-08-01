@@ -239,6 +239,11 @@ function UI.Init()
         if UI.OnESPToggled then UI.OnESPToggled(state) end
     end)
 
+    -- Thêm Slider chỉnh kích thước chữ ESP (Giá trị từ 8 đến 30, mặc định là 12)
+    Elements.CreateSlider(otherContainer, 80, "ESP Text Size", 8, 30, 12, function(val)
+        if UI.OnESPTextSizeChanged then UI.OnESPTextSizeChanged(val) end
+    end)
+
     -- Kéo giãn khung (Resize)
     local resizeBtn = Instance.new("TextButton")
     resizeBtn.Size = UDim2.new(0, 15, 0, 15)
@@ -281,6 +286,7 @@ UI.OnFlyToggled = nil
 UI.OnNoClipToggled = nil
 UI.OnJumpToggled = nil
 UI.OnESPToggled = nil
+UI.OnESPTextSizeChanged = nil
 UI.OnResetClicked = nil
 
 return UI
