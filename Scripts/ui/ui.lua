@@ -5,7 +5,6 @@ local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Tải trực tiếp các module con qua GitHub raw links
 local Config = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/config.lua"))()
 local Components = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/components.lua"))()
 local Elements = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua"))()
@@ -22,7 +21,6 @@ function UI.Init()
     screenGui.ResetOnSpawn = false
     screenGui.Parent = playerGui
 
-    -- Nút mở/đóng Hub
     local toggleBtn = Instance.new("ImageButton")
     toggleBtn.Name = "ToggleBtn"
     toggleBtn.Size = UDim2.new(0, 50, 0, 50)
@@ -42,7 +40,6 @@ function UI.Init()
     toggleStroke.Thickness = 2
     toggleStroke.Parent = toggleBtn
 
-    -- Khung chính của Hub
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
     mainFrame.Size = UDim2.new(0, 540, 0, 360)
@@ -63,7 +60,6 @@ function UI.Init()
     mainStroke.Thickness = 1.5
     mainStroke.Parent = mainFrame
 
-    -- Topbar
     local topBar = Instance.new("Frame")
     topBar.Size = UDim2.new(1, 0, 0, 40)
     topBar.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
@@ -107,7 +103,6 @@ function UI.Init()
         mainFrame.Visible = not mainFrame.Visible
     end)
 
-    -- Sidebar (Chuyển Tab)
     local sideBar = Instance.new("Frame")
     sideBar.Size = UDim2.new(0, 140, 1, -40)
     sideBar.Position = UDim2.new(0, 0, 0, 40)
@@ -157,31 +152,28 @@ function UI.Init()
     toCorner.CornerRadius = UDim.new(0, 8)
     toCorner.Parent = tabOtherBtn
 
-    -- Khung chứa nội dung Tab Main
     local mainContainer = Instance.new("ScrollingFrame")
     mainContainer.Name = "MainContainer"
     mainContainer.Size = UDim2.new(1, -145, 1, -50)
     mainContainer.Position = UDim2.new(0, 145, 0, 45)
     mainContainer.BackgroundTransparency = 1
     mainContainer.BorderSizePixel = 0
-    mainContainer.CanvasSize = UDim2.new(0, 0, 0, 500)
+    mainContainer.CanvasSize = UDim2.new(0, 0, 0, 560)
     mainContainer.ScrollBarThickness = 4
     mainContainer.Visible = true
     mainContainer.Parent = mainFrame
 
-    -- Khung chứa nội dung Tab Combat mới
     local combatContainer = Instance.new("ScrollingFrame")
     combatContainer.Name = "CombatContainer"
     combatContainer.Size = UDim2.new(1, -145, 1, -50)
     combatContainer.Position = UDim2.new(0, 145, 0, 45)
     combatContainer.BackgroundTransparency = 1
     combatContainer.BorderSizePixel = 0
-    combatContainer.CanvasSize = UDim2.new(0, 0, 0, 200)
+    combatContainer.CanvasSize = UDim2.new(0, 0, 0, 240)
     combatContainer.ScrollBarThickness = 4
     combatContainer.Visible = false
     combatContainer.Parent = mainFrame
 
-    -- Khung chứa nội dung Tab ESP
     local otherContainer = Instance.new("ScrollingFrame")
     otherContainer.Name = "OtherContainer"
     otherContainer.Size = UDim2.new(1, -145, 1, -50)
@@ -193,7 +185,6 @@ function UI.Init()
     otherContainer.Visible = false
     otherContainer.Parent = mainFrame
 
-    -- Logic chuyển Tab
     tabMainBtn.MouseButton1Click:Connect(function()
         mainContainer.Visible = true
         combatContainer.Visible = false
@@ -230,7 +221,7 @@ function UI.Init()
         tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
-    -- Thêm các phần tử vào Tab Main thông qua Elements module
+    -- Elements tab Main (Đã thêm Auto Click ở đây)
     Elements.CreateSlider(mainContainer, 10, "Run Speed", 16, 200, 16, function(val)
         if UI.OnSpeedChanged then UI.OnSpeedChanged(val) end
     end)
@@ -255,13 +246,17 @@ function UI.Init()
         if UI.OnJumpToggled then UI.OnJumpToggled(state) end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 380, "FPS Boost", function(state)
+    Elements.CreateToggleRow(mainContainer, 380, "Auto Click", function(state)
+        if UI.OnAutoClickToggled then UI.OnAutoClickToggled(state) end
+    end)
+
+    Elements.CreateToggleRow(mainContainer, 435, "FPS Boost", function(state)
         if UI.OnFPSBoostToggled then UI.OnFPSBoostToggled(state) end
     end)
 
     local resetBtn = Instance.new("TextButton")
     resetBtn.Size = UDim2.new(0.9, 0, 0, 35)
-    resetBtn.Position = UDim2.new(0.05, 0, 0, 435)
+    resetBtn.Position = UDim2.new(0.05, 0, 0, 490)
     resetBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 60)
     resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     resetBtn.TextSize = 13
@@ -282,7 +277,7 @@ function UI.Init()
         if UI.OnResetClicked then UI.OnResetClicked() end
     end)
 
-    -- Thêm các phần tử vào Tab Combat mới
+    -- Elements tab Combat (Chứa Dropdown, nút Fly to Target và Aimbot)
     local function getPlayerNames()
         local list = {}
         for _, p in ipairs(Players:GetPlayers()) do
@@ -300,21 +295,39 @@ function UI.Init()
     Players.PlayerAdded:Connect(function() updateDropFunc(getPlayerNames()) end)
     Players.PlayerRemoving:Connect(function() updateDropFunc(getPlayerNames()) end)
 
-    Elements.CreateToggleRow(combatContainer, 65, "Aimbot Nearest", function(state)
+    local flyToTargetBtn = Instance.new("TextButton")
+    flyToTargetBtn.Size = UDim2.new(0.9, 0, 0, 35)
+    flyToTargetBtn.Position = UDim2.new(0.05, 0, 0, 65)
+    flyToTargetBtn.BackgroundColor3 = Color3.fromRGB(80, 50, 180)
+    flyToTargetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    flyToTargetBtn.TextSize = 13
+    flyToTargetBtn.Font = Enum.Font.GothamBold
+    flyToTargetBtn.Text = "Fly to Selected Target"
+    flyToTargetBtn.Parent = combatContainer
+
+    local fttCorner = Instance.new("UICorner")
+    fttCorner.CornerRadius = UDim.new(0, 8)
+    fttCorner.Parent = flyToTargetBtn
+
+    flyToTargetBtn.MouseButton1Click:Connect(function()
+        if UI.OnFlyToTargetClicked then UI.OnFlyToTargetClicked() end
+    end)
+
+    Elements.CreateToggleRow(combatContainer, 115, "Aimbot Nearest", function(state)
         if state then
             if UI.OnAimbotModeChanged then UI.OnAimbotModeChanged("Nearest") end
         end
         if UI.OnAimbotToggled then UI.OnAimbotToggled(state) end
     end)
 
-    Elements.CreateToggleRow(combatContainer, 120, "Aimbot Selected", function(state)
+    Elements.CreateToggleRow(combatContainer, 170, "Aimbot Selected", function(state)
         if state then
             if UI.OnAimbotModeChanged then UI.OnAimbotModeChanged("Selected") end
         end
         if UI.OnAimbotToggled then UI.OnAimbotToggled(state) end
     end)
 
-    -- Thêm các phần tử vào Tab ESP
+    -- Elements tab ESP
     Elements.CreateSlider(otherContainer, 15, "ESP Text Size", 8, 30, 12, function(val)
         if UI.OnESPTextSizeChanged then UI.OnESPTextSizeChanged(val) end
     end)
@@ -323,7 +336,6 @@ function UI.Init()
         if UI.OnESPToggled then UI.OnESPToggled(state) end
     end)
 
-    -- Kéo giãn khung (Resize)
     local resizeBtn = Instance.new("TextButton")
     resizeBtn.Size = UDim2.new(0, 15, 0, 15)
     resizeBtn.Position = UDim2.new(1, -15, 1, -15)
@@ -364,6 +376,7 @@ UI.OnFlySpeedChanged = nil
 UI.OnFlyToggled = nil
 UI.OnNoClipToggled = nil
 UI.OnJumpToggled = nil
+UI.OnAutoClickToggled = nil
 UI.OnFPSBoostToggled = nil
 UI.OnESPToggled = nil
 UI.OnESPTextSizeChanged = nil
@@ -371,5 +384,6 @@ UI.OnResetClicked = nil
 UI.OnAimbotToggled = nil
 UI.OnAimbotModeChanged = nil
 UI.OnAimbotTargetChanged = nil
+UI.OnFlyToTargetClicked = nil
 
 return UI
