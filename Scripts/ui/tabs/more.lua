@@ -2,56 +2,41 @@
 local MoreTab = {}
 
 function MoreTab.Create(container, UI)
-    -- Tải module Elements an toàn tương tự các tab khác
-    local success, Elements = pcall(function()
-        return loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua"))()
-    end)
+    -- Sử dụng trực tiếp module Elements đã được truyền sẵn từ ui.lua qua tham số hoặc tải an toàn
+    local Elements = safeLoad and safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua") 
     
-    if not success or not Elements then
-        warn("Failed to load Elements for MoreTab")
-        return
+    if not Elements then
+        local success, result = pcall(function()
+            return loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua"))()
+        end)
+        if success then Elements = result else return end
     end
 
-    -- Tạo Section chứa các chức năng Position
     local posSection = Elements.CreateSection(container, "Teleport Position", UDim2.new(0, 0, 0, 0))
 
-    local inputX, inputY, inputZ
+    local coords = {x = 0, y = 0, z = 0}
 
-    -- Ô nhập tọa độ X
-    if Elements.CreateTextbox then
-        inputX = Elements.CreateTextbox(posSection, "Position X", "Nhập tọa độ X...", function(value)
-            -- Xử lý khi nhập giá trị X nếu cần
-        end)
+    Elements.CreateTextbox(posSection, "Position X", "Nhập X...", function(value)
+        coords.x = tonumber(value) or 0
+    end)
+    
+    Elements.CreateTextbox(posSection, "Position Y", "Nhập Y...", function(value)
+        coords.y = tonumber(value) or 0
+    end)
+    
+    Elements.CreateTextbox(posSection, "Position Z", "Nhập Z...", function(value)
+        coords.z = tonumber(value) or 0
+    end)
+
+    Elements.CreateButton(posSection, "Teleport to Coords", function()
+        if UI.OnTeleportCoords then
+            UI.OnTeleportCoords(coords.x, coords.y, coords.z)
+        end
         
-        -- Ô nhập tọa độ Y
-        inputY = Elements.CreateTextbox(posSection, "Position Y", "Nhập tọa độ Y...", function(value)
-            -- Xử lý khi nhập giá trị Y nếu cần
-        end)
-        
-        -- Ô nhập tọa độ Z
-        inputZ = Elements.CreateTextbox(posSection, "Position Z", "Nhập tọa độ Z...", function(value)
-            -- Xử lý khi nhập giá trị Z nếu cần
-        end)
-    end
-
-    -- Nút bấm thực hiện dịch chuyển
-    if Elements.CreateButton then
-        Elements.CreateButton(posSection, "Teleport to Coords", function()
-            -- Lấy dữ liệu từ các ô nhập (tuỳ thuộc vào hàm trả về của Elements.CreateTextbox trong dự án của bạn)
-            local x = tonumber(inputX and inputX.GetText and inputX.GetText() or 0) or 0
-            local y = tonumber(inputY and inputY.GetText and inputY.GetText() or 0) or 0
-            local z = tonumber(inputZ and inputZ.GetText and inputZ.GetText() or 0) or 0
-
-            -- Gửi tín hiệu qua cầu nối UI xuống Logic
-            if UI.OnTeleportCoords then
-                UI.OnTeleportCoords(x, y, z)
-            end
-            
-            if UI.Notify then
-                UI.Notify.Show("NANA HUB", "Đã dịch chuyển tới: " .. x .. ", " .. y .. ", " .. z, 3, "rbxassetid://93925828218201")
-            end
-        end)
-    end
+        if UI.Notify then
+            UI.Notify.Show("NANA HUB", "Đã dịch chuyển tới: " .. coords.x .. ", " .. coords.y .. ", " .. coords.z, 3, "rbxassetid://93925828218201")
+        end
+    end)
 end
 
 return MoreTab
