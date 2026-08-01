@@ -233,17 +233,17 @@ function UI.Init()
         end)
     end
 
-    -- Khởi tạo các thành phần giao diện theo thứ tự mới
-    createToggleRow(10, "⚡ Speed Mode", function(state)
-        if UI.OnSpeedToggled then UI.OnSpeedToggled(state) end
-    end)
-
-    createSlider(55, "🏃 Run Speed", 16, 200, 16, function(val)
+    -- Khởi tạo các thành phần giao diện (đưa Speed Mode xuống dưới)
+    createSlider(10, "🏃 Run Speed", 16, 200, 16, function(val)
         if UI.OnSpeedChanged then UI.OnSpeedChanged(val) end
     end)
 
-    createSlider(120, "✈️ Fly Speed", 10, 300, 50, function(val)
+    createSlider(75, "✈️ Fly Speed", 10, 300, 50, function(val)
         if UI.OnFlySpeedChanged then UI.OnFlySpeedChanged(val) end
+    end)
+
+    createToggleRow(140, "⚡ Speed Mode", function(state)
+        if UI.OnSpeedToggled then UI.OnSpeedToggled(state) end
     end)
 
     createToggleRow(185, "✈️ Fly Mode", function(state)
