@@ -1,64 +1,64 @@
 -- logic/init.lua
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
--- Tải các module con qua GitHub raw links
-local Speed = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/speed.lua"))()
-local Fly = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fly.lua"))()
-local Noclip = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/noclip.lua"))()
-local Jump = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/jump.lua"))()
-local ESP = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/esp.lua"))()
-
 local Logic = {}
 
+-- Tải các module logic con
+local SpeedModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/speed.lua"))()
+local FlyModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fly.lua"))()
+local NoClipModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/noclip.lua"))()
+local JumpModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/jump.lua"))()
+local ESPModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/esp.lua"))()
+local FPSBoostModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fpsboost.lua"))()
+
+-- Cầu nối Speed
 function Logic.ToggleSpeed(state)
-    Speed.Toggle(state)
+    SpeedModule.Toggle(state)
 end
 
-function Logic.SetSpeed(speed)
-    Speed.Set(speed)
+function Logic.SetSpeed(val)
+    SpeedModule.SetSpeed(val)
 end
 
-function Logic.SetFlySpeed(speed)
-    Fly.SetSpeed(speed)
-end
-
+-- Cầu nối Fly
 function Logic.ToggleFly(state)
-    Fly.Toggle(state)
+    FlyModule.Toggle(state)
 end
 
+function Logic.SetFlySpeed(val)
+    FlyModule.SetFlySpeed(val)
+end
+
+-- Cầu nối NoClip
 function Logic.ToggleNoClip(state)
-    Noclip.Toggle(state)
+    NoClipModule.Toggle(state)
 end
 
+-- Cầu nối Infinite Jump
 function Logic.ToggleInfiniteJump(state)
-    Jump.Toggle(state)
+    JumpModule.Toggle(state)
 end
 
+-- Cầu nối ESP
 function Logic.ToggleESP(state)
-    ESP.Toggle(state)
+    ESPModule.Toggle(state)
 end
 
--- Thêm hàm điều chỉnh kích thước chữ ESP
 function Logic.SetESPTextSize(size)
-    ESP.SetTextSize(size)
+    ESPModule.SetTextSize(size)
 end
 
+-- Cầu nối FPS Boost mới thêm
+function Logic.ToggleFPSBoost(state)
+    FPSBoostModule.Toggle(state)
+end
+
+-- Cầu nối Reset Config tổng thể
 function Logic.ResetConfig()
-    Speed.Toggle(false)
-    Fly.Toggle(false)
-    Noclip.Toggle(false)
-    Jump.Toggle(false)
-    Speed.Set(16)
+    SpeedModule.Toggle(false)
+    FlyModule.Toggle(false)
+    NoClipModule.Toggle(false)
+    JumpModule.Toggle(false)
+    ESPModule.Toggle(false)
+    FPSBoostModule.Toggle(false)
 end
-
--- Xử lý hồi sinh nhân vật
-LocalPlayer.CharacterAdded:Connect(function(newCharacter)
-    task.wait(1)
-    if Speed.IsEnabled() then Speed.Toggle(true) end
-    if Fly.IsEnabled() then Fly.Toggle(true) end
-    if Noclip.IsEnabled() then Noclip.Toggle(true) end
-    if Jump.IsEnabled() then Jump.Toggle(true) end
-end)
 
 return Logic
