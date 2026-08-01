@@ -55,6 +55,19 @@ UI.OnESPTextSizeChanged = function(value)
     Logic.SetESPTextSize(value)
 end
 
+-- Kết nối các sự kiện Aimbot mới thêm
+UI.OnAimbotToggled = function(state)
+    Logic.ToggleAimbot(state)
+end
+
+UI.OnAimbotModeChanged = function(mode)
+    Logic.SetAimbotMode(mode)
+end
+
+UI.OnAimbotTargetChanged = function(targetName)
+    Logic.SetAimbotTarget(targetName)
+end
+
 UI.OnResetClicked = function()
     Logic.ResetConfig()
 end
