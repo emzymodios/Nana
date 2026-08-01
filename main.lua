@@ -1,17 +1,7 @@
 -- Nana Hub Main Loader (main.lua)
 
-local SuccessUI, UI = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/ui.lua"))()
-end)
-
-local SuccessLogic, Logic = pcall(function()
-    return loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/init.lua"))()
-end)
-
-if not SuccessUI or not SuccessLogic then
-    warn("Nana Hub: error acc bạn đã bị ban")
-    return
-end
+local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/ui.lua"))()
+local Logic = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/init.lua"))()
 
 -- Kích hoạt giao diện UI
 UI.Init()
@@ -41,6 +31,11 @@ UI.OnJumpToggled = function(state)
     Logic.ToggleInfiniteJump(state)
 end
 
+-- Kết nối sự kiện Auto Click (Tab Main)
+UI.OnAutoClickToggled = function(state)
+    Logic.ToggleAutoClick(state)
+end
+
 -- Kết nối sự kiện FPS Boost
 UI.OnFPSBoostToggled = function(state)
     Logic.ToggleFPSBoost(state)
@@ -55,7 +50,7 @@ UI.OnESPTextSizeChanged = function(value)
     Logic.SetESPTextSize(value)
 end
 
--- Kết nối các sự kiện Aimbot mới thêm
+-- Kết nối các sự kiện Aimbot và Teleport (Tab Combat)
 UI.OnAimbotToggled = function(state)
     Logic.ToggleAimbot(state)
 end
@@ -66,6 +61,11 @@ end
 
 UI.OnAimbotTargetChanged = function(targetName)
     Logic.SetAimbotTarget(targetName)
+end
+
+-- Kết nối sự kiện Fly to Target
+UI.OnFlyToTargetClicked = function()
+    Logic.SmoothTeleportToTarget()
 end
 
 UI.OnResetClicked = function()
