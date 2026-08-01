@@ -45,6 +45,11 @@ UI.OnESPToggled = function(state)
     Logic.ToggleESP(state)
 end
 
+-- Thêm đoạn kết nối này để nhận sự kiện đổi kích thước chữ ESP
+UI.OnESPTextSizeChanged = function(value)
+    Logic.SetESPTextSize(value)
+end
+
 UI.OnResetClicked = function()
     Logic.ResetConfig()
 end
