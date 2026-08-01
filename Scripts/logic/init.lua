@@ -1,17 +1,35 @@
 -- logic/init.lua
 local Logic = {}
 
--- Tải trực tiếp các module logic con qua link Raw GitHub
-local SpeedModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/speed.lua"))()
-local FlyModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fly.lua"))()
-local NoClipModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/noclip.lua"))()
-local JumpModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/jump.lua"))()
-local ESPModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/esp.lua"))()
-local FPSBoostModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fpsboost.lua"))()
-local AimbotModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua"))()
-local SoruModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/soru.lua"))()
-local TeleportModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/teleport.lua"))()
-local PositionModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/position.lua"))()
+-- Hàm hỗ trợ tải module an toàn, tránh sập toàn bộ Hub nếu 1 file lỗi
+local function safeLoad(url)
+    local success, result = pcall(function()
+        return loadstring(game:HttpGet(url))()
+    end)
+    if success and type(result) == "table" then
+        return result
+    else
+        warn("Không thể tải module từ: " .. url)
+        -- Trả về một bảng trống chứa hàm giả để tránh lỗi "attempt to index nil"
+        return setmetatable({}, {
+            __index = function(_, _)
+                return function() end
+            end
+        })
+    end
+end
+
+-- Tải các module con qua hàm an toàn
+local SpeedModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/speed.lua")
+local FlyModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fly.lua")
+local NoClipModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/noclip.lua")
+local JumpModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/jump.lua")
+local ESPModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/esp.lua")
+local FPSBoostModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fpsboost.lua")
+local AimbotModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua")
+local SoruModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/soru.lua")
+local TeleportModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/teleport.lua")
+local PositionModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/position.lua")
 
 -- Cầu nối Speed
 function Logic.ToggleSpeed(state)
@@ -78,7 +96,7 @@ function Logic.SmoothTeleportToTarget()
     if TeleportModule.FlyToTarget then TeleportModule.FlyToTarget() end
 end
 
--- Cầu nối tính năng Position (Tab More) - Khớp 100% với position.lua của bạn
+-- Cầu nối tính năng Position (Tab More)
 function Logic.SavePosition()
     if PositionModule.Save then return PositionModule.Save() end
     return "Chưa có vị trí"
