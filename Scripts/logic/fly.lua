@@ -1,11 +1,10 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 
 local FlyModule = {}
 local flyEnabled = false
-local flySpeed = 50
+local flySpeed = 50 -- Tốc độ mặc định
 local bg, bv
 local flyConnection
 
@@ -16,10 +15,7 @@ end
 function FlyModule.Toggle(state)
     flyEnabled = state
     local character = LocalPlayer.Character
-    if not character or not character:FindFirstChild("HumanoidRootPart") then 
-        FlyModule.Cleanup()
-        return 
-    end
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
 
     local hrp = character.HumanoidRootPart
     local humanoid = character:FindFirstChildOfClass("Humanoid")
@@ -27,7 +23,6 @@ function FlyModule.Toggle(state)
     if flyEnabled then
         humanoid.PlatformStand = true
         
-        -- Dọn dẹp đối tượng cũ nếu có
         if bg then bg:Destroy() end
         if bv then bv:Destroy() end
 
@@ -51,28 +46,26 @@ function FlyModule.Toggle(state)
             local camera = workspace.CurrentCamera
             local moveDir = humanoid.MoveDirection
             
-            -- Tính toán vận tốc dựa hoàn toàn vào hướng camera để bay mượt theo góc nhìn
-            local velocity = Vector3.new(0, 0, 0)
             if moveDir.Magnitude > 0 then
-                velocity = camera.CFrame.LookVector * (moveDir.Z * -flySpeed) + camera.CFrame.RightVector * (moveDir.X * flySpeed)
+                local camCF = camera.CFrame
+                -- Chuyển đổi hướng di chuyển của Humanoid sang hệ tọa độ của Camera 
+                -- nhưng khóa trục Y của MoveDirection để tránh bị kéo chúi xuống đất khi nhìn thẳng
+                local flatMoveDir = Vector3.new(moveDir.X, 0, moveDir.Z)
+                local relativeDir = camCF:VectorToObjectSpace(flatMoveDir)
+                
+                -- Kết hợp độ cao nếu nhân vật bay lên/xuống bằng phím nhảy/ngồi (nếu có) hoặc giữ nguyên phẳng
+                bv.velocity = camCF:VectorToWorldSpace(Vector3.new(relativeDir.X, moveDir.Y, relativeDir.Z)) * flySpeed
+            else
+                bv.velocity = Vector3.new(0, 0, 0)
             end
-            
-            bv.velocity = velocity
             bg.cframe = camera.CFrame
         end)
     else
-        FlyModule.Cleanup()
-        if humanoid then
-            humanoid.PlatformStand = false
-        end
+        humanoid.PlatformStand = false
+        if bg then bg:Destroy(); bg = nil end
+        if bv then bv:Destroy(); bv = nil end
+        if flyConnection then flyConnection:Disconnect(); flyConnection = nil end
     end
-end
-
-function FlyModule.Cleanup()
-    flyEnabled = false
-    if bg then bg:Destroy(); bg = nil end
-    if bv then bv:Destroy(); bv = nil end
-    if flyConnection then flyConnection:Disconnect(); flyConnection = nil end
 end
 
 function FlyModule.IsEnabled()
