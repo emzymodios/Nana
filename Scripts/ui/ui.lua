@@ -129,9 +129,23 @@ function UI.Init()
     tmCorner.CornerRadius = UDim.new(0, 8)
     tmCorner.Parent = tabMainBtn
 
+    local tabCombatBtn = Instance.new("TextButton")
+    tabCombatBtn.Size = UDim2.new(0.9, 0, 0, 38)
+    tabCombatBtn.Position = UDim2.new(0.05, 0, 0.17, 0)
+    tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+    tabCombatBtn.TextSize = 13
+    tabCombatBtn.Font = Enum.Font.GothamBold
+    tabCombatBtn.Text = "Combat"
+    tabCombatBtn.Parent = sideBar
+
+    local tcCorner = Instance.new("UICorner")
+    tcCorner.CornerRadius = UDim.new(0, 8)
+    tcCorner.Parent = tabCombatBtn
+
     local tabOtherBtn = Instance.new("TextButton")
     tabOtherBtn.Size = UDim2.new(0.9, 0, 0, 38)
-    tabOtherBtn.Position = UDim2.new(0.05, 0, 0.17, 0)
+    tabOtherBtn.Position = UDim2.new(0.05, 0, 0.29, 0)
     tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
     tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     tabOtherBtn.TextSize = 13
@@ -143,7 +157,7 @@ function UI.Init()
     toCorner.CornerRadius = UDim.new(0, 8)
     toCorner.Parent = tabOtherBtn
 
--- Khung chứa nội dung Tab Main (Đã tăng CanvasSize lên 500 để không bị che nút Reset)
+    -- Khung chứa nội dung Tab Main
     local mainContainer = Instance.new("ScrollingFrame")
     mainContainer.Name = "MainContainer"
     mainContainer.Size = UDim2.new(1, -145, 1, -50)
@@ -154,6 +168,18 @@ function UI.Init()
     mainContainer.ScrollBarThickness = 4
     mainContainer.Visible = true
     mainContainer.Parent = mainFrame
+
+    -- Khung chứa nội dung Tab Combat mới
+    local combatContainer = Instance.new("ScrollingFrame")
+    combatContainer.Name = "CombatContainer"
+    combatContainer.Size = UDim2.new(1, -145, 1, -50)
+    combatContainer.Position = UDim2.new(0, 145, 0, 45)
+    combatContainer.BackgroundTransparency = 1
+    combatContainer.BorderSizePixel = 0
+    combatContainer.CanvasSize = UDim2.new(0, 0, 0, 200)
+    combatContainer.ScrollBarThickness = 4
+    combatContainer.Visible = false
+    combatContainer.Parent = mainFrame
 
     -- Khung chứa nội dung Tab ESP
     local otherContainer = Instance.new("ScrollingFrame")
@@ -170,20 +196,38 @@ function UI.Init()
     -- Logic chuyển Tab
     tabMainBtn.MouseButton1Click:Connect(function()
         mainContainer.Visible = true
+        combatContainer.Visible = false
         otherContainer.Visible = false
         tabMainBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
         tabMainBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+    end)
+
+    tabCombatBtn.MouseButton1Click:Connect(function()
+        mainContainer.Visible = false
+        combatContainer.Visible = true
+        otherContainer.Visible = false
+        tabCombatBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
+        tabCombatBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tabMainBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
         tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
     tabOtherBtn.MouseButton1Click:Connect(function()
         mainContainer.Visible = false
+        combatContainer.Visible = false
         otherContainer.Visible = true
         tabOtherBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
         tabOtherBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         tabMainBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
     -- Thêm các phần tử vào Tab Main thông qua Elements module
@@ -211,7 +255,6 @@ function UI.Init()
         if UI.OnJumpToggled then UI.OnJumpToggled(state) end
     end)
 
-    -- Thêm nút FPS Boost vào tab Main
     Elements.CreateToggleRow(mainContainer, 380, "FPS Boost", function(state)
         if UI.OnFPSBoostToggled then UI.OnFPSBoostToggled(state) end
     end)
@@ -237,6 +280,38 @@ function UI.Init()
 
     resetBtn.MouseButton1Click:Connect(function()
         if UI.OnResetClicked then UI.OnResetClicked() end
+    end)
+
+    -- Thêm các phần tử vào Tab Combat mới
+    local function getPlayerNames()
+        local list = {}
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= player then
+                table.insert(list, p.Name)
+            end
+        end
+        return list
+    end
+
+    local dropdownObj, updateDropFunc = Elements.CreateDropdown(combatContainer, 15, "Target Player", getPlayerNames(), function(selectedName)
+        if UI.OnAimbotTargetChanged then UI.OnAimbotTargetChanged(selectedName) end
+    end)
+
+    Players.PlayerAdded:Connect(function() updateDropFunc(getPlayerNames()) end)
+    Players.PlayerRemoving:Connect(function() updateDropFunc(getPlayerNames()) end)
+
+    Elements.CreateToggleRow(combatContainer, 65, "Aimbot Nearest", function(state)
+        if state then
+            if UI.OnAimbotModeChanged then UI.OnAimbotModeChanged("Nearest") end
+        end
+        if UI.OnAimbotToggled then UI.OnAimbotToggled(state) end
+    end)
+
+    Elements.CreateToggleRow(combatContainer, 120, "Aimbot Selected", function(state)
+        if state then
+            if UI.OnAimbotModeChanged then UI.OnAimbotModeChanged("Selected") end
+        end
+        if UI.OnAimbotToggled then UI.OnAimbotToggled(state) end
     end)
 
     -- Thêm các phần tử vào Tab ESP
@@ -293,5 +368,8 @@ UI.OnFPSBoostToggled = nil
 UI.OnESPToggled = nil
 UI.OnESPTextSizeChanged = nil
 UI.OnResetClicked = nil
+UI.OnAimbotToggled = nil
+UI.OnAimbotModeChanged = nil
+UI.OnAimbotTargetChanged = nil
 
 return UI
