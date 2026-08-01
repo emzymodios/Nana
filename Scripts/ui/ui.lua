@@ -234,13 +234,13 @@ function UI.Init()
         if UI.OnResetClicked then UI.OnResetClicked() end
     end)
 
-    -- Thêm các phần tử vào Tab ESP
-    Elements.CreateToggleRow(otherContainer, 15, "ESP Player", function(state)
-        if UI.OnESPToggled then UI.OnESPToggled(state) end
+    -- Thêm các phần tử vào Tab ESP (Thanh trượt ở trên, Toggle ở dưới)
+    Elements.CreateSlider(otherContainer, 15, "ESP Text Size", 8, 30, 12, function(val)
+        if UI.OnESPTextSizeChanged then UI.OnESPTextSizeChanged(val) end
     end)
 
-    Elements.CreateSlider(otherContainer, 80, "ESP Text Size", 8, 30, 12, function(val)
-        if UI.OnESPTextSizeChanged then UI.OnESPTextSizeChanged(val) end
+    Elements.CreateToggleRow(otherContainer, 80, "ESP Player", function(state)
+        if UI.OnESPToggled then UI.OnESPToggled(state) end
     end)
 
     -- Kéo giãn khung (Resize)
