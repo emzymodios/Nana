@@ -33,9 +33,9 @@ UI.OnJumpToggled = function(state)
     Logic.ToggleInfiniteJump(state)
 end
 
--- Kết nối sự kiện Auto Click (Tab Main)
-UI.OnAutoClickToggled = function(state)
-    Logic.ToggleAutoClick(state)
+-- Kết nối sự kiện Soru (Tab Main) - Thay thế Auto Click
+UI.OnSoruToggled = function(state)
+    Logic.ToggleSoru(state)
 end
 
 -- Kết nối sự kiện FPS Boost
@@ -75,7 +75,6 @@ UI.OnResetClicked = function()
 end
 
 -- Hiển thị bảng thông báo mờ ảo góc phải khi load xong
--- Thay "rbxassetid://YOUR_ICON_ID" bằng ID icon của bạn, hoặc để nil nếu không muốn dùng ảnh
 Notification.Show("NANA HUB", "Đã load! Chúc bạn bay acc:))", 5, "rbxassetid://93925828218201")
 
 print("Nana Hub loaded successfully")
