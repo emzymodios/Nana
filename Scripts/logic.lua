@@ -1,7 +1,14 @@
+-- ╔════════════════════════════════════════╗
+-- ║   NANA HUB - LOGIC.LUA                  ║
+-- ║   File: Xử lý chức năng (Speed, Fly...) ║
+-- ║   Tác giả: emzymodios                   ║
+-- ╚════════════════════════════════════════╝
+
 local Logic = {}
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local Lighting = game:GetService("Lighting")
 local LocalPlayer = Players.LocalPlayer
 
 local speedEnabled = false
@@ -9,14 +16,19 @@ local flyEnabled = false
 local noclipEnabled = false
 local jumpEnabled = false
 local espEnabled = false
+local fpsBoostEnabled = false
 
 local currentSpeed = 16
 local flySpeed = 50
+
+-- Lưu trữ giá trị cũ
+local originalGraphicsSettings = {}
 
 local bg, bv
 local noclipConnection, flyConnection, jumpConnection
 local espConnections = {}
 
+-- ✅ SPEED
 function Logic.ToggleSpeed(state)
     speedEnabled = state
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -31,10 +43,12 @@ function Logic.SetSpeed(speed)
     end
 end
 
+-- ✅ FLY SPEED
 function Logic.SetFlySpeed(speed)
     flySpeed = speed
 end
 
+-- ✅ FLY
 function Logic.ToggleFly(state)
     flyEnabled = state
     local character = LocalPlayer.Character
@@ -78,6 +92,7 @@ function Logic.ToggleFly(state)
     end
 end
 
+-- ✅ NOCLIP
 function Logic.ToggleNoClip(state)
     noclipEnabled = state
     if noclipEnabled then
@@ -96,9 +111,18 @@ function Logic.ToggleNoClip(state)
         if noclipConnection then
             noclipConnection:Disconnect()
         end
+        local character = LocalPlayer.Character
+        if character then
+            for _, part in ipairs(character:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
     end
 end
 
+-- ✅ INFINITE JUMP
 function Logic.ToggleInfiniteJump(state)
     jumpEnabled = state
     if jumpEnabled then
@@ -114,7 +138,51 @@ function Logic.ToggleInfiniteJump(state)
     end
 end
 
--- Hệ thống ESP Players cơ bản
+-- ✅ FPS BOOST
+function Logic.ToggleFPSBoost(state)
+    fpsBoostEnabled = state
+    
+    if fpsBoostEnabled then
+        -- Lưu giá trị gốc
+        originalGraphicsSettings.GlobalShadows = Lighting.GlobalShadows
+        originalGraphicsSettings.Brightness = Lighting.Brightness
+        originalGraphicsSettings.Ambient = Lighting.Ambient
+        originalGraphicsSettings.ClockTime = Lighting.ClockTime
+        
+        -- Giảm chất lượng đồ họa
+        Lighting.GlobalShadows = false
+        Lighting.Brightness = 3
+        Lighting.Ambient = Color3.fromRGB(128, 128, 128)
+        Lighting.ClockTime = 12
+        
+        -- Giảm chất lượng texture
+        for _, obj in pairs(workspace:FindPartBoundsInRadius(LocalPlayer.Character.HumanoidRootPart.Position, 10000)) do
+            if obj:IsA("BasePart") then
+                obj.Material = Enum.Material.Plastic
+            end
+        end
+        
+        print("✅ FPS Boost ON")
+    else
+        -- Khôi phục giá trị gốc
+        if originalGraphicsSettings.GlobalShadows ~= nil then
+            Lighting.GlobalShadows = originalGraphicsSettings.GlobalShadows
+        end
+        if originalGraphicsSettings.Brightness ~= nil then
+            Lighting.Brightness = originalGraphicsSettings.Brightness
+        end
+        if originalGraphicsSettings.Ambient ~= nil then
+            Lighting.Ambient = originalGraphicsSettings.Ambient
+        end
+        if originalGraphicsSettings.ClockTime ~= nil then
+            Lighting.ClockTime = originalGraphicsSettings.ClockTime
+        end
+        
+        print("❌ FPS Boost OFF")
+    end
+end
+
+-- ✅ ESP
 local function createESP(player)
     if player == LocalPlayer then return end
     
@@ -169,21 +237,26 @@ function Logic.ToggleESP(state)
     end
 end
 
+-- ✅ RESET CONFIG
 function Logic.ResetConfig()
     Logic.ToggleSpeed(false)
     Logic.ToggleFly(false)
     Logic.ToggleNoClip(false)
     Logic.ToggleInfiniteJump(false)
+    Logic.ToggleFPSBoost(false)
     Logic.SetSpeed(16)
-    -- Lưu ý: Không ảnh hưởng đến ESP (giữ nguyên trạng thái ESP người dùng đang bật/tắt)
+    print("✅ Config reset to default")
 end
 
+-- ✅ Character respawn handler
 LocalPlayer.CharacterAdded:Connect(function(newCharacter)
     task.wait(1)
     if speedEnabled then Logic.ToggleSpeed(true) end
     if flyEnabled then Logic.ToggleFly(true) end
     if noclipEnabled then Logic.ToggleNoClip(true) end
     if jumpEnabled then Logic.ToggleInfiniteJump(true) end
+    if fpsBoostEnabled then Logic.ToggleFPSBoost(true) end
 end)
 
 return Logic
+
