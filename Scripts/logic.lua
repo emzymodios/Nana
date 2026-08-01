@@ -183,28 +183,48 @@ function Logic.ToggleFPSBoost(state)
 end
 
 -- ✅ ESP
-local function createESP(player)
-    if player == LocalPlayer then return end
-    
-    local function addBillboard(char)
-        if char:FindFirstChild("NanaESP") then return end
-        local bgGui = Instance.new("BillboardGui")
-        bgGui.Name = "NanaESP"
-        bgGui.Size = UDim2.new(0, 100, 0, 40)
-        bgGui.StudsOffset = Vector3.new(0, 2.5, 0)
-        bgGui.AlwaysOnTop = true
-        bgGui.Parent = char:WaitForChild("Head")
+local function addBillboard(char)
+    if char:FindFirstChild("NanaESP") then return end
 
-        local textLbl = Instance.new("TextLabel")
-        textLbl.Size = UDim2.new(1, 0, 1, 0)
-        textLbl.BackgroundTransparency = 1
-        textLbl.TextColor3 = Color3.fromRGB(0, 255, 150)
-        textLbl.TextStrokeTransparency = 0
-        textLbl.TextSize = 12
-        textLbl.Font = Enum.Font.GothamBold
-        textLbl.Text = player.Name
-        textLbl.Parent = bgGui
-    end
+    local head = char:WaitForChild("Head")
+    local hrp = char:WaitForChild("HumanoidRootPart")
+
+    local bgGui = Instance.new("BillboardGui")
+    bgGui.Name = "NanaESP"
+    bgGui.Size = UDim2.new(0, 120, 0, 45)
+    bgGui.StudsOffset = Vector3.new(0, 2.5, 0)
+    bgGui.AlwaysOnTop = true
+    bgGui.Parent = head
+
+    local textLbl = Instance.new("TextLabel")
+    textLbl.Size = UDim2.new(1, 0, 1, 0)
+    textLbl.BackgroundTransparency = 1
+    textLbl.TextColor3 = Color3.fromRGB(0, 255, 150)
+    textLbl.TextStrokeTransparency = 0
+    textLbl.TextSize = 12
+    textLbl.Font = Enum.Font.GothamBold
+    textLbl.Parent = bgGui
+
+    local updateConnection
+    updateConnection = RunService.RenderStepped:Connect(function()
+        if not espEnabled then
+            updateConnection:Disconnect()
+            return
+        end
+
+        local myChar = LocalPlayer.Character
+        if not myChar then return end
+
+        local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+        if not myHRP or not hrp.Parent then return end
+
+        local distance = math.floor((myHRP.Position - hrp.Position).Magnitude)
+
+        textLbl.Text = player.Name .. "\n[" .. distance .. " Studs]"
+    end)
+
+    table.insert(espConnections, updateConnection)
+end
 
     if player.Character then
         addBillboard(player.Character)
