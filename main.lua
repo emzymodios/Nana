@@ -2,6 +2,8 @@
 
 local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/ui.lua"))()
 local Logic = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/init.lua"))()
+-- Nạp module thông báo mới tạo
+local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/notification.lua"))()
 
 -- Kích hoạt giao diện UI
 UI.Init()
@@ -71,5 +73,9 @@ end
 UI.OnResetClicked = function()
     Logic.ResetConfig()
 end
+
+-- Hiển thị bảng thông báo mờ ảo góc phải khi load xong
+-- Thay "rbxassetid://YOUR_ICON_ID" bằng ID icon của bạn, hoặc để nil nếu không muốn dùng ảnh
+Notification.Show("NANA HUB", "Đã load! Chúc bạn bay acc:))", 2, "rbxassetid://13833983220")
 
 print("Nana Hub loaded successfully")
