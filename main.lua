@@ -76,6 +76,6 @@ end
 
 -- Hiển thị bảng thông báo mờ ảo góc phải khi load xong
 -- Thay "rbxassetid://YOUR_ICON_ID" bằng ID icon của bạn, hoặc để nil nếu không muốn dùng ảnh
-Notification.Show("NANA HUB", "Đã load! Chúc bạn bay acc:))", 2, "rbxassetid://93925828218201")
+Notification.Show("NANA HUB", "Đã load! Chúc bạn bay acc:))", 5, "rbxassetid://93925828218201")
 
 print("Nana Hub loaded successfully")
