@@ -152,13 +152,11 @@ function UI.Init()
     toCorner.CornerRadius = UDim.new(0, 8)
     toCorner.Parent = tabOtherBtn
 
-    -- Hàm hỗ trợ tối ưu ScrollingFrame để tránh dính kéo nhầm bảng chính
     local function setupScrollingFrame(container)
         container.ScrollingEnabled = true
         container.Selectable = true
         container.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                -- Giữ tập trung tương tác cho việc cuộn nội dung con
             end
         end)
     end
@@ -302,39 +300,31 @@ function UI.Init()
         return list
     end
 
+    local currentSelectedTarget = nil
+
     local dropdownObj, updateDropFunc = Elements.CreateDropdown(combatContainer, 15, "Target Player", getPlayerNames(), function(selectedName)
+        currentSelectedTarget = selectedName
         if UI.OnAimbotTargetChanged then UI.OnAimbotTargetChanged(selectedName) end
     end)
 
     Players.PlayerAdded:Connect(function() updateDropFunc(getPlayerNames()) end)
     Players.PlayerRemoving:Connect(function() updateDropFunc(getPlayerNames()) end)
 
-    local flyToTargetBtn = Instance.new("TextButton")
-    flyToTargetBtn.Size = UDim2.new(0.9, 0, 0, 35)
-    flyToTargetBtn.Position = UDim2.new(0.05, 0, 0, 65)
-    flyToTargetBtn.BackgroundColor3 = Color3.fromRGB(80, 50, 180)
-    flyToTargetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    flyToTargetBtn.TextSize = 13
-    flyToTargetBtn.Font = Enum.Font.GothamBold
-    flyToTargetBtn.Text = "Fly to Selected Target"
-    flyToTargetBtn.Parent = combatContainer
-
-    local fttCorner = Instance.new("UICorner")
-    fttCorner.CornerRadius = UDim.new(0, 8)
-    fttCorner.Parent = flyToTargetBtn
-
-    flyToTargetBtn.MouseButton1Click:Connect(function()
-        if UI.OnFlyToTargetClicked then UI.OnFlyToTargetClicked() end
+    -- THAY THẾ NÚT BẤM CŨ THÀNH TOGGLE ROW CHO BẠN
+    Elements.CreateToggleRow(combatContainer, 65, "Bait & Follow Target", function(state)
+        if UI.OnTeleportPlayerToggled then 
+            UI.OnTeleportPlayerToggled(state, currentSelectedTarget) 
+        end
     end)
 
-    Elements.CreateToggleRow(combatContainer, 115, "Aimbot Nearest", function(state)
+    Elements.CreateToggleRow(combatContainer, 125, "Aimbot Nearest", function(state)
         if state then
             if UI.OnAimbotModeChanged then UI.OnAimbotModeChanged("Nearest") end
         end
         if UI.OnAimbotToggled then UI.OnAimbotToggled(state) end
     end)
 
-    Elements.CreateToggleRow(combatContainer, 170, "Aimbot Selected", function(state)
+    Elements.CreateToggleRow(combatContainer, 180, "Aimbot Selected", function(state)
         if state then
             if UI.OnAimbotModeChanged then UI.OnAimbotModeChanged("Selected") end
         end
@@ -398,6 +388,6 @@ UI.OnResetClicked = nil
 UI.OnAimbotToggled = nil
 UI.OnAimbotModeChanged = nil
 UI.OnAimbotTargetChanged = nil
-UI.OnFlyToTargetClicked = nil
+UI.OnTeleportPlayerToggled = nil
 
 return UI
