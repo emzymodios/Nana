@@ -79,7 +79,7 @@ function UI.Init()
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextSize = 16
     titleLabel.Font = Enum.Font.GothamBlack -- In đậm nổi bật
-    titleLabel.Text = " NANA HUB 1.2 | "
+    titleLabel.Text = "NANA HUB 1.2|"
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
@@ -90,7 +90,7 @@ function UI.Init()
     closeBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
     closeBtn.TextSize = 15
     closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.Text = "✕"
+    closeBtn.Text = "X"
     closeBtn.Parent = topBar
 
     local cBtnCorner = Instance.new("UICorner")
@@ -333,7 +333,7 @@ function UI.Init()
     resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     resetBtn.TextSize = 13
     resetBtn.Font = Enum.Font.GothamBold
-    resetBtn.Text = " Reset Config "
+    resetBtn.Text = "Reset Config"
     resetBtn.Parent = mainContainer
 
     local rCorner = Instance.new("UICorner")
