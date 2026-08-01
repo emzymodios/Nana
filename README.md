@@ -28,5 +28,5 @@ Hệ thống Notification tùy chỉnh riêng biệt ở góc dưới bên phả
 
 ### global load
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/main.lua"))()
+[loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/main.lua"))()]
 ```
