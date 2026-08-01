@@ -7,7 +7,7 @@ local SuccessLogic, Logic = pcall(function()
 end)
 
 if not SuccessUI or not SuccessLogic then
-    warn("Nana Hub: Lỗi khi tải UI hoặc Logic từ GitHub!")
+    warn("Nana Hub: error acc bạn đã bị ban")
     return
 end
 
