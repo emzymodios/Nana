@@ -1,3 +1,5 @@
+local Elements = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua"))()
+
 local MainTab = {}
 
 function MainTab.Create(mainContainer, UI)
