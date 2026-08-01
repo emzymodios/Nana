@@ -1,4 +1,4 @@
--- Nana Hub UI (ui.lua) - REDESIGNED & MULTI-TAB
+-- Nana Hub UI (ui.lua) - FULL CODE HOÀN CHỈNH
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
@@ -7,7 +7,7 @@ local playerGui = player:WaitForChild("PlayerGui")
 
 local UI = {}
 
--- ⚙️ THAY ĐỔI ID ẢNH NÚT MỞ HUB TẠI ĐÂY (Ví dụ: rbxassetid://6023426915 hoặc để trống nếu dùng icon chữ)
+-- ⚙️ THAY ĐỔI ID ẢNH NÚT MỞ HUB TẠI ĐÂY
 local ICON_IMAGE_ID = "rbxassetid://93925828218201"
 
 function UI.Init()
@@ -20,7 +20,7 @@ function UI.Init()
     screenGui.ResetOnSpawn = false
     screenGui.Parent = playerGui
 
-    -- ✅ Nút mở/đóng Hub dạng Ảnh độc đáo
+    -- ✅ Nút mở/đóng Hub
     local toggleBtn = Instance.new("ImageButton")
     toggleBtn.Name = "ToggleBtn"
     toggleBtn.Size = UDim2.new(0, 50, 0, 50)
@@ -40,7 +40,7 @@ function UI.Init()
     toggleStroke.Thickness = 2
     toggleStroke.Parent = toggleBtn
 
-    -- ✅ Khung chính của Hub (Thiết kế cao cấp hơn)
+    -- ✅ Khung chính của Hub
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
     mainFrame.Size = UDim2.new(0, 540, 0, 360)
@@ -78,8 +78,8 @@ function UI.Init()
     titleLabel.BackgroundTransparency = 1
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextSize = 16
-    titleLabel.Font = Enum.Font.GothamBlack -- In đậm nổi bật
-    titleLabel.Text = "NANA HUB 1.2|"
+    titleLabel.Font = Enum.Font.GothamBlack
+    titleLabel.Text = "NANA HUB 1.2" -- 👈 THAY ĐỔI TÊN HIỂN THỊ TẠI ĐÂY NẾU MUỐN
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
@@ -148,7 +148,7 @@ function UI.Init()
     mainContainer.Position = UDim2.new(0, 145, 0, 45)
     mainContainer.BackgroundTransparency = 1
     mainContainer.BorderSizePixel = 0
-    mainContainer.CanvasSize = UDim2.new(0, 0, 0, 350)
+    mainContainer.CanvasSize = UDim2.new(0, 0, 0, 380)
     mainContainer.ScrollBarThickness = 4
     mainContainer.Visible = true
     mainContainer.Parent = mainFrame
@@ -156,7 +156,7 @@ function UI.Init()
     -- Khung chứa nội dung Tab Other ESP
     local otherContainer = Instance.new("ScrollingFrame")
     otherContainer.Name = "OtherContainer"
-    otherContainer.Size = UDim2.new(0, 385, 1, -50)
+    otherContainer.Size = UDim2.new(1, -145, 1, -50)
     otherContainer.Position = UDim2.new(0, 145, 0, 45)
     otherContainer.BackgroundTransparency = 1
     otherContainer.BorderSizePixel = 0
@@ -306,29 +306,29 @@ function UI.Init()
         if UI.OnSpeedChanged then UI.OnSpeedChanged(val) end
     end)
 
-    createSlider(mainContainer, 75, "Fly Speed", 10, 300, 50, function(val)
+    createSlider(mainContainer, 70, "Fly Speed", 10, 300, 50, function(val)
         if UI.OnFlySpeedChanged then UI.OnFlySpeedChanged(val) end
     end)
 
-    createToggleRow(mainContainer, 140, "Speed Mode", function(state)
+    createToggleRow(mainContainer, 130, "Speed Mode", function(state)
         if UI.OnSpeedToggled then UI.OnSpeedToggled(state) end
     end)
 
-    createToggleRow(mainContainer, 185, "Fly Mode", function(state)
+    createToggleRow(mainContainer, 175, "Fly Mode", function(state)
         if UI.OnFlyToggled then UI.OnFlyToggled(state) end
     end)
 
-    createToggleRow(mainContainer, 230, "NoClip Mode", function(state)
+    createToggleRow(mainContainer, 220, "NoClip Mode", function(state)
         if UI.OnNoClipToggled then UI.OnNoClipToggled(state) end
     end)
 
-    createToggleRow(mainContainer, 275, "Infinite Jump", function(state)
+    createToggleRow(mainContainer, 265, "Infinite Jump", function(state)
         if UI.OnJumpToggled then UI.OnJumpToggled(state) end
     end)
 
     local resetBtn = Instance.new("TextButton")
     resetBtn.Size = UDim2.new(0.9, 0, 0, 35)
-    resetBtn.Position = UDim2.new(0.05, 0, 0, 330)
+    resetBtn.Position = UDim2.new(0.05, 0, 0, 315)
     resetBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 60)
     resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     resetBtn.TextSize = 13
@@ -380,7 +380,7 @@ function UI.Init()
         if resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStart
             mainFrame.Size = UDim2.new(0, math.clamp(startSize.X + delta.X, 450, 800), 0, math.clamp(startSize.Y + delta.Y, 300, 600))
-        end
+        end 
     end)
 end
 
