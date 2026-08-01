@@ -9,9 +9,6 @@ local JumpModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/em
 local ESPModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/esp.lua"))()
 local FPSBoostModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fpsboost.lua"))()
 local AimbotModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua"))()
-local SoruModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/soru.lua"))()
-local TeleportModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/teleport.lua"))()
-local PositionModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/position.lua"))()
 
 -- Cầu nối Speed
 function Logic.ToggleSpeed(state)
@@ -41,11 +38,6 @@ function Logic.ToggleInfiniteJump(state)
     JumpModule.Toggle(state)
 end
 
--- Cầu nối Soru
-function Logic.ToggleSoru(state)
-    SoruModule.Toggle(state)
-end
-
 -- Cầu nối ESP
 function Logic.ToggleESP(state)
     ESPModule.Toggle(state)
@@ -71,37 +63,6 @@ end
 
 function Logic.SetAimbotTarget(playerName)
     AimbotModule.SetTarget(playerName)
-    if TeleportModule.SetTarget then
-        TeleportModule.SetTarget(playerName)
-    end
-end
-
--- Cầu nối Teleport Target
-function Logic.SmoothTeleportToTarget()
-    if TeleportModule.FlyToTarget then
-        TeleportModule.FlyToTarget()
-    end
-end
-
--- Cầu nối Position (Tab More)
-function Logic.SavePosition()
-    if PositionModule.Save then
-        return PositionModule.Save()
-    end
-    return "Chưa có vị trí"
-end
-
-function Logic.ResetPosition()
-    if PositionModule.Reset then
-        return PositionModule.Reset()
-    end
-    return "[            ]"
-end
-
-function Logic.TeleportToSaved()
-    if PositionModule.Teleport then
-        PositionModule.Teleport()
-    end
 end
 
 -- Cầu nối Reset Config tổng thể
@@ -113,9 +74,6 @@ function Logic.ResetConfig()
     ESPModule.Toggle(false)
     FPSBoostModule.Toggle(false)
     AimbotModule.Toggle(false)
-    if SoruModule.Toggle then
-        SoruModule.Toggle(false)
-    end
 end
 
 return Logic
