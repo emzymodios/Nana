@@ -44,6 +44,13 @@ UI.OnTeleportPlayerToggled = function(state, targetName)
     Logic.ToggleTeleportPlayer(state, targetName) 
 end
 
+-- Cầu nối Position (Tab More)
+UI.OnTeleportCoords = function(x, y, z)
+    if Logic.TeleportToCoords then
+        Logic.TeleportToCoords(x, y, z)
+    end
+end
+
 -- Cầu nối Reset cấu hình tổng thể
 UI.OnResetClicked = function() Logic.ResetConfig() end
 
