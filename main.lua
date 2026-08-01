@@ -11,7 +11,7 @@ if not SuccessUI or not SuccessLogic then
     return
 end
 
--- Kích hoạt giao diện UI hiển thị
+-- Kích hoạt giao diện UI
 UI.Init()
 
 -- Móc nối các sự kiện từ UI sang Logic
@@ -35,8 +35,16 @@ UI.OnNoClipToggled = function(state)
     Logic.ToggleNoClip(state)
 end
 
+UI.OnJumpToggled = function(state)
+    Logic.ToggleInfiniteJump(state)
+end
+
+UI.OnESPToggled = function(state)
+    Logic.ToggleESP(state)
+end
+
 UI.OnResetClicked = function()
     Logic.ResetConfig()
 end
 
-print("Nana Hub loaded successfully with Full UI!")
+print("Nana Hub loaded successfully with Tabs & ESP!")
