@@ -79,7 +79,7 @@ function UI.Init()
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextSize = 16
     titleLabel.Font = Enum.Font.GothamBlack -- In đậm nổi bật
-    titleLabel.Text = "⚡ NANA HUB | MAIN MENU"
+    titleLabel.Text = " NANA HUB | 1."
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
@@ -120,7 +120,7 @@ function UI.Init()
     tabMainBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     tabMainBtn.TextSize = 13
     tabMainBtn.Font = Enum.Font.GothamBold
-    tabMainBtn.Text = "🏠 Main"
+    tabMainBtn.Text = "Main"
     tabMainBtn.Parent = sideBar
 
     local tmCorner = Instance.new("UICorner")
@@ -134,7 +134,7 @@ function UI.Init()
     tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     tabOtherBtn.TextSize = 13
     tabOtherBtn.Font = Enum.Font.GothamBold
-    tabOtherBtn.Text = "👥 Other ESP"
+    tabOtherBtn.Text = "ESP"
     tabOtherBtn.Parent = sideBar
 
     local toCorner = Instance.new("UICorner")
@@ -302,27 +302,27 @@ function UI.Init()
     end
 
     -- Đưa các thành phần vào Tab Main
-    createSlider(mainContainer, 10, "🏃 Run Speed", 16, 200, 16, function(val)
+    createSlider(mainContainer, 10, "Run Speed", 16, 200, 16, function(val)
         if UI.OnSpeedChanged then UI.OnSpeedChanged(val) end
     end)
 
-    createSlider(mainContainer, 75, "✈️ Fly Speed", 10, 300, 50, function(val)
+    createSlider(mainContainer, 75, "Fly Speed", 10, 300, 50, function(val)
         if UI.OnFlySpeedChanged then UI.OnFlySpeedChanged(val) end
     end)
 
-    createToggleRow(mainContainer, 140, "⚡ Speed Mode", function(state)
+    createToggleRow(mainContainer, 140, "Speed Mode", function(state)
         if UI.OnSpeedToggled then UI.OnSpeedToggled(state) end
     end)
 
-    createToggleRow(mainContainer, 185, "✈️ Fly Mode", function(state)
+    createToggleRow(mainContainer, 185, "Fly Mode", function(state)
         if UI.OnFlyToggled then UI.OnFlyToggled(state) end
     end)
 
-    createToggleRow(mainContainer, 230, "👻 NoClip Mode", function(state)
+    createToggleRow(mainContainer, 230, "NoClip Mode", function(state)
         if UI.OnNoClipToggled then UI.OnNoClipToggled(state) end
     end)
 
-    createToggleRow(mainContainer, 275, "🦘 Infinite Jump", function(state)
+    createToggleRow(mainContainer, 275, "Infinite Jump", function(state)
         if UI.OnJumpToggled then UI.OnJumpToggled(state) end
     end)
 
@@ -345,7 +345,7 @@ function UI.Init()
     end)
 
     -- Đưa ESP Player vào Tab Other ESP
-    createToggleRow(otherContainer, 15, "👥 ESP Player Names", function(state)
+    createToggleRow(otherContainer, 15, "ESP Player", function(state)
         if UI.OnESPToggled then UI.OnESPToggled(state) end
     end)
 
