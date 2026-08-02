@@ -28,9 +28,6 @@ function MoreTab.Create(container, UI)
         if UI.OnTeleportCoords then
             UI.OnTeleportCoords(inputValues.x, inputValues.y, inputValues.z)
         end
-        if UI.Notify then
-            UI.Notify.Show("NANA HUB", "Đã dịch chuyển tới tọa độ!", 3, "rbxassetid://93925828218201")
-        end
     end)
 end
 
