@@ -26,6 +26,7 @@ local Notification = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana
 local MainTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/main_tab.lua")
 local CombatTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/combat_tab.lua")
 local ESPTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/esp_tab.lua")
+local MoreTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/more.lua")
 
 local UI = {}
 UI.Notify = Notification -- Đưa notification vào UI để các module khác dễ dàng sử dụng
@@ -171,6 +172,20 @@ function UI.Init()
     toCorner.CornerRadius = UDim.new(0, 8)
     toCorner.Parent = tabOtherBtn
 
+    local tabMoreBtn = Instance.new("TextButton")
+    tabMoreBtn.Size = UDim2.new(0.9, 0, 0, 38)
+    tabMoreBtn.Position = UDim2.new(0.05, 0, 0.41, 0)
+    tabMoreBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    tabMoreBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+    tabMoreBtn.TextSize = 13
+    tabMoreBtn.Font = Enum.Font.GothamBold
+    tabMoreBtn.Text = "More"
+    tabMoreBtn.Parent = sideBar
+
+    local tMoreCorner = Instance.new("UICorner")
+    tMoreCorner.CornerRadius = UDim.new(0, 8)
+    tMoreCorner.Parent = tabMoreBtn
+
     local function setupScrollingFrame(container)
         container.ScrollingEnabled = true
         container.Selectable = true
@@ -212,46 +227,83 @@ function UI.Init()
     otherContainer.Parent = mainFrame
     setupScrollingFrame(otherContainer)
 
+    local moreContainer = Instance.new("ScrollingFrame")
+    moreContainer.Name = "MoreContainer"
+    moreContainer.Size = UDim2.new(1, -145, 1, -50)
+    moreContainer.Position = UDim2.new(0, 145, 0, 45)
+    moreContainer.BackgroundTransparency = 1
+    moreContainer.BorderSizePixel = 0
+    moreContainer.CanvasSize = UDim2.new(0, 0, 0, 150)
+    moreContainer.ScrollBarThickness = 4
+    moreContainer.Visible = false
+    moreContainer.Parent = mainFrame
+    setupScrollingFrame(moreContainer)
+
     tabMainBtn.MouseButton1Click:Connect(function()
         mainContainer.Visible = true
         combatContainer.Visible = false
         otherContainer.Visible = false
+        moreContainer.Visible = false
         tabMainBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
         tabMainBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
         tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        tabMoreBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabMoreBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
     tabCombatBtn.MouseButton1Click:Connect(function()
         mainContainer.Visible = false
         combatContainer.Visible = true
         otherContainer.Visible = false
+        moreContainer.Visible = false
         tabCombatBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
         tabCombatBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         tabMainBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
         tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        tabMoreBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabMoreBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
     tabOtherBtn.MouseButton1Click:Connect(function()
         mainContainer.Visible = false
         combatContainer.Visible = false
         otherContainer.Visible = true
+        moreContainer.Visible = false
         tabOtherBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
         tabOtherBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         tabMainBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
         tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
         tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        tabMoreBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabMoreBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+    end)
+
+    tabMoreBtn.MouseButton1Click:Connect(function()
+        mainContainer.Visible = false
+        combatContainer.Visible = false
+        otherContainer.Visible = false
+        moreContainer.Visible = true
+        tabMoreBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
+        tabMoreBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        tabMainBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+        tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+        tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
     -- Gọi khởi tạo các module tab con an toàn
     if MainTab and MainTab.Create then MainTab.Create(mainContainer, UI) end
     if CombatTab and CombatTab.Create then CombatTab.Create(combatContainer, UI) end
     if ESPTab and ESPTab.Create then ESPTab.Create(otherContainer, UI) end
+    if MoreTab and MoreTab.Create then MoreTab.Create(moreContainer, UI) end
 
     local resizeBtn = Instance.new("TextButton")
     resizeBtn.Size = UDim2.new(0, 15, 0, 15)
