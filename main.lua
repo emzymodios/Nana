@@ -43,11 +43,16 @@ UI.OnAimbotTargetChanged = function(targetName) Logic.SetAimbotTarget(targetName
 UI.OnTeleportPlayerToggled = function(state, targetName) 
     Logic.ToggleTeleportPlayer(state, targetName) 
 end
+
 -- Cầu nối Godmode
 UI.OnGodmodeToggled = function(state) Logic.ToggleGodmode(state) end
 
 -- Cầu nối Reset cấu hình tổng thể
 UI.OnResetClicked = function() Logic.ResetConfig() end
+
+-- Cầu nối Rejoin & Server Hop
+UI.OnRejoinClicked = function() Logic.RejoinGame() end
+UI.OnServerHopClicked = function() Logic.ServerHop() end
 
 Notification.Show("NANA HUB", "Đã load! Chúc bạn bay acc:))", 5, "rbxassetid://93925828218201")
 print("Nana Hub loaded successfully")
