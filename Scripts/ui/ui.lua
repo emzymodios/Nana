@@ -1,17 +1,35 @@
 -- logic/init.lua
 local Logic = {}
 
--- Tải các module logic con
-local SpeedModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/speed.lua"))()
-local FlyModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fly.lua"))()
-local NoClipModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/noclip.lua"))()
-local JumpModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/jump.lua"))()
-local ESPModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/esp.lua"))()
-local FPSBoostModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fpsboost.lua"))()
-local AimbotModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua"))()
-local TeleportModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/teleport.lua"))()
-local SoruModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/soru.lua"))()
-local PositionModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/position.lua"))()
+-- Hàm hỗ trợ tải module an toàn bằng pcall để tránh sập toàn bộ script nếu mạng lỗi hoặc sai link
+local function safeLoad(url)
+    local success, result = pcall(function()
+        return loadstring(game:HttpGet(url))()
+    end)
+    if success and type(result) == "table" then
+        return result
+    else
+        warn("[Nana Hub] Khong the tai module tu URL: " .. tostring(url))
+        -- Trả về một bảng trống chứa các hàm giả lập để không bị lỗi attempt to index nil
+        return setmetatable({}, {
+            __index = function(_, k)
+                return function() end
+            end
+        })
+    end
+end
+
+-- Tải các module logic con qua hàm an toàn
+local SpeedModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/speed.lua")
+local FlyModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fly.lua")
+local NoClipModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/noclip.lua")
+local JumpModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/jump.lua")
+local ESPModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/esp.lua")
+local FPSBoostModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/fpsboost.lua")
+local AimbotModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua")
+local TeleportModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/teleport.lua")
+local SoruModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/soru.lua")
+local PositionModule = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/position.lua")
 
 -- Cầu nối Speed
 function Logic.ToggleSpeed(state)
@@ -48,11 +66,16 @@ end
 
 -- Cầu nối Position Teleport
 function Logic.TeleportToCoords(x, y, z)
-    PositionModule.TeleportToCoords(x, y, z)
+    if PositionModule.TeleportToCoords then
+        PositionModule.TeleportToCoords(x, y, z)
+    end
 end
 
 function Logic.GetCurrentPosition()
-    return PositionModule.GetCurrentPosition()
+    if PositionModule.GetCurrentPosition then
+        return PositionModule.GetCurrentPosition()
+    end
+    return Vector3.new(0, 0, 0)
 end
 
 -- Cầu nối chọn tên người chơi cho Teleport / Aimbot
@@ -68,10 +91,8 @@ function Logic.ToggleTeleportPlayer(state, targetName)
     end
 
     if state then
-        -- Khi gạt bật: Bắt đầu bay bám sát liên tục theo mục tiêu
         TeleportModule.StartContinuousFly(100)
     else
-        -- Khi gạt tắt: Ngưng bay ngay lập tức
         TeleportModule.StopFly()
     end
 end
