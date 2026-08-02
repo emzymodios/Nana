@@ -1,36 +1,49 @@
 -- Scripts/logic/server.lua
 local TeleportService = game:GetService("TeleportService")
-local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
-local player = Players.LocalPlayer
+local HttpService = game:GetService("HttpService")
 
 local ServerModule = {}
 
 function ServerModule.Rejoin()
-    TeleportService:Teleport(game.PlaceId, player)
+    local success, err = pcall(function()
+        if #Players:GetPlayers() <= 1 then
+            Players.LocalPlayer:Kick("\nRejoining...")
+            task.wait(1)
+            TeleportService:Teleport(game.PlaceId, Players.LocalPlayer)
+        else
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, Players.LocalPlayer)
+        end
+    end)
+    if not success then
+        warn("Rejoin error: " .. tostring(err))
+    end
 end
 
 function ServerModule.ServerHop()
-    local success, result = pcall(function()
-        return HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
-    end)
-
-    if success and result and result.data then
+    local success, err = pcall(function()
         local servers = {}
-        for _, s in ipairs(result.data) do
-            if type(s) == "table" and s.playing and s.maxPlayers and s.playing < s.maxPlayers and s.id ~= game.JobId then
-                table.insert(servers, s.id)
+        local req = game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")
+        local body = HttpService:JSONDecode(req)
+        
+        if body and body.data then
+            for _, server in ipairs(body.data) do
+                if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                    table.insert(servers, server.id)
+                end
             end
         end
-
+        
         if #servers > 0 then
-            local targetServer = servers[math.random(1, #servers)]
-            TeleportService:TeleportToPlaceInstance(game.PlaceId, targetServer, player)
+            TeleportService:TeleportToPlaceInstance(game.PlaceId, servers[math.random(1, #servers)], Players.LocalPlayer)
         else
-            warn("Không tìm thấy server trống phù hợp!")
+            if UI and UI.Notify then
+                UI.Notify("Không tìm thấy server trống phù hợp!", 3)
+            end
         end
-    else
-        warn("Lỗi khi lấy danh sách server!")
+    end)
+    if not success then
+        warn("Server Hop error: " .. tostring(err))
     end
 end
 
