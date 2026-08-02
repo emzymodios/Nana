@@ -11,7 +11,6 @@ local FPSBoostModule = loadstring(game:HttpGet("https://raw.githubusercontent.co
 local AimbotModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua"))()
 local TeleportModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/teleport.lua"))()
 local SoruModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/soru.lua"))()
-local PositionModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/position.lua"))()
 
 -- Cầu nối Speed
 function Logic.ToggleSpeed(state)
@@ -44,15 +43,6 @@ end
 -- Cầu nối Soru (Click Teleport)
 function Logic.ToggleSoru(state)
     SoruModule.Toggle(state)
-end
-
--- Cầu nối Position Teleport
-function Logic.TeleportToCoords(x, y, z)
-    PositionModule.TeleportToCoords(x, y, z)
-end
-
-function Logic.GetCurrentPosition()
-    return PositionModule.GetCurrentPosition()
 end
 
 -- Cầu nối chọn tên người chơi cho Teleport / Aimbot
