@@ -1,4 +1,5 @@
 -- Scripts/ui/tabs/more_tab.lua
+local Elements = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua"))()
 local MoreTab = {}
 
 function MoreTab.Create(container, UI)
