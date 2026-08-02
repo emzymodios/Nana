@@ -354,5 +354,8 @@ UI.OnAimbotToggled = nil
 UI.OnAimbotModeChanged = nil
 UI.OnAimbotTargetChanged = nil
 UI.OnTeleportPlayerToggled = nil
+UI.OnGodmodeToggled = nil
+UI.OnRejoinClicked = nil
+UI.OnServerHopClicked = nil
 
 return UI
