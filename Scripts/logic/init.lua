@@ -11,6 +11,7 @@ local FPSBoostModule = loadstring(game:HttpGet("https://raw.githubusercontent.co
 local AimbotModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/aimbot.lua"))()
 local TeleportModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/teleport.lua"))()
 local SoruModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/soru.lua"))()
+local GodmodeModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/godmode.lua"))()
 
 -- Cầu nối Speed
 function Logic.ToggleSpeed(state)
@@ -94,6 +95,11 @@ function Logic.SetAimbotMode(mode)
     AimbotModule.SetMode(mode)
 end
 
+-- Cầu nối Godmode
+function Logic.ToggleGodmode(state)
+    GodmodeModule.Toggle(state)
+end
+
 -- Cầu nối Reset Config tổng thể
 function Logic.ResetConfig()
     SpeedModule.Toggle(false)
@@ -105,6 +111,7 @@ function Logic.ResetConfig()
     FPSBoostModule.Toggle(false)
     AimbotModule.Toggle(false)
     TeleportModule.StopFly()
+    GodmodeModule.Toggle(false)
 end
 
 return Logic
