@@ -1,4 +1,4 @@
--- Scripts/ui/tabs/more.lua
+-- Nana Hub More Tab (more.lua)
 local MoreTab = {}
 
 function MoreTab.Create(container, UI)
@@ -34,9 +34,9 @@ function MoreTab.Create(container, UI)
     godmodeBtn.Text = "Godmode: OFF"
     godmodeBtn.Parent = tabContent
 
-    local btnCorner = Instance.new("UICorner")
-    btnCorner.CornerRadius = UDim.new(0, 8)
-    btnCorner.Parent = godmodeBtn
+    local btnCorner1 = Instance.new("UICorner")
+    btnCorner1.CornerRadius = UDim.new(0, 8)
+    btnCorner1.Parent = godmodeBtn
 
     local godmodeState = false
     godmodeBtn.MouseButton1Click:Connect(function()
@@ -53,9 +53,52 @@ function MoreTab.Create(container, UI)
             if UI.Notify then UI.Notify("Godmode Disabled", 2) end
         end
 
-        -- Gọi hàm xử lý logic từ bên ngoài thông qua UI (hoặc bạn có thể kết nối trực tiếp với game logic)
         if UI.OnGodmodeToggled then
             UI.OnGodmodeToggled(godmodeState)
+        end
+    end)
+
+    -- Nút Rejoin Game
+    local rejoinBtn = Instance.new("TextButton")
+    rejoinBtn.Size = UDim2.new(1, -20, 0, 40)
+    rejoinBtn.Position = UDim2.new(0, 10, 0, 105)
+    rejoinBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    rejoinBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+    rejoinBtn.TextSize = 13
+    rejoinBtn.Font = Enum.Font.GothamBold
+    rejoinBtn.Text = "Rejoin Game"
+    rejoinBtn.Parent = tabContent
+
+    local btnCorner2 = Instance.new("UICorner")
+    btnCorner2.CornerRadius = UDim.new(0, 8)
+    btnCorner2.Parent = rejoinBtn
+
+    rejoinBtn.MouseButton1Click:Connect(function()
+        if UI.Notify then UI.Notify("Rejoining...", 2) end
+        if UI.OnRejoinClicked then
+            UI.OnRejoinClicked()
+        end
+    end)
+
+    -- Nút Server Hop
+    local serverHopBtn = Instance.new("TextButton")
+    serverHopBtn.Size = UDim2.new(1, -20, 0, 40)
+    serverHopBtn.Position = UDim2.new(0, 10, 0, 160)
+    serverHopBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    serverHopBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+    serverHopBtn.TextSize = 13
+    serverHopBtn.Font = Enum.Font.GothamBold
+    serverHopBtn.Text = "Server Hop"
+    serverHopBtn.Parent = tabContent
+
+    local btnCorner3 = Instance.new("UICorner")
+    btnCorner3.CornerRadius = UDim.new(0, 8)
+    btnCorner3.Parent = serverHopBtn
+
+    serverHopBtn.MouseButton1Click:Connect(function()
+        if UI.Notify then UI.Notify("Finding new server...", 2) end
+        if UI.OnServerHopClicked then
+            UI.OnServerHopClicked()
         end
     end)
 
