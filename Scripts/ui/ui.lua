@@ -21,6 +21,7 @@ local Config = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/
 local Components = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/components.lua")
 local Elements = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua")
 local Notification = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/notification.lua")
+local HUD = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/hud.lua")
 
 -- Tải các module tab con nằm trong thư mục tabs/
 local MainTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/main_tab.lua")
@@ -40,6 +41,11 @@ function UI.Init()
     screenGui.Name = "NanaHubUI"
     screenGui.ResetOnSpawn = false
     screenGui.Parent = playerGui
+
+    -- Khởi tạo HUD (Time, FPS, Ping) an toàn
+    if HUD and HUD.Init then
+        HUD.Init(screenGui)
+    end
 
     local toggleBtn = Instance.new("ImageButton")
     toggleBtn.Name = "ToggleBtn"
