@@ -11,17 +11,53 @@ function MoreTab.Create(container, UI)
     tabContent.ScrollBarThickness = 4
     tabContent.Parent = container
 
-    -- Thêm một tiêu đề hoặc nút test tạm thời trong tab More để kiểm tra hiển thị
+    -- Tiêu đề tab
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -20, 0, 40)
+    titleLabel.Size = UDim2.new(1, -20, 0, 30)
     titleLabel.Position = UDim2.new(0, 10, 0, 10)
     titleLabel.BackgroundTransparency = 1
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextSize = 14
     titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.Text = "More Settings - coming soon"
+    titleLabel.Text = "More Settings"
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = tabContent
+
+    -- Nút gạt (Toggle) Godmode
+    local godmodeBtn = Instance.new("TextButton")
+    godmodeBtn.Size = UDim2.new(1, -20, 0, 40)
+    godmodeBtn.Position = UDim2.new(0, 10, 0, 50)
+    godmodeBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    godmodeBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+    godmodeBtn.TextSize = 13
+    godmodeBtn.Font = Enum.Font.GothamBold
+    godmodeBtn.Text = "Godmode: OFF"
+    godmodeBtn.Parent = tabContent
+
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 8)
+    btnCorner.Parent = godmodeBtn
+
+    local godmodeState = false
+    godmodeBtn.MouseButton1Click:Connect(function()
+        godmodeState = not godmodeState
+        if godmodeState then
+            godmodeBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
+            godmodeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            godmodeBtn.Text = "Godmode: ON"
+            if UI.Notify then UI.Notify("Godmode Enabled", 2) end
+        else
+            godmodeBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+            godmodeBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+            godmodeBtn.Text = "Godmode: OFF"
+            if UI.Notify then UI.Notify("Godmode Disabled", 2) end
+        end
+
+        -- Gọi hàm xử lý logic từ bên ngoài thông qua UI (hoặc bạn có thể kết nối trực tiếp với game logic)
+        if UI.OnGodmodeToggled then
+            UI.OnGodmodeToggled(godmodeState)
+        end
+    end)
 
     return tabContent
 end
