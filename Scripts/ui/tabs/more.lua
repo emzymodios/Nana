@@ -20,7 +20,7 @@ function MoreTab.Create(container, UI)
         inputValues.y = tonumber(value) or 0
     end)
     
-    Elements.CreateTextbox(posState or posSection, "Position Z", "Nhập Z...", function(value)
+    Elements.CreateTextbox(posSection, "Position Z", "Nhập Z...", function(value)
         inputValues.z = tonumber(value) or 0
     end)
 
