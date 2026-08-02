@@ -19,7 +19,7 @@ function MoreTab.Create(container, UI)
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextSize = 14
     titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.Text = "More Settings"
+    titleLabel.Text = "Other More"
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = tabContent
 
