@@ -11,7 +11,6 @@ function MoreTab.Create(container, UI)
     tabContent.ScrollBarThickness = 4
     tabContent.Parent = container
 
-    -- Tiêu đề tab
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, -20, 0, 30)
     titleLabel.Position = UDim2.new(0, 10, 0, 10)
@@ -19,11 +18,11 @@ function MoreTab.Create(container, UI)
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextSize = 14
     titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.Text = "Other More"
+    titleLabel.Text = "More Settings"
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = tabContent
 
-    -- Nút gạt (Toggle) Godmode
+    -- Nút gạt Godmode cũ
     local godmodeBtn = Instance.new("TextButton")
     godmodeBtn.Size = UDim2.new(1, -20, 0, 40)
     godmodeBtn.Position = UDim2.new(0, 10, 0, 50)
@@ -52,11 +51,47 @@ function MoreTab.Create(container, UI)
             godmodeBtn.Text = "Godmode: OFF"
             if UI.Notify then UI.Notify("Godmode Disabled", 2) end
         end
+        if UI.OnGodmodeToggled then UI.OnGodmodeToggled(godmodeState) end
+    end)
 
-        -- Gọi hàm xử lý logic từ bên ngoài thông qua UI (hoặc bạn có thể kết nối trực tiếp với game logic)
-        if UI.OnGodmodeToggled then
-            UI.OnGodmodeToggled(godmodeState)
-        end
+    -- Nút Rejoin Server
+    local rejoinBtn = Instance.new("TextButton")
+    rejoinBtn.Size = UDim2.new(1, -20, 0, 40)
+    rejoinBtn.Position = UDim2.new(0, 10, 0, 100)
+    rejoinBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    rejoinBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+    rejoinBtn.TextSize = 13
+    rejoinBtn.Font = Enum.Font.GothamBold
+    rejoinBtn.Text = "Rejoin Server"
+    rejoinBtn.Parent = tabContent
+
+    local rCorner = Instance.new("UICorner")
+    rCorner.CornerRadius = UDim.new(0, 8)
+    rCorner.Parent = rejoinBtn
+
+    rejoinBtn.MouseButton1Click:Connect(function()
+        if UI.Notify then UI.Notify("Rejoining Server...", 2) end
+        if UI.OnRejoinClicked then UI.OnRejoinClicked() end
+    end)
+
+    -- Nút Server Hop (Đổi server khác)
+    local hopBtn = Instance.new("TextButton")
+    hopBtn.Size = UDim2.new(1, -20, 0, 40)
+    hopBtn.Position = UDim2.new(0, 10, 0, 150)
+    hopBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
+    hopBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
+    hopBtn.TextSize = 13
+    hopBtn.Font = Enum.Font.GothamBold
+    hopBtn.Text = "Server Hop (Đổi Server)"
+    hopBtn.Parent = tabContent
+
+    local hCorner = Instance.new("UICorner")
+    hCorner.CornerRadius = UDim.new(0, 8)
+    hCorner.Parent = hopBtn
+
+    hopBtn.MouseButton1Click:Connect(function()
+        if UI.Notify then UI.Notify("Finding new server...", 2) end
+        if UI.OnServerHopClicked then UI.OnServerHopClicked() end
     end)
 
     return tabContent
