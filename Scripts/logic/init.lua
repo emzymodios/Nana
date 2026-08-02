@@ -60,15 +60,12 @@ function Logic.ToggleTeleportPlayer(state, targetName)
     end
 
     if state then
-        -- Khi gạt bật: Bắt đầu bay bám sát liên tục theo mục tiêu
         TeleportModule.StartContinuousFly(100)
     else
-        -- Khi gạt tắt: Ngưng bay ngay lập tức
         TeleportModule.StopFly()
     end
 end
 
--- Hàm cũ giữ lại phòng trường hợp cần dùng dạng click đơn
 function Logic.SmoothTeleportToTarget()
     TeleportModule.FlyToTarget()
 end
