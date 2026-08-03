@@ -2,14 +2,8 @@
 local MoreTab = {}
 
 function MoreTab.Create(container, UI)
-    local tabContent = Instance.new("ScrollingFrame")
-    tabContent.Name = "MoreTabContent"
-    tabContent.Size = UDim2.new(1, 0, 1, 0)
-    tabContent.BackgroundTransparency = 1
-    tabContent.BorderSizePixel = 0
-    tabContent.CanvasSize = UDim2.new(0, 0, 0, 300)
-    tabContent.ScrollBarThickness = 4
-    tabContent.Parent = container
+    -- Dùng luôn container (moreContainer) được truyền từ ui.lua qua, không tạo thêm khung nữa
+    container.CanvasSize = UDim2.new(0, 0, 0, 150)
 
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, -20, 0, 30)
@@ -20,7 +14,7 @@ function MoreTab.Create(container, UI)
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.Text = "Other More"
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Parent = tabContent
+    titleLabel.Parent = container
 
     local godmodeBtn = Instance.new("TextButton")
     godmodeBtn.Size = UDim2.new(1, -20, 0, 40)
@@ -30,7 +24,7 @@ function MoreTab.Create(container, UI)
     godmodeBtn.TextSize = 13
     godmodeBtn.Font = Enum.Font.GothamBold
     godmodeBtn.Text = "Godmode: OFF"
-    godmodeBtn.Parent = tabContent
+    godmodeBtn.Parent = container
 
     local btnCorner1 = Instance.new("UICorner")
     btnCorner1.CornerRadius = UDim.new(0, 8)
@@ -55,8 +49,6 @@ function MoreTab.Create(container, UI)
             UI.OnGodmodeToggled(godmodeState)
         end
     end)
-
-    return tabContent
 end
 
 return MoreTab
