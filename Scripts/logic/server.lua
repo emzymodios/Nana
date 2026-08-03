@@ -5,6 +5,7 @@ local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+local PlaceID = game.PlaceId
 
 -- Hàm Rejoin (Vào lại server hiện tại)
 function ServerModule.Rejoin()
@@ -12,45 +13,93 @@ function ServerModule.Rejoin()
         if #Players:GetPlayers() <= 1 then
             LocalPlayer:Kick("\nĐang kết nối lại...")
             task.wait(1)
-            TeleportService:Teleport(game.PlaceId, LocalPlayer)
+            TeleportService:Teleport(PlaceID, LocalPlayer)
         else
-            TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+            TeleportService:TeleportToPlaceInstance(PlaceID, game.JobId, LocalPlayer)
         end
     end)
 end
 
--- Hàm Server Hop (Đổi sang server khác ngẫu nhiên)
+-- Hàm Server Hop tối ưu kết hợp lưu lịch sử (An toàn cho Mobile)
 function ServerModule.ServerHop()
     pcall(function()
+        local AllIDs = {}
+        local actualHour = os.date("!*t").hour
+        
+        -- Đọc file lưu lịch sử server cũ (có bảo vệ pcall nếu executor không hỗ trợ file)
+        local successFile = pcall(function()
+            AllIDs = HttpService:JSONDecode(readfile("NanaHub_Servers.json"))
+        end)
+        
+        if not successFile or type(AllIDs) ~= "table" then
+            AllIDs = { actualHour }
+            pcall(function()
+                writefile("NanaHub_Servers.json", HttpService:JSONEncode(AllIDs))
+            end)
+        else
+            -- Reset danh sách nếu sang giờ mới
+            if AllIDs[1] ~= actualHour then
+                AllIDs = { actualHour }
+                pcall(function()
+                    writefile("NanaHub_Servers.json", HttpService:JSONEncode(AllIDs))
+                end)
+            end
+        end
+        
+        -- Lấy danh sách server công khai từ API Roblox
         local cursor = ""
         local servers = {}
         
-        -- Lấy danh sách server công khai từ API Roblox
-        local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+        local function fetchServers(cursorToken)
+            local url = "https://games.roblox.com/v1/games/" .. PlaceID .. "/servers/Public?sortOrder=Asc&limit=100"
+            if cursorToken and cursorToken ~= "" then
+                url = url .. "&cursor=" .. cursorToken
+            end
+            
+            local success, result = pcall(function()
+                return game:HttpGet(url)
+            end)
+            
+            if success and result then
+                local data = HttpService:JSONDecode(result)
+                return data
+            end
+            return nil
+        end
         
-        local success, result = pcall(function()
-            return game:HttpGet(url)
-        end)
-        
-        if success and result then
-            local data = HttpService:JSONDecode(result)
-            if data and data.data then
-                for _, server in ipairs(data.data) do
-                    -- Lọc các server chưa đầy và không phải server hiện tại
-                    if type(server) == "table" and server.playing < server.maxPlayers and server.id ~= game.JobId then
-                        table.insert(servers, server.id)
+        -- Quét tìm server chưa từng vào
+        local siteData = fetchServers("")
+        if siteData and siteData.data then
+            for _, server in ipairs(siteData.data) do
+                local id = tostring(server.id)
+                if server.playing < server.maxPlayers and id ~= game.JobId then
+                    local isExist = false
+                    for _, existingId in ipairs(AllIDs) do
+                        if id == tostring(existingId) then
+                            isExist = true
+                            break
+                        end
+                    end
+                    
+                    if not isExist then
+                        table.insert(servers, id)
                     end
                 end
             end
         end
         
         if #servers > 0 then
-            -- Chọn ngẫu nhiên một server trong danh sách hợp lệ
             local randomServerId = servers[math.random(1, #servers)]
-            TeleportService:TeleportToPlaceInstance(game.PlaceId, randomServerId, LocalPlayer)
+            table.insert(AllIDs, randomServerId)
+            
+            pcall(function()
+                writefile("NanaHub_Servers.json", HttpService:JSONEncode(AllIDs))
+            end)
+            
+            TeleportService:TeleportToPlaceInstance(PlaceID, randomServerId, LocalPlayer)
         else
-            -- Fallback nếu không tìm thấy danh sách qua API
-            TeleportService:Teleport(game.PlaceId, LocalPlayer)
+            -- Fallback nếu hết server mới: Teleport ngẫu nhiên mặc định
+            TeleportService:Teleport(PlaceID, LocalPlayer)
         end
     end)
 end
