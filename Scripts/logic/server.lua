@@ -1,11 +1,9 @@
 -- Scripts/logic/server.lua
-
 local TeleportService = game:GetService("TeleportService")
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 
 local LocalPlayer = Players.LocalPlayer
-
 local Server = {}
 
 -- Rejoin server hiện tại
@@ -26,10 +24,7 @@ end
 -- Server Hop
 function Server.ServerHop()
 	local success, err = pcall(function()
-
-		local url = ("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100")
-			:format(game.PlaceId)
-
+		local url = ("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Asc&limit=100"):format(game.PlaceId)
 		local response = game:HttpGet(url)
 		local data = HttpService:JSONDecode(response)
 
@@ -39,11 +34,8 @@ function Server.ServerHop()
 		end
 
 		local available = {}
-
 		for _, server in ipairs(data.data) do
-			if server.id ~= game.JobId
-				and server.playing < server.maxPlayers then
-
+			if server.id ~= game.JobId and server.playing < server.maxPlayers then
 				table.insert(available, server.id)
 			end
 		end
@@ -54,13 +46,11 @@ function Server.ServerHop()
 		end
 
 		local target = available[math.random(#available)]
-
 		TeleportService:TeleportToPlaceInstance(
 			game.PlaceId,
 			target,
 			LocalPlayer
 		)
-
 	end)
 
 	if not success then
