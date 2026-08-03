@@ -1,4 +1,4 @@
--- logic/init.lua
+-- Scripts/logic/init.lua
 local Logic = {}
 
 -- Tải các module logic con
@@ -15,37 +15,21 @@ local GodmodeModule = loadstring(game:HttpGet("https://raw.githubusercontent.com
 local ServerModule = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/logic/server.lua"))()
 
 -- Cầu nối Speed
-function Logic.ToggleSpeed(state)
-    SpeedModule.Toggle(state)
-end
-
-function Logic.SetSpeed(val)
-    SpeedModule.SetSpeed(val)
-end
+function Logic.ToggleSpeed(state) SpeedModule.Toggle(state) end
+function Logic.SetSpeed(val) SpeedModule.SetSpeed(val) end
 
 -- Cầu nối Fly
-function Logic.ToggleFly(state)
-    FlyModule.Toggle(state)
-end
-
-function Logic.SetFlySpeed(val)
-    FlyModule.SetFlySpeed(val)
-end
+function Logic.ToggleFly(state) FlyModule.Toggle(state) end
+function Logic.SetFlySpeed(val) FlyModule.SetFlySpeed(val) end
 
 -- Cầu nối NoClip
-function Logic.ToggleNoClip(state)
-    NoClipModule.Toggle(state)
-end
+function Logic.ToggleNoClip(state) NoClipModule.Toggle(state) end
 
 -- Cầu nối Infinite Jump
-function Logic.ToggleInfiniteJump(state)
-    JumpModule.Toggle(state)
-end
+function Logic.ToggleInfiniteJump(state) JumpModule.Toggle(state) end
 
 -- Cầu nối Soru (Click Teleport)
-function Logic.ToggleSoru(state)
-    SoruModule.Toggle(state)
-end
+function Logic.ToggleSoru(state) SoruModule.Toggle(state) end
 
 -- Cầu nối chọn tên người chơi cho Teleport / Aimbot
 function Logic.SetAimbotTarget(playerName)
@@ -71,41 +55,22 @@ function Logic.SmoothTeleportToTarget()
 end
 
 -- Cầu nối ESP
-function Logic.ToggleESP(state)
-    ESPModule.Toggle(state)
-end
-
-function Logic.SetESPTextSize(size)
-    ESPModule.SetTextSize(size)
-end
+function Logic.ToggleESP(state) ESPModule.Toggle(state) end
+function Logic.SetESPTextSize(size) ESPModule.SetTextSize(size) end
 
 -- Cầu nối FPS Boost
-function Logic.ToggleFPSBoost(state)
-    FPSBoostModule.Toggle(state)
-end
+function Logic.ToggleFPSBoost(state) FPSBoostModule.Toggle(state) end
 
 -- Cầu nối Aimbot
-function Logic.ToggleAimbot(state)
-    AimbotModule.Toggle(state)
-end
-
-function Logic.SetAimbotMode(mode)
-    AimbotModule.SetMode(mode)
-end
+function Logic.ToggleAimbot(state) AimbotModule.Toggle(state) end
+function Logic.SetAimbotMode(mode) AimbotModule.SetMode(mode) end
 
 -- Cầu nối Godmode
-function Logic.ToggleGodmode(state)
-    GodmodeModule.Toggle(state)
-end
+function Logic.ToggleGodmode(state) GodmodeModule.Toggle(state) end
 
 -- Cầu nối Rejoin & Server Hop
-function Logic.RejoinGame()
-    ServerModule.Rejoin()
-end
-
-function Logic.ServerHop()
-    ServerModule.ServerHop()
-end
+function Logic.RejoinGame() ServerModule.Rejoin() end
+function Logic.ServerHop() ServerModule.ServerHop() end
 
 -- Cầu nối Reset Config tổng thể
 function Logic.ResetConfig()
