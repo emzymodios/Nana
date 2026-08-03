@@ -1,13 +1,20 @@
--- logic/aimbot.lua
+-- ╔════════════════════════════════════════╗
+-- ║   NANA HUB - AIMBOT.LUA                 ║
+-- ║   Kiểu: Skill Direction Lock            ║
+-- ║   - Camera hoàn toàn tự do              ║
+-- ║   - Hướng skill tự động tới mục tiêu   ║
+-- ╚════════════════════════════════════════╝
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local Camera = workspace.CurrentCamera
+local UserInputService = game:GetService("UserInputService")
 local LocalPlayer = Players.LocalPlayer
 
 local AimbotModule = {}
 local isAimbotEnabled = false
 local aimMode = "Nearest" -- "Nearest" hoặc "Selected"
 local selectedTargetPlayer = nil
+local isAttacking = false
 
 function AimbotModule.Toggle(state)
     isAimbotEnabled = state
@@ -58,13 +65,37 @@ local function GetTarget()
     return nil
 end
 
--- Vòng lặp camera tự động hướng về mục tiêu
+-- Phát hiện attack (click chuột)
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isAttacking = true
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gameProcessed)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isAttacking = false
+    end
+end)
+
+-- Vòng lặp: Chỉ rotate character body khi attacking (hướng skill)
 RunService.RenderStepped:Connect(function()
     if isAimbotEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        local targetPart = GetTarget()
-        if targetPart then
-            -- Khóa tâm camera vào vị trí mục tiêu
-            Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPart.Position)
+        -- Chỉ aim khi đang attack
+        if isAttacking then
+            local targetPart = GetTarget()
+            if targetPart then
+                local hrp = LocalPlayer.Character.HumanoidRootPart
+                local directionToTarget = (targetPart.Position - hrp.Position).Unit
+                
+                -- CHỈ ROTATE BODY - Camera không bị ảnh hưởng
+                local newCFrame = CFrame.new(hrp.Position, hrp.Position + directionToTarget)
+                
+                -- Rotate character mượt mà
+                hrp.CFrame = hrp.CFrame:Lerp(newCFrame, 0.25) -- 0.25 = smooth level
+            end
         end
     end
 end)
