@@ -11,7 +11,6 @@ function MoreTab.Create(container, UI)
     tabContent.ScrollBarThickness = 4
     tabContent.Parent = container
 
-    -- Tiêu đề tab
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, -20, 0, 30)
     titleLabel.Position = UDim2.new(0, 10, 0, 10)
@@ -23,7 +22,6 @@ function MoreTab.Create(container, UI)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = tabContent
 
-    -- Nút gạt (Toggle) Godmode
     local godmodeBtn = Instance.new("TextButton")
     godmodeBtn.Size = UDim2.new(1, -20, 0, 40)
     godmodeBtn.Position = UDim2.new(0, 10, 0, 50)
@@ -58,7 +56,6 @@ function MoreTab.Create(container, UI)
         end
     end)
 
-    -- Nút Rejoin Game
     local rejoinBtn = Instance.new("TextButton")
     rejoinBtn.Size = UDim2.new(1, -20, 0, 40)
     rejoinBtn.Position = UDim2.new(0, 10, 0, 105)
@@ -80,7 +77,6 @@ function MoreTab.Create(container, UI)
         end
     end)
 
-    -- Nút Server Hop
     local serverHopBtn = Instance.new("TextButton")
     serverHopBtn.Size = UDim2.new(1, -20, 0, 40)
     serverHopBtn.Position = UDim2.new(0, 10, 0, 160)
