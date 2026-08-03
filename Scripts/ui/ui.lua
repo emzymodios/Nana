@@ -239,9 +239,10 @@ function UI.Init()
     moreContainer.Position = UDim2.new(0, 145, 0, 45)
     moreContainer.BackgroundTransparency = 1
     moreContainer.BorderSizePixel = 0
-    moreContainer.CanvasSize = UDim2.new(0, 0, 0, 150)
+    moreContainer.CanvasSize = UDim2.new(0, 0, 0, 200)
     moreContainer.ScrollBarThickness = 4
     moreContainer.Visible = false
+    moreContainer.Active = true
     moreContainer.Parent = mainFrame
     setupScrollingFrame(moreContainer)
 
