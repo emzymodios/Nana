@@ -1,6 +1,5 @@
 -- Nana Hub Main Loader (main.lua)
 
--- Tải các module bất đồng bộ song song để không bị nghẽn mạng trên luồng chính
 local UI, Logic, Notification
 
 task.spawn(function()
@@ -15,7 +14,6 @@ task.spawn(function()
     Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/notification.lua"))()
 end)
 
--- Chờ một xíu cực ngắn để đảm bảo các module đã tải xong (hoặc check điều kiện)
 repeat task.wait() until UI and Logic and Notification
 
 UI.Init()
@@ -39,7 +37,7 @@ UI.OnAimbotToggled = function(state) Logic.ToggleAimbot(state) end
 UI.OnAimbotModeChanged = function(mode) Logic.SetAimbotMode(mode) end
 UI.OnAimbotTargetChanged = function(targetName) Logic.SetAimbotTarget(targetName) end
 
--- Cầu nối Teleport qua người chơi dạng Toggle (Bait & Follow)
+-- Cầu nối Teleport qua người chơi dạng Toggle
 UI.OnTeleportPlayerToggled = function(state, targetName) 
     Logic.ToggleTeleportPlayer(state, targetName) 
 end
