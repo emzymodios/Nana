@@ -1,4 +1,4 @@
-V-- Nana Hub More Tab (more.lua)
+-- Nana Hub More Tab (more.lua)
 local MoreTab = {}
 
 function MoreTab.Create(container, UI)
