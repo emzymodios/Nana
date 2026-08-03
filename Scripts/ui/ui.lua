@@ -83,7 +83,7 @@ function UI.Init()
 
     local mainStroke = Instance.new("UIStroke")
     mainStroke.Color = Color3.fromRGB(70, 50, 120)
-    mainStroke.Thickness = 1.5
+    mainStroke.Thickness = 1.6
     mainStroke.Parent = mainFrame
 
     local topBar = Instance.new("Frame")
