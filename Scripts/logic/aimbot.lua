@@ -1,4 +1,4 @@
--- logic/aimbot.lua
+-- Scripts/logic/aimbot.lua
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Camera = workspace.CurrentCamera
@@ -8,6 +8,9 @@ local AimbotModule = {}
 local isAimbotEnabled = false
 local aimMode = "Nearest" -- "Nearest" hoặc "Selected"
 local selectedTargetPlayer = nil
+
+-- Tùy chỉnh độ mượt (Số càng nhỏ càng mượt/chậm, từ 0.1 đến 0.5 là đẹp)
+local SMOOTHNESS = 0.25 
 
 function AimbotModule.Toggle(state)
     isAimbotEnabled = state
@@ -25,7 +28,7 @@ function AimbotModule.SetTarget(playerName)
     end
 end
 
--- Hàm lấy mục tiêu dựa trên chế độ
+-- Hàm lấy mục tiêu
 local function GetTarget()
     if not isAimbotEnabled then return nil end
 
@@ -58,13 +61,16 @@ local function GetTarget()
     return nil
 end
 
--- Vòng lặp camera tự động hướng về mục tiêu
+-- Vòng lặp camera có tích hợp độ mượt (Interpolation) chống chóng mặt
 RunService.RenderStepped:Connect(function()
     if isAimbotEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         local targetPart = GetTarget()
         if targetPart then
-            -- Khóa tâm camera vào vị trí mục tiêu
-            Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPart.Position)
+            -- Tính toán góc nhìn hướng đến mục tiêu
+            local targetCFrame = CFrame.new(Camera.CFrame.Position, targetPart.Position)
+            
+            -- Dùng Lerp để camera lướt tới mục tiêu một cách mượt mà, không bị giật cục
+            Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, SMOOTHNESS)
         end
     end
 end)
