@@ -42,9 +42,6 @@ UI.OnTeleportPlayerToggled = function(state, targetName)
     Logic.ToggleTeleportPlayer(state, targetName) 
 end
 
--- Cầu nối Godmode
-UI.OnGodmodeToggled = function(state) Logic.ToggleGodmode(state) end
-
 -- Cầu nối Reset cấu hình tổng thể
 UI.OnResetClicked = function() Logic.ResetConfig() end
 
