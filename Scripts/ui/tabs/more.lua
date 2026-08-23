@@ -1,4 +1,4 @@
--- Nana Hub More Tab (more.lua)
+-- Nana Hub More Tab (more.lua) - FIXED
 local MoreTab = {}
 
 function MoreTab.Create(container, UI, backgroundImage)
@@ -148,7 +148,7 @@ function MoreTab.Create(container, UI, backgroundImage)
 
 
         -- =================================================
-        -- SELECT IMAGE
+        -- SELECT IMAGE (Chỉ cập nhật preview, chưa cập nhật nền)
         -- =================================================
 
         imgBtn.MouseButton1Click:Connect(function()
@@ -156,13 +156,8 @@ function MoreTab.Create(container, UI, backgroundImage)
             selectedImage = MenuImages[index]
             selectedIndex = index
 
-            -- Preview hiển thị ảnh được chọn
+            -- ✅ FIX: Preview hiển thị ảnh được chọn (chưa áp dụng nền)
             imagePreview.Image = selectedImage
-            
-            -- UPDATE BACKGROUND MENU NGAY LẬP TỨC
-            if backgroundImage then
-                backgroundImage.Image = selectedImage
-            end
 
             imageSelect.Text = "Image " .. index .. " ▼"
 
@@ -225,17 +220,18 @@ function MoreTab.Create(container, UI, backgroundImage)
 
     -- =====================================================
     -- APPLY
+    -- ✅ FIX: Chỉ lúc này mới cập nhật nền menu
     -- =====================================================
 
     applyButton.MouseButton1Click:Connect(function()
 
         if selectedImage then
 
-            -- Xác nhận ảnh hiện tại (permanent)
+            -- ✅ Xác nhận ảnh hiện tại (permanent) và cập nhật nền
             originalImage = selectedImage
-            
-            -- Update both preview and background
             imagePreview.Image = originalImage
+            
+            -- UPDATE BACKGROUND NGAY LẬP TỨC
             if backgroundImage then
                 backgroundImage.Image = originalImage
             end
@@ -263,10 +259,9 @@ function MoreTab.Create(container, UI, backgroundImage)
 
     resetButton.MouseButton1Click:Connect(function()
 
-        -- Reset preview về original
+        -- Reset preview và background về original
         imagePreview.Image = originalImage
 
-        -- Reset background menu về original
         if backgroundImage then
             backgroundImage.Image = originalImage
         end
