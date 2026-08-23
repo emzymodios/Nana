@@ -105,6 +105,7 @@ function UI.Init()
     local topBar = Instance.new("Frame")
     topBar.Size = UDim2.new(1, 0, 0, 40)
     topBar.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
+    topBar.BackgroundTransparency = 0.35
     topBar.BorderSizePixel = 0
     topBar.Parent = mainFrame
 
@@ -149,6 +150,7 @@ function UI.Init()
     sideBar.Size = UDim2.new(0, 140, 1, -40)
     sideBar.Position = UDim2.new(0, 0, 0, 40)
     sideBar.BackgroundColor3 = Color3.fromRGB(17, 17, 24)
+    sideBar.BackgroundTransparency = 0.35
     sideBar.BorderSizePixel = 0
     sideBar.Parent = mainFrame
 
