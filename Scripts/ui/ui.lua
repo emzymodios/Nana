@@ -86,6 +86,22 @@ function UI.Init()
     mainStroke.Thickness = 1.6
     mainStroke.Parent = mainFrame
 
+    -- Ảnh nền của cả bảng menu (panel). Đây chính là object được
+    -- truyền cho MoreTab để đổi ảnh nền menu khi Apply.
+    local panelBackground = Instance.new("ImageLabel")
+    panelBackground.Name = "PanelBackground"
+    panelBackground.Size = UDim2.new(1, 0, 1, 0)
+    panelBackground.Position = UDim2.new(0, 0, 0, 0)
+    panelBackground.BackgroundTransparency = 1
+    panelBackground.Image = ""
+    panelBackground.ScaleType = Enum.ScaleType.Crop
+    panelBackground.ZIndex = 0
+    panelBackground.Parent = mainFrame
+
+    local panelBgCorner = Instance.new("UICorner")
+    panelBgCorner.CornerRadius = UDim.new(0, 12)
+    panelBgCorner.Parent = panelBackground
+
     local topBar = Instance.new("Frame")
     topBar.Size = UDim2.new(1, 0, 0, 40)
     topBar.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
@@ -310,10 +326,10 @@ function UI.Init()
     if MainTab and MainTab.Create then MainTab.Create(mainContainer, UI) end
     if CombatTab and CombatTab.Create then CombatTab.Create(combatContainer, UI) end
     if ESPTab and ESPTab.Create then ESPTab.Create(otherContainer, UI) end
-    -- FIX: truyền toggleBtn (ImageButton icon) làm backgroundImage, trước đây
-    -- biến "backgroundImage" không được khai báo nên luôn là nil, khiến
-    -- Apply/Select ở tab More không cập nhật được ảnh nào cả.
-    if MoreTab and MoreTab.Create then MoreTab.Create(moreContainer, UI, toggleBtn) end
+    -- FIX: truyền panelBackground (ImageLabel nền của cả bảng menu) làm
+    -- backgroundImage. Trước đây biến "backgroundImage" không được khai báo
+    -- nên luôn là nil, khiến Apply/Select ở tab More không cập nhật được gì.
+    if MoreTab and MoreTab.Create then MoreTab.Create(moreContainer, UI, panelBackground) end
 
     local resizeBtn = Instance.new("TextButton")
     resizeBtn.Size = UDim2.new(0, 15, 0, 15)
