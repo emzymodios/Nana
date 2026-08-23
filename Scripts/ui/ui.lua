@@ -1,4 +1,4 @@
--- Nana Hub Main (ui.lua)
+-- Nana Hub Main (ui.lua) - FIXED
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
@@ -95,7 +95,7 @@ function UI.Init()
     panelBackground.BackgroundTransparency = 1
     panelBackground.Image = ""
     panelBackground.ScaleType = Enum.ScaleType.Crop
-    panelBackground.ZIndex = 0
+    panelBackground.ZIndex = -1  -- ✅ FIX: Đặt ZIndex âm để nó nằm phía sau topBar
     panelBackground.Parent = mainFrame
 
     local panelBgCorner = Instance.new("UICorner")
@@ -105,8 +105,8 @@ function UI.Init()
     local topBar = Instance.new("Frame")
     topBar.Size = UDim2.new(1, 0, 0, 40)
     topBar.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
-    topBar.BackgroundTransparency = 0.35
     topBar.BorderSizePixel = 0
+    topBar.ZIndex = 1  -- ✅ Đảm bảo topBar ở trên nền
     topBar.Parent = mainFrame
 
     local topCorner = Instance.new("UICorner")
@@ -120,7 +120,7 @@ function UI.Init()
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextSize = 16
     titleLabel.Font = Enum.Font.GothamBlack
-    titleLabel.Text = "NANA HUB 1.6"
+    titleLabel.Text = "NANA HUB 1.5"
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
@@ -150,8 +150,8 @@ function UI.Init()
     sideBar.Size = UDim2.new(0, 140, 1, -40)
     sideBar.Position = UDim2.new(0, 0, 0, 40)
     sideBar.BackgroundColor3 = Color3.fromRGB(17, 17, 24)
-    sideBar.BackgroundTransparency = 0.35
     sideBar.BorderSizePixel = 0
+    sideBar.ZIndex = 1  -- ✅ Đảm bảo sidebar ở trên nền
     sideBar.Parent = mainFrame
 
     local tabMainBtn = Instance.new("TextButton")
@@ -224,6 +224,7 @@ function UI.Init()
     mainContainer.CanvasSize = UDim2.new(0, 0, 0, 560)
     mainContainer.ScrollBarThickness = 4
     mainContainer.Visible = true
+    mainContainer.ZIndex = 1  -- ✅ Đảm bảo container ở trên nền
     mainContainer.Parent = mainFrame
     setupScrollingFrame(mainContainer)
 
@@ -236,6 +237,7 @@ function UI.Init()
     combatContainer.CanvasSize = UDim2.new(0, 0, 0, 240)
     combatContainer.ScrollBarThickness = 4
     combatContainer.Visible = false
+    combatContainer.ZIndex = 1
     combatContainer.Parent = mainFrame
     setupScrollingFrame(combatContainer)
 
@@ -248,6 +250,7 @@ function UI.Init()
     otherContainer.CanvasSize = UDim2.new(0, 0, 0, 150)
     otherContainer.ScrollBarThickness = 4
     otherContainer.Visible = false
+    otherContainer.ZIndex = 1
     otherContainer.Parent = mainFrame
     setupScrollingFrame(otherContainer)
 
@@ -261,6 +264,7 @@ function UI.Init()
     moreContainer.ScrollBarThickness = 4
     moreContainer.Visible = false
     moreContainer.Active = true
+    moreContainer.ZIndex = 1
     moreContainer.Parent = mainFrame
     setupScrollingFrame(moreContainer)
 
@@ -328,9 +332,6 @@ function UI.Init()
     if MainTab and MainTab.Create then MainTab.Create(mainContainer, UI) end
     if CombatTab and CombatTab.Create then CombatTab.Create(combatContainer, UI) end
     if ESPTab and ESPTab.Create then ESPTab.Create(otherContainer, UI) end
-    -- FIX: truyền panelBackground (ImageLabel nền của cả bảng menu) làm
-    -- backgroundImage. Trước đây biến "backgroundImage" không được khai báo
-    -- nên luôn là nil, khiến Apply/Select ở tab More không cập nhật được gì.
     if MoreTab and MoreTab.Create then MoreTab.Create(moreContainer, UI, panelBackground) end
 
     local resizeBtn = Instance.new("TextButton")
@@ -340,6 +341,7 @@ function UI.Init()
     resizeBtn.Text = "◢"
     resizeBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
     resizeBtn.TextSize = 12
+    resizeBtn.ZIndex = 5  -- ✅ Đảm bảo resize button ở trên cùng
     resizeBtn.Parent = mainFrame
 
     local resizing = false
