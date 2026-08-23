@@ -310,7 +310,10 @@ function UI.Init()
     if MainTab and MainTab.Create then MainTab.Create(mainContainer, UI) end
     if CombatTab and CombatTab.Create then CombatTab.Create(combatContainer, UI) end
     if ESPTab and ESPTab.Create then ESPTab.Create(otherContainer, UI) end
-    if MoreTab and MoreTab.Create then MoreTab.Create(moreContainer, UI, backgroundImage) end
+    -- FIX: truyền toggleBtn (ImageButton icon) làm backgroundImage, trước đây
+    -- biến "backgroundImage" không được khai báo nên luôn là nil, khiến
+    -- Apply/Select ở tab More không cập nhật được ảnh nào cả.
+    if MoreTab and MoreTab.Create then MoreTab.Create(moreContainer, UI, toggleBtn) end
 
     local resizeBtn = Instance.new("TextButton")
     resizeBtn.Size = UDim2.new(0, 15, 0, 15)
