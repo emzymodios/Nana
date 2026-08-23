@@ -158,6 +158,11 @@ function MoreTab.Create(container, UI, backgroundImage)
 
             -- Preview hiển thị ảnh được chọn
             imagePreview.Image = selectedImage
+            
+            -- UPDATE BACKGROUND MENU NGAY LẬP TỨC
+            if backgroundImage then
+                backgroundImage.Image = selectedImage
+            end
 
             imageSelect.Text = "Image " .. index .. " ▼"
 
@@ -226,10 +231,11 @@ function MoreTab.Create(container, UI, backgroundImage)
 
         if selectedImage then
 
-            -- Xác nhận ảnh hiện tại
+            -- Xác nhận ảnh hiện tại (permanent)
             originalImage = selectedImage
+            
+            -- Update both preview and background
             imagePreview.Image = originalImage
-
             if backgroundImage then
                 backgroundImage.Image = originalImage
             end
@@ -239,7 +245,7 @@ function MoreTab.Create(container, UI, backgroundImage)
             imageSelect.Text = "Select Image ▼"
 
             if UI.Notify then
-                UI.Notify("✅ Menu Image Applied", 2)
+                UI.Notify("✅ Menu Image Applied Successfully!", 3)
             end
 
         else
@@ -260,6 +266,7 @@ function MoreTab.Create(container, UI, backgroundImage)
         -- Reset preview về original
         imagePreview.Image = originalImage
 
+        -- Reset background menu về original
         if backgroundImage then
             backgroundImage.Image = originalImage
         end
@@ -269,7 +276,7 @@ function MoreTab.Create(container, UI, backgroundImage)
         imageSelect.Text = "Select Image ▼"
 
         if UI.Notify then
-            UI.Notify("🔄 Menu Image Reset", 2)
+            UI.Notify("🔄 Menu Image Reset to Default", 2)
         end
 
     end)
