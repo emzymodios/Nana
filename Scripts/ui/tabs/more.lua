@@ -26,17 +26,13 @@ function MoreTab.Create(container, UI, backgroundImage)
     local selectedImage = nil
     local selectedIndex = nil
     local dropdownOpen = false
-    
-    -- Canvas size: Closed = 430, Open = 500 (cho phép hiển thị 6 button + Apply/Reset)
-    local CANVAS_SIZE_CLOSED = 430
-    local CANVAS_SIZE_OPENED = 560  -- 6 buttons * 42 + title + spacing + apply/reset
 
 
     -- =====================================================
     -- CANVAS
     -- =====================================================
 
-    container.CanvasSize = UDim2.new(0, 0, 0, CANVAS_SIZE_CLOSED)
+    container.CanvasSize = UDim2.new(0, 0, 0, 550)
 
 
     -- =====================================================
@@ -97,6 +93,25 @@ function MoreTab.Create(container, UI, backgroundImage)
 
 
     -- =====================================================
+    -- IMAGE PREVIEW
+    -- =====================================================
+
+    local imagePreview = Instance.new("ImageLabel")
+    imagePreview.Name = "ImagePreview"
+    imagePreview.Size = UDim2.new(1, -20, 0, 80)
+    imagePreview.Position = UDim2.new(0, 10, 0, 135)
+    imagePreview.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+    imagePreview.Image = originalImage
+    imagePreview.ScaleType = Enum.ScaleType.Fit
+    imagePreview.ZIndex = 1
+    imagePreview.Parent = container
+
+    local previewCorner = Instance.new("UICorner")
+    previewCorner.CornerRadius = UDim.new(0, 8)
+    previewCorner.Parent = imagePreview
+
+
+    -- =====================================================
     -- IMAGE BUTTONS
     -- =====================================================
 
@@ -113,7 +128,7 @@ function MoreTab.Create(container, UI, backgroundImage)
             0,
             10,
             0,
-            135 + ((i - 1) * 42)
+            220 + ((i - 1) * 42)
         )
 
         imgBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
@@ -141,16 +156,14 @@ function MoreTab.Create(container, UI, backgroundImage)
             selectedImage = MenuImages[index]
             selectedIndex = index
 
-            -- Preview
-            if backgroundImage then
-                backgroundImage.Image = selectedImage
-            end
+            -- Preview hiển thị ảnh được chọn
+            imagePreview.Image = selectedImage
 
             imageSelect.Text = "Image " .. index .. " ▼"
 
             -- Đóng dropdown
             dropdownOpen = false
-            container.CanvasSize = UDim2.new(0, 0, 0, CANVAS_SIZE_CLOSED)
+            container.CanvasSize = UDim2.new(0, 0, 0, 400)
 
             for _, button in pairs(imageButtons) do
                 button.Visible = false
@@ -163,16 +176,16 @@ function MoreTab.Create(container, UI, backgroundImage)
 
     -- =====================================================
     -- APPLY BUTTON
-    -- Luôn hiển thị bên ngoài dropdown
+    -- Nằm dưới Preview Image
     -- =====================================================
 
     local applyButton = Instance.new("TextButton")
     applyButton.Name = "ApplyImage"
-    applyButton.Size = UDim2.new(0.48, -5, 0, 45)
-    applyButton.Position = UDim2.new(0, 10, 0, 395)
+    applyButton.Size = UDim2.new(0.48, -5, 0, 40)
+    applyButton.Position = UDim2.new(0, 10, 0, 220)
     applyButton.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
     applyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    applyButton.TextSize = 15
+    applyButton.TextSize = 14
     applyButton.Font = Enum.Font.GothamBold
     applyButton.Text = "Apply"
     applyButton.ZIndex = 2
@@ -185,16 +198,16 @@ function MoreTab.Create(container, UI, backgroundImage)
 
     -- =====================================================
     -- RESET BUTTON
-    -- Luôn hiển thị bên ngoài dropdown
+    -- Cạnh Apply Button
     -- =====================================================
 
     local resetButton = Instance.new("TextButton")
     resetButton.Name = "ResetImage"
-    resetButton.Size = UDim2.new(0.48, -5, 0, 45)
-    resetButton.Position = UDim2.new(0.52, 0, 0, 395)
+    resetButton.Size = UDim2.new(0.48, -5, 0, 40)
+    resetButton.Position = UDim2.new(0.52, 0, 0, 220)
     resetButton.BackgroundColor3 = Color3.fromRGB(45, 45, 55)
     resetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    resetButton.TextSize = 15
+    resetButton.TextSize = 14
     resetButton.Font = Enum.Font.GothamBold
     resetButton.Text = "Reset"
     resetButton.ZIndex = 2
@@ -215,6 +228,7 @@ function MoreTab.Create(container, UI, backgroundImage)
 
             -- Xác nhận ảnh hiện tại
             originalImage = selectedImage
+            imagePreview.Image = originalImage
 
             if backgroundImage then
                 backgroundImage.Image = originalImage
@@ -222,11 +236,16 @@ function MoreTab.Create(container, UI, backgroundImage)
 
             selectedImage = nil
             selectedIndex = nil
+            imageSelect.Text = "Select Image ▼"
 
             if UI.Notify then
-                UI.Notify("Menu Image Applied", 2)
+                UI.Notify("✅ Menu Image Applied", 2)
             end
 
+        else
+            if UI.Notify then
+                UI.Notify("⚠️ Please select an image first", 2)
+            end
         end
 
     end)
@@ -238,17 +257,19 @@ function MoreTab.Create(container, UI, backgroundImage)
 
     resetButton.MouseButton1Click:Connect(function()
 
+        -- Reset preview về original
+        imagePreview.Image = originalImage
+
         if backgroundImage then
             backgroundImage.Image = originalImage
         end
 
         selectedImage = nil
         selectedIndex = nil
-
         imageSelect.Text = "Select Image ▼"
 
         if UI.Notify then
-            UI.Notify("Menu Image Reset", 2)
+            UI.Notify("🔄 Menu Image Reset", 2)
         end
 
     end)
@@ -264,9 +285,9 @@ function MoreTab.Create(container, UI, backgroundImage)
 
         -- Cập nhật canvas size khi dropdown mở/đóng
         if dropdownOpen then
-            container.CanvasSize = UDim2.new(0, 0, 0, CANVAS_SIZE_OPENED)
+            container.CanvasSize = UDim2.new(0, 0, 0, 550)  -- Mở rộng để hiển thị tất cả 6 buttons
         else
-            container.CanvasSize = UDim2.new(0, 0, 0, CANVAS_SIZE_CLOSED)
+            container.CanvasSize = UDim2.new(0, 0, 0, 400)  -- Thu nhỏ khi đóng dropdown
         end
 
         for _, button in pairs(imageButtons) do
