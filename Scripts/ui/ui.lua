@@ -1,4 +1,4 @@
--- Nana Hub Main (ui.lua)
+-- Nana Hub Main (ui.lua) - AUTO RELOAD VERSION
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 
@@ -23,18 +23,14 @@ local Elements = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/ref
 local Notification = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/notification.lua")
 local HUD = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/hud.lua")
 
--- Tải các module tab con nằm trong thư mục tabs/
+-- Tải các module tab con
 local MainTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/main_tab.lua")
 local CombatTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/combat_tab.lua")
 local ESPTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/esp_tab.lua")
 local MoreTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/more.lua")
 
 local UI = {}
-UI.Notify = function(message, duration)
-    if Notification and Notification.Show then
-        Notification.Show("Nana Hub", tostring(message), duration or 3)
-    end
-end
+UI.Notify = Notification
 
 function UI.Init()
     if playerGui:FindFirstChild("NanaHubUI") then
@@ -46,7 +42,7 @@ function UI.Init()
     screenGui.ResetOnSpawn = false
     screenGui.Parent = playerGui
 
-    -- Khởi tạo HUD (Time, FPS, Ping) an toàn
+    -- Khởi tạo HUD
     if HUD and HUD.Init then
         HUD.Init(screenGui)
     end
@@ -90,17 +86,22 @@ function UI.Init()
     mainStroke.Thickness = 1.6
     mainStroke.Parent = mainFrame
 
-    -- Ảnh nền của cả bảng menu (panel). Đây chính là object được
-    -- truyền cho MoreTab để đổi ảnh nền menu khi Apply.
+    -- ✅ BACKGROUND IMAGE - Đây là nơi sẽ apply ảnh
     local panelBackground = Instance.new("ImageLabel")
     panelBackground.Name = "PanelBackground"
     panelBackground.Size = UDim2.new(1, 0, 1, 0)
     panelBackground.Position = UDim2.new(0, 0, 0, 0)
     panelBackground.BackgroundTransparency = 1
-    panelBackground.Image = ""
     panelBackground.ScaleType = Enum.ScaleType.Crop
-    panelBackground.ZIndex = 0
+    panelBackground.ZIndex = -1  -- ✅ Nằm phía sau các element khác
     panelBackground.Parent = mainFrame
+
+    -- ✅ LOAD ẢNH ĐÃ LƯU (từ _G khi reload)
+    if _G.NanaHubBackgroundImage and _G.NanaHubBackgroundImage ~= "" then
+        panelBackground.Image = _G.NanaHubBackgroundImage
+    else
+        panelBackground.Image = ""
+    end
 
     local panelBgCorner = Instance.new("UICorner")
     panelBgCorner.CornerRadius = UDim.new(0, 12)
@@ -109,8 +110,8 @@ function UI.Init()
     local topBar = Instance.new("Frame")
     topBar.Size = UDim2.new(1, 0, 0, 40)
     topBar.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
-    topBar.BackgroundTransparency = 0.6
     topBar.BorderSizePixel = 0
+    topBar.ZIndex = 1
     topBar.Parent = mainFrame
 
     local topCorner = Instance.new("UICorner")
@@ -124,7 +125,7 @@ function UI.Init()
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextSize = 16
     titleLabel.Font = Enum.Font.GothamBlack
-    titleLabel.Text = "NANA HUB 1.6"
+    titleLabel.Text = "NANA HUB 1.5"
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Parent = topBar
 
@@ -154,8 +155,8 @@ function UI.Init()
     sideBar.Size = UDim2.new(0, 140, 1, -40)
     sideBar.Position = UDim2.new(0, 0, 0, 40)
     sideBar.BackgroundColor3 = Color3.fromRGB(17, 17, 24)
-    sideBar.BackgroundTransparency = 0.6
     sideBar.BorderSizePixel = 0
+    sideBar.ZIndex = 1
     sideBar.Parent = mainFrame
 
     local tabMainBtn = Instance.new("TextButton")
@@ -228,6 +229,7 @@ function UI.Init()
     mainContainer.CanvasSize = UDim2.new(0, 0, 0, 560)
     mainContainer.ScrollBarThickness = 4
     mainContainer.Visible = true
+    mainContainer.ZIndex = 1
     mainContainer.Parent = mainFrame
     setupScrollingFrame(mainContainer)
 
@@ -240,6 +242,7 @@ function UI.Init()
     combatContainer.CanvasSize = UDim2.new(0, 0, 0, 240)
     combatContainer.ScrollBarThickness = 4
     combatContainer.Visible = false
+    combatContainer.ZIndex = 1
     combatContainer.Parent = mainFrame
     setupScrollingFrame(combatContainer)
 
@@ -252,6 +255,7 @@ function UI.Init()
     otherContainer.CanvasSize = UDim2.new(0, 0, 0, 150)
     otherContainer.ScrollBarThickness = 4
     otherContainer.Visible = false
+    otherContainer.ZIndex = 1
     otherContainer.Parent = mainFrame
     setupScrollingFrame(otherContainer)
 
@@ -265,6 +269,7 @@ function UI.Init()
     moreContainer.ScrollBarThickness = 4
     moreContainer.Visible = false
     moreContainer.Active = true
+    moreContainer.ZIndex = 1
     moreContainer.Parent = mainFrame
     setupScrollingFrame(moreContainer)
 
@@ -328,13 +333,10 @@ function UI.Init()
         tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
     end)
 
-    -- Gọi khởi tạo các module tab con an toàn
+    -- Gọi khởi tạo các module tab con
     if MainTab and MainTab.Create then MainTab.Create(mainContainer, UI) end
     if CombatTab and CombatTab.Create then CombatTab.Create(combatContainer, UI) end
     if ESPTab and ESPTab.Create then ESPTab.Create(otherContainer, UI) end
-    -- FIX: truyền panelBackground (ImageLabel nền của cả bảng menu) làm
-    -- backgroundImage. Trước đây biến "backgroundImage" không được khai báo
-    -- nên luôn là nil, khiến Apply/Select ở tab More không cập nhật được gì.
     if MoreTab and MoreTab.Create then MoreTab.Create(moreContainer, UI, panelBackground) end
 
     local resizeBtn = Instance.new("TextButton")
@@ -344,6 +346,7 @@ function UI.Init()
     resizeBtn.Text = "◢"
     resizeBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
     resizeBtn.TextSize = 12
+    resizeBtn.ZIndex = 5
     resizeBtn.Parent = mainFrame
 
     local resizing = false
