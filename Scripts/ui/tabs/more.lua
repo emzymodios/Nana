@@ -1,4 +1,4 @@
--- Nana Hub More Tab (more.lua) - FIXED
+-- Nana Hub More Tab (more.lua) - AUTO RELOAD VERSION
 local MoreTab = {}
 
 function MoreTab.Create(container, UI, backgroundImage)
@@ -16,11 +16,14 @@ function MoreTab.Create(container, UI, backgroundImage)
         ["6"] = "rbxassetid://116222439691339"
     }
 
+    -- Đọc ảnh đã lưu từ _G (nếu có từ lần trước)
+    local savedImage = _G.NanaHubBackgroundImage or ""
+    
     -- Ảnh ban đầu
-    local originalImage = ""
+    local originalImage = savedImage ~= "" and savedImage or (backgroundImage and backgroundImage.Image or "")
 
-    if backgroundImage then
-        originalImage = backgroundImage.Image
+    if backgroundImage and originalImage ~= "" then
+        backgroundImage.Image = originalImage
     end
 
     local selectedImage = nil
@@ -137,7 +140,7 @@ function MoreTab.Create(container, UI, backgroundImage)
         imgBtn.Font = Enum.Font.GothamBold
         imgBtn.Text = "Image " .. index
         imgBtn.Visible = false
-        imgBtn.ZIndex = 3  -- Cao hơn select button
+        imgBtn.ZIndex = 3
         imgBtn.Parent = container
 
         local corner = Instance.new("UICorner")
@@ -148,17 +151,14 @@ function MoreTab.Create(container, UI, backgroundImage)
 
 
         -- =================================================
-        -- SELECT IMAGE (Chỉ cập nhật preview, chưa cập nhật nền)
+        -- SELECT IMAGE
         -- =================================================
 
         imgBtn.MouseButton1Click:Connect(function()
 
             selectedImage = MenuImages[index]
             selectedIndex = index
-
-            -- ✅ FIX: Preview hiển thị ảnh được chọn (chưa áp dụng nền)
             imagePreview.Image = selectedImage
-
             imageSelect.Text = "Image " .. index .. " ▼"
 
             -- Đóng dropdown
@@ -176,7 +176,6 @@ function MoreTab.Create(container, UI, backgroundImage)
 
     -- =====================================================
     -- APPLY BUTTON
-    -- Nằm dưới Preview Image
     -- =====================================================
 
     local applyButton = Instance.new("TextButton")
@@ -198,7 +197,6 @@ function MoreTab.Create(container, UI, backgroundImage)
 
     -- =====================================================
     -- RESET BUTTON
-    -- Cạnh Apply Button
     -- =====================================================
 
     local resetButton = Instance.new("TextButton")
@@ -219,30 +217,71 @@ function MoreTab.Create(container, UI, backgroundImage)
 
 
     -- =====================================================
-    -- APPLY
-    -- ✅ FIX: Chỉ lúc này mới cập nhật nền menu
+    -- 🔄 AUTO RELOAD FUNCTION
+    -- =====================================================
+
+    local function reloadUI()
+        if UI.Notify then
+            UI.Notify("⏳ Reloading UI to apply image...", 2)
+        end
+
+        -- Chờ 0.5 giây rồi destroy UI
+        task.wait(0.5)
+
+        local playerGui = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+        local nanaUI = playerGui:FindFirstChild("NanaHubUI")
+        
+        if nanaUI then
+            nanaUI:Destroy()
+        end
+
+        -- Chờ UI tái khởi tạo
+        task.wait(0.5)
+
+        -- Gọi lại UI.Init() để reload
+        if UI.Init then
+            UI.Init()
+        end
+
+        if UI.Notify then
+            UI.Notify("✅ UI Reloaded! Image Applied!", 2)
+        end
+    end
+
+
+    -- =====================================================
+    -- 🎯 APPLY - LƯU + RELOAD
     -- =====================================================
 
     applyButton.MouseButton1Click:Connect(function()
 
         if selectedImage then
 
-            -- ✅ Xác nhận ảnh hiện tại (permanent) và cập nhật nền
+            -- 1️⃣ Lưu ảnh vào _G (để persist qua reload)
+            _G.NanaHubBackgroundImage = selectedImage
+
+            -- 2️⃣ Cập nhật background image hiện tại
             originalImage = selectedImage
             imagePreview.Image = originalImage
             
-            -- UPDATE BACKGROUND NGAY LẬP TỨC
             if backgroundImage then
                 backgroundImage.Image = originalImage
             end
 
+            -- 3️⃣ Reset select
             selectedImage = nil
             selectedIndex = nil
             imageSelect.Text = "Select Image ▼"
 
             if UI.Notify then
-                UI.Notify("✅ Menu Image Applied Successfully!", 3)
+                UI.Notify("✅ Image saved! Reloading...", 3)
             end
+
+            -- 4️⃣ RELOAD UI - Đây chính là phần quan trọng!
+            -- Spawn async để không block
+            task.spawn(function()
+                reloadUI()
+            end)
 
         else
             if UI.Notify then
@@ -259,11 +298,14 @@ function MoreTab.Create(container, UI, backgroundImage)
 
     resetButton.MouseButton1Click:Connect(function()
 
+        -- Xóa ảnh đã lưu
+        _G.NanaHubBackgroundImage = nil
+
         -- Reset preview và background về original
-        imagePreview.Image = originalImage
+        imagePreview.Image = ""
 
         if backgroundImage then
-            backgroundImage.Image = originalImage
+            backgroundImage.Image = ""
         end
 
         selectedImage = nil
@@ -271,8 +313,13 @@ function MoreTab.Create(container, UI, backgroundImage)
         imageSelect.Text = "Select Image ▼"
 
         if UI.Notify then
-            UI.Notify("🔄 Menu Image Reset to Default", 2)
+            UI.Notify("🔄 Image Reset! Reloading...", 2)
         end
+
+        -- Reload UI
+        task.spawn(function()
+            reloadUI()
+        end)
 
     end)
 
@@ -285,11 +332,10 @@ function MoreTab.Create(container, UI, backgroundImage)
 
         dropdownOpen = not dropdownOpen
 
-        -- Cập nhật canvas size khi dropdown mở/đóng
         if dropdownOpen then
-            container.CanvasSize = UDim2.new(0, 0, 0, 550)  -- Mở rộng để hiển thị tất cả 6 buttons
+            container.CanvasSize = UDim2.new(0, 0, 0, 550)
         else
-            container.CanvasSize = UDim2.new(0, 0, 0, 400)  -- Thu nhỏ khi đóng dropdown
+            container.CanvasSize = UDim2.new(0, 0, 0, 400)
         end
 
         for _, button in pairs(imageButtons) do
