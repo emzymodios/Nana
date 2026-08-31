@@ -27,7 +27,7 @@ function MoreTab.Create(container, UI, backgroundImage)
     info.TextColor3 = Color3.fromRGB(220, 220, 220)
     info.TextSize = 14
     info.Font = Enum.Font.Gotham
-    info.Text = "Menu background is fixed when the script loads."
+    info.Text = "comming soon ."
     info.TextXAlignment = Enum.TextXAlignment.Left
     info.TextWrapped = true
     info.ZIndex = 2
