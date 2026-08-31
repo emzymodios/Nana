@@ -97,7 +97,7 @@ function UI.Init()
     panelBackground.ScaleType = Enum.ScaleType.Crop
     panelBackground.ZIndex = 0
     panelBackground.Image = "rbxassetid://116222439691339"
-    panelBackground.ImageTransparency = 0.55
+    panelBackground.ImageTransparency = 0.25
     panelBackground.Parent = mainFrame
 
     local panelBgCorner = Instance.new("UICorner")
