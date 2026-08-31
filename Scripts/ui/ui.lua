@@ -93,15 +93,12 @@ function UI.Init()
     panelBackground.Position = UDim2.new(0, 0, 0, 0)
     panelBackground.BackgroundTransparency = 1
     panelBackground.ScaleType = Enum.ScaleType.Crop
-    panelBackground.ZIndex = -1  -- ✅ Nằm phía sau các element khác
+    panelBackground.ZIndex = 0
+    panelBackground.ImageTransparency = 0.45 -- nền mờ
     panelBackground.Parent = mainFrame
 
-    -- ✅ LOAD ẢNH ĐÃ LƯU (từ _G khi reload)
-    if _G.NanaHubBackgroundImage and _G.NanaHubBackgroundImage ~= "" then
-        panelBackground.Image = _G.NanaHubBackgroundImage
-    else
-        panelBackground.Image = ""
-    end
+    -- ẢNH NỀN CỐ ĐỊNH KHI LOAD SCRIPT
+    panelBackground.Image = "rbxassetid://116222439691339"
 
     local panelBgCorner = Instance.new("UICorner")
     panelBgCorner.CornerRadius = UDim.new(0, 12)
@@ -392,3 +389,4 @@ UI.OnTeleportPlayerToggled = nil
 UI.OnGodmodeToggled = nil
 
 return UI
+
