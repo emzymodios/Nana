@@ -71,6 +71,7 @@ function UI.Init()
     mainFrame.Size = UDim2.new(0, 540, 0, 360)
     mainFrame.Position = UDim2.new(0.5, -270, 0.5, -180)
     mainFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 20)
+    mainFrame.BackgroundTransparency = 0.45
     mainFrame.BorderSizePixel = 0
     mainFrame.Active = true
     mainFrame.Draggable = true
@@ -86,19 +87,18 @@ function UI.Init()
     mainStroke.Thickness = 1.6
     mainStroke.Parent = mainFrame
 
-    -- ✅ BACKGROUND IMAGE - Đây là nơi sẽ apply ảnh
+    -- BACKGROUND IMAGE - fixed on script load
     local panelBackground = Instance.new("ImageLabel")
     panelBackground.Name = "PanelBackground"
     panelBackground.Size = UDim2.new(1, 0, 1, 0)
     panelBackground.Position = UDim2.new(0, 0, 0, 0)
     panelBackground.BackgroundTransparency = 1
+    panelBackground.BorderSizePixel = 0
     panelBackground.ScaleType = Enum.ScaleType.Crop
     panelBackground.ZIndex = 0
-    panelBackground.ImageTransparency = 0.45 -- nền mờ
-    panelBackground.Parent = mainFrame
-
-    -- ẢNH NỀN CỐ ĐỊNH KHI LOAD SCRIPT
     panelBackground.Image = "rbxassetid://116222439691339"
+    panelBackground.ImageTransparency = 0.55
+    panelBackground.Parent = mainFrame
 
     local panelBgCorner = Instance.new("UICorner")
     panelBgCorner.CornerRadius = UDim.new(0, 12)
@@ -107,6 +107,7 @@ function UI.Init()
     local topBar = Instance.new("Frame")
     topBar.Size = UDim2.new(1, 0, 0, 40)
     topBar.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
+    topBar.BackgroundTransparency = 0.45
     topBar.BorderSizePixel = 0
     topBar.ZIndex = 1
     topBar.Parent = mainFrame
@@ -152,6 +153,7 @@ function UI.Init()
     sideBar.Size = UDim2.new(0, 140, 1, -40)
     sideBar.Position = UDim2.new(0, 0, 0, 40)
     sideBar.BackgroundColor3 = Color3.fromRGB(17, 17, 24)
+    sideBar.BackgroundTransparency = 0.45
     sideBar.BorderSizePixel = 0
     sideBar.ZIndex = 1
     sideBar.Parent = mainFrame
