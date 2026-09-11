@@ -3,11 +3,11 @@ local Elements = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzy
 local MainTab = {}
 
 function MainTab.Create(mainContainer, UI)
-    Elements.CreateSlider(mainContainer, 10, "Run Speed", 16, 200, 16, function(val)
+    Elements.CreateSlider(mainContainer, 10, "Run", 16, 700, 16, function(val)
         if UI.OnSpeedChanged then UI.OnSpeedChanged(val) end
     end)
 
-    Elements.CreateSlider(mainContainer, 85, "Fly Speed", 10, 300, 50, function(val)
+    Elements.CreateSlider(mainContainer, 85, "Fly", 10, 800, 50, function(val)
         if UI.OnFlySpeedChanged then UI.OnFlySpeedChanged(val) end
     end)
 
