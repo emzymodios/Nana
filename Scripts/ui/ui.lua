@@ -88,9 +88,34 @@ function UI.Init()
     btnCorner.Parent = openBtn
 
     local btnStroke = Instance.new("UIStroke")
-    btnStroke.Color = Color3.fromRGB(0, 255, 220)
-    btnStroke.Thickness = 2.5
-    btnStroke.Parent = openBtn
+btnStroke.Color = Color3.fromRGB(0, 255, 220)
+btnStroke.Thickness = 2.5
+btnStroke.Transparency = 0.15
+btnStroke.Parent = openBtn
+
+task.spawn(function()
+    while btnStroke.Parent do
+        -- Nhạt → đậm
+        for i = 0, 100, 2 do
+            if not btnStroke.Parent then break end
+
+            local alpha = i / 100
+            btnStroke.Transparency = 0.15 + (alpha * 0.55)
+
+            task.wait(0.025)
+        end
+
+        -- Đậm → nhạt
+        for i = 100, 0, -2 do
+            if not btnStroke.Parent then break end
+
+            local alpha = i / 100
+            btnStroke.Transparency = 0.15 + (alpha * 0.55)
+
+            task.wait(0.025)
+        end
+    end
+end)
 
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
