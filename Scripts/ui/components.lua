@@ -1,4 +1,4 @@
--- Nana Hub Components (components.lua đã sửa triệt để vệt tiêu đề thừa)
+-- Nana Hub Components (components.lua đã xóa hoàn toàn title)
 local Components = {}
 
 function Components.CreateFrameBox(parent, posY, height, titleText)
@@ -13,7 +13,7 @@ function Components.CreateFrameBox(parent, posY, height, titleText)
     boxCorner.CornerRadius = UDim.new(0, 8)
     boxCorner.Parent = box
 
-    -- Chỉ giữ lại viền Cyan duy nhất
+    -- Viền Cyan đơn giản, sạch sẽ
     local boxStroke = Instance.new("UIStroke")
     boxStroke.Color = Color3.fromRGB(0, 200, 255)
     boxStroke.Thickness = 1.5
@@ -27,21 +27,6 @@ function Components.CreateFrameBox(parent, posY, height, titleText)
     })
     gradient.Rotation = 90
     gradient.Parent = box
-
-    -- CHỈ TẠO THẺ TIÊU ĐỀ KHI THỰC SỰ CÓ TRUYỀN TÊN (tránh tạo khung chữ rỗng gây vệt đen)
-    if titleText and titleText ~= "" then
-        local titleTag = Instance.new("TextLabel")
-        titleTag.Size = UDim2.new(0.4, 0, 0, 16)
-        titleTag.Position = UDim2.new(0.02, 0, 0, -8)
-        titleTag.BackgroundColor3 = Color3.fromRGB(14, 14, 20)
-        titleTag.TextColor3 = Color3.fromRGB(0, 220, 255)
-        titleTag.TextSize = 11
-        titleTag.Font = Enum.Font.GothamBold
-        titleTag.Text = titleText
-        titleTag.TextXAlignment = Enum.TextXAlignment.Left
-        titleTag.BorderSizePixel = 0
-        titleTag.Parent = box
-    end
 
     return box
 end
