@@ -114,8 +114,8 @@ function UI.Init()
     mainFrame.ClipsDescendants = true
     mainFrame.Visible = false
     mainFrame.Active = true
-    -- Menu đứng yên: không kéo MainFrame bằng cách click/drag bên trong.
-    mainFrame.Draggable = false
+    -- Fix kéo menu: áp dụng cơ chế draggable như code 2.
+    mainFrame.Draggable = true
     mainFrame.ZIndex = 1
     mainFrame.Parent = gui
 
@@ -221,11 +221,26 @@ function UI.Init()
     -- =========================================================
     -- CONTENT AREA
     -- =========================================================
-    local contentFrame = Instance.new("Frame")
+    -- =========================================================
+    -- CONTENT AREA - SCROLL FIX
+    -- Dùng ScrollingFrame để nội dung từng tab có thể cuộn xuống.
+    -- AutomaticCanvasSize giúp tự tính chiều cao nội dung.
+    -- =========================================================
+    local contentFrame = Instance.new("ScrollingFrame")
     contentFrame.Name = "ContentFrame"
     contentFrame.Position = UDim2.new(0, 152, 0, 45)
     contentFrame.Size = UDim2.new(1, -164, 1, -57)
     contentFrame.BackgroundTransparency = 1
+    contentFrame.BorderSizePixel = 0
+    contentFrame.ScrollBarThickness = 4
+    contentFrame.ScrollBarImageColor3 = Color3.fromRGB(0, 200, 255)
+    contentFrame.ScrollBarImageTransparency = 0.15
+    contentFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+    contentFrame.ScrollingEnabled = true
+    contentFrame.Active = true
+    contentFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    contentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+    contentFrame.CanvasPosition = Vector2.new(0, 0)
     contentFrame.ZIndex = 2
     contentFrame.Parent = mainFrame
 
@@ -327,6 +342,11 @@ resizeBtn.Parent = mainFrame
 
         currentTab = nil
 
+        -- Reset scroll mỗi khi chuyển tab.
+        pcall(function()
+            contentFrame.CanvasPosition = Vector2.new(0, 0)
+        end)
+
         if tabModule and tabModule.Create then
             local success, result = pcall(function()
                 return tabModule.Create(contentFrame, UI, panelBackground)
@@ -334,6 +354,15 @@ resizeBtn.Parent = mainFrame
 
             if success then
                 currentTab = result
+
+                -- Cho phép Roblox cập nhật AutomaticCanvasSize sau khi tab tạo xong.
+                task.defer(function()
+                    if contentFrame and contentFrame.Parent then
+                        pcall(function()
+                            contentFrame.CanvasPosition = Vector2.new(0, 0)
+                        end)
+                    end
+                end)
             else
                 warn("[Nana Hub] Tab error: " .. tostring(result))
             end
