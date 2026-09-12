@@ -1,4 +1,4 @@
--- logic/speed.lua (Đã xử lý triệt để quán tính trôi)
+-- logic/speed.lua
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
@@ -8,11 +8,22 @@ local SpeedModule = {}
 local isSpeedEnabled = false
 local currentSpeed = 16
 
+local SLIDE_TIME = 0.5 -- thời gian trượt sau khi thả phím
+local slideTimer = 0   -- đếm ngược
+
 function SpeedModule.Toggle(state)
     isSpeedEnabled = state
-    if not isSpeedEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
-        LocalPlayer.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 16
-        LocalPlayer.Character:FindFirstChildOfClass("Humanoid").AssemblyLinearVelocity = Vector3.new(0, LocalPlayer.Character.HumanoidRootPart.AssemblyLinearVelocity.Y, 0)
+    if not isSpeedEnabled then
+        slideTimer = 0
+        local char = LocalPlayer.Character
+        local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+        local root = char and char:FindFirstChild("HumanoidRootPart")
+        if humanoid then
+            humanoid.WalkSpeed = 16
+        end
+        if root then
+            root.AssemblyLinearVelocity = Vector3.new(0, root.AssemblyLinearVelocity.Y, 0)
+        end
     end
 end
 
@@ -20,18 +31,41 @@ function SpeedModule.SetSpeed(val)
     currentSpeed = val
 end
 
-RunService.RenderStepped:Connect(function()
-    if isSpeedEnabled and LocalPlayer.Character then
-        local humanoid = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-        local rootPart = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-        
-        if humanoid then
-            humanoid.WalkSpeed = currentSpeed
+RunService.RenderStepped:Connect(function(dt)
+    if not isSpeedEnabled then return end
+    
+    local char = LocalPlayer.Character
+    if not char then return end
+    
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    local rootPart = char:FindFirstChild("HumanoidRootPart")
+    if not (humanoid and rootPart) then return end
+    
+    humanoid.WalkSpeed = currentSpeed
+    
+    local vel = rootPart.AssemblyLinearVelocity
+    local isMoving = humanoid.MoveDirection.Magnitude > 0
+    
+    if isMoving then
+        -- Đang bấm phím → reset đồng hồ trượt
+        slideTimer = SLIDE_TIME
+    else
+        -- Thả phím → trượt dần
+        if slideTimer > 0 then
+            slideTimer -= dt
             
-            -- Nếu nhân vật không bấm phím di chuyển nữa, triệt tiêu quán tính trôi ngay lập tức
-            if rootPart and humanoid.MoveDirection.Magnitude == 0 then
-                local currentVel = rootPart.AssemblyLinearVelocity
-                rootPart.AssemblyLinearVelocity = Vector3.new(0, currentVel.Y, 0)
+            -- Giảm dần vận tốc ngang (không đụng Y để không ảnh hưởng rơi)
+            local decay = math.clamp(slideTimer / SLIDE_TIME, 0, 1)
+            rootPart.AssemblyLinearVelocity = Vector3.new(
+                vel.X * decay,
+                vel.Y,
+                vel.Z * decay
+            )
+            
+            -- Hết thời gian trượt → dừng hẳn
+            if slideTimer <= 0 then
+                slideTimer = 0
+                rootPart.AssemblyLinearVelocity = Vector3.new(0, vel.Y, 0)
             end
         end
     end
