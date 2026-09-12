@@ -10,6 +10,26 @@ local Components = loadstring(game:HttpGet(
 local Elements = {}
 
 --------------------------------------------------
+-- COLORS
+--------------------------------------------------
+
+local COLORS = {
+    Box = Color3.fromRGB(20, 30, 45),
+    SliderBackground = Color3.fromRGB(30, 45, 60),
+    SliderFill = Color3.fromRGB(0, 200, 255),
+    SliderHover = Color3.fromRGB(0, 255, 220),
+
+    Text = Color3.fromRGB(200, 240, 255),
+
+    ToggleOff = Color3.fromRGB(30, 45, 60),
+    ToggleOn = Color3.fromRGB(0, 210, 110),
+
+    Dropdown = Color3.fromRGB(30, 45, 60),
+    DropdownList = Color3.fromRGB(20, 30, 45),
+    DropdownHover = Color3.fromRGB(0, 120, 170)
+}
+
+--------------------------------------------------
 -- SLIDER
 --------------------------------------------------
 
@@ -21,16 +41,21 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     box.Selectable = false
     box.ZIndex = 3
 
+    --------------------------------------------------
+    -- LABEL
+    --------------------------------------------------
+
     local lbl = Instance.new("TextLabel")
+
     lbl.Size = UDim2.new(0.9, 0, 0, 20)
     lbl.Position = UDim2.new(0.05, 0, 0, 8)
     lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(200, 240, 255)
+    lbl.TextColor3 = COLORS.Text
     lbl.TextSize = 12
     lbl.Font = Enum.Font.GothamBold
     lbl.Text = titleText .. ": " .. tostring(defaultVal)
     lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.ZIndex = 4
+    lbl.ZIndex = 5
     lbl.Parent = box
 
     --------------------------------------------------
@@ -38,9 +63,10 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     --------------------------------------------------
 
     local sliderBg = Instance.new("Frame")
-    sliderBg.Size = UDim2.new(0.9, 0, 0, 12)
-    sliderBg.Position = UDim2.new(0.05, 0, 0, 32)
-    sliderBg.BackgroundColor3 = Color3.fromRGB(30, 45, 60)
+
+    sliderBg.Size = UDim2.new(0.9, 0, 0, 10)
+    sliderBg.Position = UDim2.new(0.05, 0, 0, 34)
+    sliderBg.BackgroundColor3 = COLORS.SliderBackground
     sliderBg.BorderSizePixel = 0
     sliderBg.Active = true
     sliderBg.ZIndex = 4
@@ -51,7 +77,7 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     sCorner.Parent = sliderBg
 
     --------------------------------------------------
-    -- SLIDER FILL
+    -- INITIAL VALUE
     --------------------------------------------------
 
     local initialPercent = 0
@@ -64,9 +90,14 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
         )
     end
 
+    --------------------------------------------------
+    -- SLIDER FILL
+    --------------------------------------------------
+
     local sliderFill = Instance.new("Frame")
+
     sliderFill.Size = UDim2.new(initialPercent, 0, 1, 0)
-    sliderFill.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+    sliderFill.BackgroundColor3 = COLORS.SliderFill
     sliderFill.BorderSizePixel = 0
     sliderFill.Active = false
     sliderFill.ZIndex = 5
@@ -77,19 +108,53 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     fCorner.Parent = sliderFill
 
     --------------------------------------------------
-    -- SLIDER BUTTON
+    -- ROUND THUMB
+    --------------------------------------------------
+
+    local thumb = Instance.new("Frame")
+
+    thumb.Size = UDim2.new(0, 18, 0, 18)
+    thumb.AnchorPoint = Vector2.new(0.5, 0.5)
+
+    thumb.Position = UDim2.new(
+        initialPercent,
+        0,
+        0.5,
+        0
+    )
+
+    thumb.BackgroundColor3 = Color3.fromRGB(220, 250, 255)
+    thumb.BorderSizePixel = 0
+    thumb.Active = false
+    thumb.ZIndex = 7
+    thumb.Parent = sliderBg
+
+    local thumbCorner = Instance.new("UICorner")
+    thumbCorner.CornerRadius = UDim.new(1, 0)
+    thumbCorner.Parent = thumb
+
+    local thumbStroke = Instance.new("UIStroke")
+    thumbStroke.Color = COLORS.SliderFill
+    thumbStroke.Thickness = 2
+    thumbStroke.Parent = thumb
+
+    --------------------------------------------------
+    -- INVISIBLE DRAG BUTTON
     --------------------------------------------------
 
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, 12, 0, 24)
-    btn.Position = UDim2.new(0, -6, 0.5, -12)
+
+    -- Bao phủ cả thanh + vùng nhỏ xung quanh
+    btn.Size = UDim2.new(1, 16, 0, 28)
+    btn.Position = UDim2.new(0, -8, 0.5, -14)
+
     btn.BackgroundTransparency = 1
     btn.BorderSizePixel = 0
     btn.Text = ""
     btn.AutoButtonColor = false
     btn.Active = true
     btn.Selectable = false
-    btn.ZIndex = 6
+    btn.ZIndex = 8
     btn.Parent = sliderBg
 
     --------------------------------------------------
@@ -97,6 +162,8 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     --------------------------------------------------
 
     local sliding = false
+    local dragInput = nil
+
     local scrollParent = nil
     local oldScrollingEnabled = nil
 
@@ -105,9 +172,11 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     --------------------------------------------------
 
     local function findScrollingParent()
+
         local current = parent
 
         while current do
+
             if current:IsA("ScrollingFrame") then
                 return current
             end
@@ -119,7 +188,7 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     end
 
     --------------------------------------------------
-    -- GET VALUE
+    -- UPDATE SLIDER
     --------------------------------------------------
 
     local function update(input)
@@ -128,19 +197,24 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
             return
         end
 
-        local absoluteX = input.Position.X
-        local startX = sliderBg.AbsolutePosition.X
         local width = sliderBg.AbsoluteSize.X
 
         if width <= 0 then
             return
         end
 
+        local mouseX = input.Position.X
+        local startX = sliderBg.AbsolutePosition.X
+
         local percent = math.clamp(
-            (absoluteX - startX) / width,
+            (mouseX - startX) / width,
             0,
             1
         )
+
+        --------------------------------------------------
+        -- FILL
+        --------------------------------------------------
 
         sliderFill.Size = UDim2.new(
             percent,
@@ -149,17 +223,42 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
             0
         )
 
+        --------------------------------------------------
+        -- THUMB
+        --------------------------------------------------
+
+        thumb.Position = UDim2.new(
+            percent,
+            0,
+            0.5,
+            0
+        )
+
+        --------------------------------------------------
+        -- VALUE
+        --------------------------------------------------
+
         local val
 
         if maxVal == minVal then
+
             val = minVal
+
         else
+
             val = math.floor(
-                minVal + ((maxVal - minVal) * percent) + 0.5
+                minVal
+                + ((maxVal - minVal) * percent)
+                + 0.5
             )
+
         end
 
         lbl.Text = titleText .. ": " .. tostring(val)
+
+        --------------------------------------------------
+        -- CALLBACK
+        --------------------------------------------------
 
         if callback then
             callback(val)
@@ -167,7 +266,7 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     end
 
     --------------------------------------------------
-    -- START DRAG
+    -- START SLIDER
     --------------------------------------------------
 
     local function startSliding(input)
@@ -183,19 +282,33 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
 
         sliding = true
 
-        -- Khóa scroll của content khi kéo slider
+        --------------------------------------------------
+        -- IMPORTANT:
+        -- Chỉ slider này được kéo
+        --------------------------------------------------
+
+        dragInput = nil
+
+        --------------------------------------------------
+        -- Tắt scroll khi đang kéo
+        --------------------------------------------------
+
         scrollParent = findScrollingParent()
 
         if scrollParent then
-            oldScrollingEnabled = scrollParent.ScrollingEnabled
+
+            oldScrollingEnabled =
+                scrollParent.ScrollingEnabled
+
             scrollParent.ScrollingEnabled = false
+
         end
 
         update(input)
     end
 
     --------------------------------------------------
-    -- STOP DRAG
+    -- STOP SLIDER
     --------------------------------------------------
 
     local function stopSliding(input)
@@ -210,18 +323,38 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
         end
 
         sliding = false
+        dragInput = nil
+
+        --------------------------------------------------
+        -- Restore scroll
+        --------------------------------------------------
 
         if scrollParent then
+
             scrollParent.ScrollingEnabled =
                 oldScrollingEnabled ~= false
 
             scrollParent = nil
             oldScrollingEnabled = nil
+
         end
+
+        --------------------------------------------------
+        -- Reset thumb color
+        --------------------------------------------------
+
+        thumb.BackgroundColor3 =
+            Color3.fromRGB(220, 250, 255)
+
+        thumbStroke.Color =
+            COLORS.SliderFill
+
+        sliderFill.BackgroundColor3 =
+            COLORS.SliderFill
     end
 
     --------------------------------------------------
-    -- INPUT BEGIN
+    -- BUTTON INPUT BEGIN
     --------------------------------------------------
 
     btn.InputBegan:Connect(function(input)
@@ -230,7 +363,52 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
             or input.UserInputType == Enum.UserInputType.Touch then
 
             startSliding(input)
+
         end
+    end)
+
+    --------------------------------------------------
+    -- TRACK DRAG INPUT
+    --------------------------------------------------
+
+    btn.InputChanged:Connect(function(input)
+
+        if input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch then
+
+            dragInput = input
+
+        end
+    end)
+
+    --------------------------------------------------
+    -- GLOBAL INPUT CHANGE
+    --------------------------------------------------
+
+    UserInputService.InputChanged:Connect(function(input)
+
+        if not sliding then
+            return
+        end
+
+        --------------------------------------------------
+        -- Mouse
+        --------------------------------------------------
+
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+
+            update(input)
+
+        --------------------------------------------------
+        -- Touch
+        --------------------------------------------------
+
+        elseif input.UserInputType == Enum.UserInputType.Touch then
+
+            update(input)
+
+        end
+
     end)
 
     --------------------------------------------------
@@ -243,38 +421,47 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
             or input.UserInputType == Enum.UserInputType.Touch then
 
             stopSliding(input)
+
         end
+
     end)
 
     --------------------------------------------------
-    -- MOUSE / TOUCH MOVE
-    --------------------------------------------------
-
-    UserInputService.InputChanged:Connect(function(input)
-
-        if not sliding then
-            return
-        end
-
-        if input.UserInputType == Enum.UserInputType.MouseMovement
-            or input.UserInputType == Enum.UserInputType.Touch then
-
-            update(input)
-        end
-    end)
-
-    --------------------------------------------------
-    -- HOVER EFFECT
+    -- HOVER
     --------------------------------------------------
 
     btn.MouseEnter:Connect(function()
-        sliderFill.BackgroundColor3 = Color3.fromRGB(0, 255, 220)
+
+        if not sliding then
+
+            sliderFill.BackgroundColor3 =
+                COLORS.SliderHover
+
+            thumb.BackgroundColor3 =
+                Color3.fromRGB(255, 255, 255)
+
+            thumbStroke.Color =
+                COLORS.SliderHover
+
+        end
+
     end)
 
     btn.MouseLeave:Connect(function()
+
         if not sliding then
-            sliderFill.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+
+            sliderFill.BackgroundColor3 =
+                COLORS.SliderFill
+
+            thumb.BackgroundColor3 =
+                Color3.fromRGB(220, 250, 255)
+
+            thumbStroke.Color =
+                COLORS.SliderFill
+
         end
+
     end)
 
     return box
@@ -287,17 +474,19 @@ end
 
 function Elements.CreateToggleRow(parent, posY, titleText, callback)
 
-    local box = Components.CreateFrameBox(parent, posY, 45, nil)
+    local box =
+        Components.CreateFrameBox(parent, posY, 45, nil)
 
     box.Active = true
     box.Selectable = false
     box.ZIndex = 3
 
     local lbl = Instance.new("TextLabel")
+
     lbl.Size = UDim2.new(0.7, 0, 1, 0)
     lbl.Position = UDim2.new(0.05, 0, 0, 0)
     lbl.BackgroundTransparency = 1
-    lbl.TextColor3 = Color3.fromRGB(200, 240, 255)
+    lbl.TextColor3 = COLORS.Text
     lbl.TextSize = 12
     lbl.Font = Enum.Font.GothamBold
     lbl.Text = titleText
@@ -310,9 +499,10 @@ function Elements.CreateToggleRow(parent, posY, titleText, callback)
     --------------------------------------------------
 
     local toggleBox = Instance.new("TextButton")
+
     toggleBox.Size = UDim2.new(0, 45, 0, 22)
     toggleBox.Position = UDim2.new(0.75, 0, 0.5, -11)
-    toggleBox.BackgroundColor3 = Color3.fromRGB(30, 45, 60)
+    toggleBox.BackgroundColor3 = COLORS.ToggleOff
     toggleBox.BorderSizePixel = 0
     toggleBox.Text = ""
     toggleBox.AutoButtonColor = false
@@ -326,13 +516,15 @@ function Elements.CreateToggleRow(parent, posY, titleText, callback)
     tCorner.Parent = toggleBox
 
     --------------------------------------------------
-    -- TOGGLE CIRCLE
+    -- CIRCLE
     --------------------------------------------------
 
     local circle = Instance.new("Frame")
+
     circle.Size = UDim2.new(0, 18, 0, 18)
     circle.Position = UDim2.new(0, 2, 0.5, -9)
-    circle.BackgroundColor3 = Color3.fromRGB(220, 240, 255)
+    circle.BackgroundColor3 =
+        Color3.fromRGB(220, 240, 255)
     circle.BorderSizePixel = 0
     circle.ZIndex = 6
     circle.Parent = toggleBox
@@ -342,7 +534,7 @@ function Elements.CreateToggleRow(parent, posY, titleText, callback)
     cCorner.Parent = circle
 
     --------------------------------------------------
-    -- TOGGLE STATE
+    -- STATE
     --------------------------------------------------
 
     local active = false
@@ -362,7 +554,7 @@ function Elements.CreateToggleRow(parent, posY, titleText, callback)
             )
 
             toggleBox.BackgroundColor3 =
-                Color3.fromRGB(0, 210, 110)
+                COLORS.ToggleOn
 
         else
 
@@ -375,12 +567,14 @@ function Elements.CreateToggleRow(parent, posY, titleText, callback)
             )
 
             toggleBox.BackgroundColor3 =
-                Color3.fromRGB(30, 45, 60)
+                COLORS.ToggleOff
+
         end
 
         if callback then
             callback(active)
         end
+
     end)
 
     return box
@@ -405,10 +599,11 @@ function Elements.CreateDropdown(parent, posY, title, optionsList, callback)
     --------------------------------------------------
 
     local label = Instance.new("TextLabel")
+
     label.Size = UDim2.new(0.4, 0, 1, 0)
     label.Position = UDim2.new(0.05, 0, 0, 0)
     label.BackgroundTransparency = 1
-    label.TextColor3 = Color3.fromRGB(200, 240, 255)
+    label.TextColor3 = COLORS.Text
     label.TextSize = 12
     label.Font = Enum.Font.GothamBold
     label.Text = title
@@ -421,10 +616,11 @@ function Elements.CreateDropdown(parent, posY, title, optionsList, callback)
     --------------------------------------------------
 
     local dropBtn = Instance.new("TextButton")
+
     dropBtn.Size = UDim2.new(0.5, 0, 0, 28)
     dropBtn.Position = UDim2.new(0.45, 0, 0.5, -14)
-    dropBtn.BackgroundColor3 = Color3.fromRGB(30, 45, 60)
-    dropBtn.TextColor3 = Color3.fromRGB(220, 240, 255)
+    dropBtn.BackgroundColor3 = COLORS.Dropdown
+    dropBtn.TextColor3 = COLORS.Text
     dropBtn.TextSize = 12
     dropBtn.Font = Enum.Font.Gotham
     dropBtn.Text = "Select Player ▾"
@@ -443,9 +639,10 @@ function Elements.CreateDropdown(parent, posY, title, optionsList, callback)
     --------------------------------------------------
 
     local listFrame = Instance.new("ScrollingFrame")
+
     listFrame.Size = UDim2.new(0.5, 0, 0, 0)
     listFrame.Position = UDim2.new(0.45, 0, 1, 2)
-    listFrame.BackgroundColor3 = Color3.fromRGB(20, 30, 45)
+    listFrame.BackgroundColor3 = COLORS.DropdownList
     listFrame.BorderSizePixel = 0
     listFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     listFrame.ScrollBarThickness = 3
@@ -476,6 +673,7 @@ function Elements.CreateDropdown(parent, posY, title, optionsList, callback)
             if v:IsA("TextButton") then
                 v:Destroy()
             end
+
         end
 
         if not items then
@@ -495,16 +693,17 @@ function Elements.CreateDropdown(parent, posY, title, optionsList, callback)
 
         for index, itemName in ipairs(items) do
 
-            local optBtn = Instance.new("TextButton")
+            local optBtn =
+                Instance.new("TextButton")
 
             optBtn.Size =
                 UDim2.new(1, 0, 0, 28)
 
             optBtn.BackgroundColor3 =
-                Color3.fromRGB(30, 45, 60)
+                COLORS.Dropdown
 
             optBtn.TextColor3 =
-                Color3.fromRGB(220, 240, 255)
+                COLORS.Text
 
             optBtn.TextSize = 12
             optBtn.Font = Enum.Font.Gotham
@@ -516,18 +715,26 @@ function Elements.CreateDropdown(parent, posY, title, optionsList, callback)
             optBtn.ZIndex = 11
             optBtn.Parent = listFrame
 
-            local optionCorner = Instance.new("UICorner")
-            optionCorner.CornerRadius = UDim.new(0, 4)
+            local optionCorner =
+                Instance.new("UICorner")
+
+            optionCorner.CornerRadius =
+                UDim.new(0, 4)
+
             optionCorner.Parent = optBtn
 
             optBtn.MouseEnter:Connect(function()
+
                 optBtn.BackgroundColor3 =
-                    Color3.fromRGB(0, 120, 170)
+                    COLORS.DropdownHover
+
             end)
 
             optBtn.MouseLeave:Connect(function()
+
                 optBtn.BackgroundColor3 =
-                    Color3.fromRGB(30, 45, 60)
+                    COLORS.Dropdown
+
             end)
 
             optBtn.MouseButton1Click:Connect(function()
@@ -541,7 +748,9 @@ function Elements.CreateDropdown(parent, posY, title, optionsList, callback)
                 if callback then
                     callback(itemName)
                 end
+
             end)
+
         end
     end
 
@@ -558,9 +767,11 @@ function Elements.CreateDropdown(parent, posY, title, optionsList, callback)
         if isOpen and optionsList then
             updateOptions(optionsList)
         end
+
     end)
 
     return container, updateOptions
 end
 
 return Elements
+
