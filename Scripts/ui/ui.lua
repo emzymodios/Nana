@@ -114,7 +114,8 @@ function UI.Init()
     mainFrame.ClipsDescendants = true
     mainFrame.Visible = false
     mainFrame.Active = true
-    mainFrame.Draggable = true
+    -- Menu đứng yên: không kéo MainFrame bằng cách click/drag bên trong.
+    mainFrame.Draggable = false
     mainFrame.ZIndex = 1
     mainFrame.Parent = gui
 
@@ -229,22 +230,38 @@ function UI.Init()
     contentFrame.Parent = mainFrame
 
     -- =========================================================
-    -- RESIZE - STYLE FILE 1
-    -- Kéo góc phải dưới để phóng to/thu nhỏ
+    -- RESIZE - GÓC PHẢI DƯỚI
+    -- MainFrame đứng yên, chỉ thanh kéo này mới resize được.
     -- =========================================================
-    local resizeBtn = Instance.new("TextButton")
-    resizeBtn.Name = "ResizeButton"
-    resizeBtn.Size = UDim2.new(0, 25, 0, 25)
-    resizeBtn.Position = UDim2.new(1, -25, 1, -25)
-    resizeBtn.Text = ""
-    resizeBtn.BackgroundTransparency = 1
-    resizeBtn.TextTransparency = 1
-    resizeBtn.ZIndex = 10
-    resizeBtn.Parent = mainFrame
+   -- MainFrame đứng yên, chỉ vùng góc phải dưới mới resize được.
+local resizeBtn = Instance.new("TextButton")
+resizeBtn.Name = "ResizeButton"
+resizeBtn.Size = UDim2.new(0, 28, 0, 28)
+resizeBtn.AnchorPoint = Vector2.new(1, 1)
+resizeBtn.Position = UDim2.new(1, 0, 1, 0)
+
+resizeBtn.Text = ""
+resizeBtn.BackgroundTransparency = 1
+resizeBtn.BorderSizePixel = 0
+resizeBtn.AutoButtonColor = false
+resizeBtn.Active = true
+resizeBtn.ZIndex = 100
+resizeBtn.Parent = mainFrame
+
+
+    local resizeStroke = Instance.new("UIStroke")
+    resizeStroke.Color = Color3.fromRGB(0, 220, 255)
+    resizeStroke.Transparency = 0.35
+    resizeStroke.Thickness = 1
+    resizeStroke.Parent = resizeBtn
+
+    local resizeCorner = Instance.new("UICorner")
+    resizeCorner.CornerRadius = UDim.new(0, 5)
+    resizeCorner.Parent = resizeBtn
 
     local isResizing = false
-    local startInputPos
-    local startFrameSize
+    local startInputPos = nil
+    local startFrameSize = nil
 
     resizeBtn.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1
@@ -253,31 +270,30 @@ function UI.Init()
             isResizing = true
             startInputPos = input.Position
             startFrameSize = mainFrame.AbsoluteSize
-            mainFrame.Draggable = false
-        end
-    end)
-
-    resizeBtn.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1
-            or input.UserInputType == Enum.UserInputType.Touch then
-
-            isResizing = false
-            mainFrame.Draggable = true
         end
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-        if isResizing
-            and (input.UserInputType == Enum.UserInputType.MouseMovement
-            or input.UserInputType == Enum.UserInputType.Touch) then
+        if not isResizing then
+            return
+        end
+
+        if input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch then
 
             local delta = input.Position - startInputPos
 
-            -- Giống file 1: không giới hạn max, chỉ có min
             local newWidth = math.max(450, startFrameSize.X + delta.X)
             local newHeight = math.max(280, startFrameSize.Y + delta.Y)
 
             mainFrame.Size = UDim2.new(0, newWidth, 0, newHeight)
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            isResizing = false
         end
     end)
 
