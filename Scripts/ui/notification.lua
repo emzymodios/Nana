@@ -1,5 +1,5 @@
 -- Scripts/ui/notification.lua
--- Nana Hub Notification - Cyan Animated Border
+-- Nana Hub Notification - 3 Cyan Animated Border Lights
 
 local Notification = {}
 
@@ -38,47 +38,19 @@ function Notification.Show(title, text, duration, iconId)
     notifFrame.Parent = screenGui
 
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
+    corner.CornerRadius = UDim.new(0, 10)
     corner.Parent = notifFrame
 
-    -- Viền cyan chính
+    --==================================================
+    -- BASE BORDER
+    --==================================================
+
     local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(0, 220, 255)
-    stroke.Thickness = 1.5
-    stroke.Transparency = 0.15
+    stroke.Name = "Border"
+    stroke.Color = Color3.fromRGB(0, 180, 215)
+    stroke.Thickness = 1.4
+    stroke.Transparency = 0.35
     stroke.Parent = notifFrame
-
-    --==================================================
-    -- MOVING CYAN LIGHT
-    --==================================================
-
-    local light = Instance.new("Frame")
-    light.Name = "MovingLight"
-    light.Size = UDim2.new(0, 45, 0, 2)
-    light.Position = UDim2.new(0, -45, 0, 0)
-    light.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-    light.BorderSizePixel = 0
-    light.ZIndex = 4
-    light.Parent = notifFrame
-
-    local lightCorner = Instance.new("UICorner")
-    lightCorner.CornerRadius = UDim.new(1, 0)
-    lightCorner.Parent = light
-
-    -- Glow của tia sáng
-    local lightGlow = Instance.new("Frame")
-    lightGlow.Name = "Glow"
-    lightGlow.Size = UDim2.new(1, 0, 0, 5)
-    lightGlow.Position = UDim2.new(0, 0, 0.5, -2)
-    lightGlow.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
-    lightGlow.BackgroundTransparency = 0.65
-    lightGlow.BorderSizePixel = 0
-    lightGlow.ZIndex = 3
-    lightGlow.Parent = light
-
-    local glowCorner = Instance.new("UICorner")
-    glowCorner.CornerRadius = UDim.new(1, 0)
-    glowCorner.Parent = lightGlow
 
     --==================================================
     -- ICON
@@ -139,54 +111,232 @@ function Notification.Show(title, text, duration, iconId)
     descLbl.Parent = notifFrame
 
     --==================================================
+    -- BORDER LIGHT SYSTEM
+    --
+    -- 3 tia chạy quanh toàn bộ notification.
+    -- Mỗi tia cách nhau 1/3 vòng.
+    --==================================================
+
+    local lights = {}
+
+    local function createLight(index)
+        local light = Instance.new("Frame")
+        light.Name = "BorderLight_" .. index
+        light.Size = UDim2.new(0, 34, 0, 2)
+        light.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+        light.BackgroundTransparency = 0.05
+        light.BorderSizePixel = 0
+        light.ZIndex = 4
+        light.Parent = notifFrame
+
+        local lightCorner = Instance.new("UICorner")
+        lightCorner.CornerRadius = UDim.new(1, 0)
+        lightCorner.Parent = light
+
+        -- Glow
+        local glow = Instance.new("Frame")
+        glow.Name = "Glow"
+        glow.Size = UDim2.new(1, 0, 0, 7)
+        glow.Position = UDim2.new(0, 0, 0.5, -3.5)
+        glow.BackgroundColor3 = Color3.fromRGB(0, 255, 255)
+        glow.BackgroundTransparency = 0.78
+        glow.BorderSizePixel = 0
+        glow.ZIndex = 3
+        glow.Parent = light
+
+        local glowCorner = Instance.new("UICorner")
+        glowCorner.CornerRadius = UDim.new(1, 0)
+        glowCorner.Parent = glow
+
+        lights[index] = light
+    end
+
+    for i = 1, 3 do
+        createLight(i)
+    end
+
+    --==================================================
+    -- ROUNDED RECTANGLE PATH
+    --
+    -- Path gồm:
+    -- Top
+    -- Góc phải trên
+    -- Right
+    -- Góc phải dưới
+    -- Bottom
+    -- Góc trái dưới
+    -- Left
+    -- Góc trái trên
+    --==================================================
+
+    local width = 260
+    local height = 65
+    local radius = 10
+
+    local straightTop = width - radius * 2
+    local straightSide = height - radius * 2
+
+    local arcLength = math.pi * radius / 2
+
+    local perimeter =
+        straightTop +
+        arcLength +
+        straightSide +
+        arcLength +
+        straightTop +
+        arcLength +
+        straightSide +
+        arcLength
+
+    -- Trả về vị trí + hướng của một điểm trên border.
+    local function getPoint(distance)
+
+        distance = distance % perimeter
+
+        -- TOP: trái -> phải
+        if distance <= straightTop then
+            local x = radius + distance
+            return x, 0, true
+        end
+
+        distance -= straightTop
+
+        -- TOP RIGHT CORNER
+        if distance <= arcLength then
+            local a = -math.pi / 2 + (distance / arcLength) * (math.pi / 2)
+
+            local cx = width - radius
+            local cy = radius
+
+            local x = cx + math.cos(a) * radius
+            local y = cy + math.sin(a) * radius
+
+            return x, y, false
+        end
+
+        distance -= arcLength
+
+        -- RIGHT
+        if distance <= straightSide then
+            local y = radius + distance
+            return width, y, false
+        end
+
+        distance -= straightSide
+
+        -- BOTTOM RIGHT CORNER
+        if distance <= arcLength then
+            local a = (distance / arcLength) * (math.pi / 2)
+
+            local cx = width - radius
+            local cy = height - radius
+
+            local x = cx + math.cos(a) * radius
+            local y = cy + math.sin(a) * radius
+
+            return x, y, false
+        end
+
+        distance -= arcLength
+
+        -- BOTTOM: phải -> trái
+        if distance <= straightTop then
+            local x = width - radius - distance
+            return x, height, true
+        end
+
+        distance -= straightTop
+
+        -- BOTTOM LEFT CORNER
+        if distance <= arcLength then
+            local a = math.pi / 2 + (distance / arcLength) * (math.pi / 2)
+
+            local cx = radius
+            local cy = height - radius
+
+            local x = cx + math.cos(a) * radius
+            local y = cy + math.sin(a) * radius
+
+            return x, y, false
+        end
+
+        distance -= arcLength
+
+        -- LEFT
+        if distance <= straightSide then
+            local y = height - radius - distance
+            return 0, y, false
+        end
+
+        distance -= straightSide
+
+        -- TOP LEFT CORNER
+        local a = math.pi + (distance / arcLength) * (math.pi / 2)
+
+        local cx = radius
+        local cy = radius
+
+        local x = cx + math.cos(a) * radius
+        local y = cy + math.sin(a) * radius
+
+        return x, y, false
+    end
+
+    --==================================================
     -- ANIMATION
-    -- Tia sáng chạy quanh 4 cạnh
     --==================================================
 
     local connection
 
     connection = RunService.RenderStepped:Connect(function()
+
         if not notifFrame.Parent then
-            if connection then
-                connection:Disconnect()
-            end
+            connection:Disconnect()
             return
         end
 
-        local t = (os.clock() * 0.8) % 4
-        local side = math.floor(t)
-        local progress = t - side
+        local baseSpeed = 55
+        local time = (os.clock() * baseSpeed) % perimeter
 
-        if side == 0 then
-            -- Trên: trái -> phải
-            light.Size = UDim2.new(0, 45, 0, 2)
-            light.Position = UDim2.new(progress, -22, 0, 0)
+        for i, light in ipairs(lights) do
 
-        elseif side == 1 then
-            -- Phải: trên -> dưới
-            light.Size = UDim2.new(0, 2, 0, 45)
-            light.Position = UDim2.new(1, -2, progress, -22)
+            -- 3 tia cách đều nhau
+            local offset = ((i - 1) / 3) * perimeter
+            local distance = time + offset
 
-        elseif side == 2 then
-            -- Dưới: phải -> trái
-            light.Size = UDim2.new(0, 45, 0, 2)
-            light.Position = UDim2.new(1 - progress, -22, 1, -2)
+            local x, y, horizontal = getPoint(distance)
 
-        else
-            -- Trái: dưới -> trên
-            light.Size = UDim2.new(0, 2, 0, 45)
-            light.Position = UDim2.new(0, 0, 1 - progress, -22)
+            if horizontal then
+                light.Size = UDim2.new(0, 34, 0, 2)
+                light.Position = UDim2.new(0, x - 17, 0, y - 1)
+
+                local glow = light:FindFirstChild("Glow")
+                if glow then
+                    glow.Size = UDim2.new(1, 0, 0, 7)
+                    glow.Position = UDim2.new(0, 0, 0.5, -3.5)
+                end
+            else
+                light.Size = UDim2.new(0, 2, 0, 34)
+                light.Position = UDim2.new(0, x - 1, 0, y - 17)
+
+                local glow = light:FindFirstChild("Glow")
+                if glow then
+                    glow.Size = UDim2.new(0, 7, 1, 0)
+                    glow.Position = UDim2.new(0.5, -3.5, 0, 0)
+                end
+            end
         end
     end)
 
     --==================================================
     -- AUTO REMOVE
-    -- Giữ nguyên duration
     --==================================================
 
     task.delay(duration, function()
+
         if connection then
             connection:Disconnect()
+            connection = nil
         end
 
         if notifFrame and notifFrame.Parent then
