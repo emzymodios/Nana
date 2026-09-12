@@ -151,7 +151,7 @@ function UI.Init()
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, -20, 0, 35)
     titleLabel.Position = UDim2.new(0, 15, 0, 5)
-    titleLabel.Text = "ＳＨＡＤＯＷ ＧＬＡＤＥ HUB"
+    titleLabel.Text = "NANA HUB"
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.TextSize = 15
     titleLabel.TextColor3 = Color3.fromRGB(0, 255, 230)
