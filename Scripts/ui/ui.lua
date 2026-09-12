@@ -251,7 +251,7 @@ resizeBtn.Parent = mainFrame
 
     local resizeStroke = Instance.new("UIStroke")
     resizeStroke.Color = Color3.fromRGB(0, 220, 255)
-    resizeStroke.Transparency = 0.35
+    resizeStroke.Transparency = 1
     resizeStroke.Thickness = 1
     resizeStroke.Parent = resizeBtn
 
