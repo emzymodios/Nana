@@ -1,4 +1,4 @@
--- Nana Hub Elements (elements.lua) - FIXED VERSION
+-- Nana Hub Elements (elements.lua) - COMPLETE FIX V2
 local UserInputService = game:GetService("UserInputService")
 local Components = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/components.lua"))()
 
@@ -29,6 +29,13 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     sCorner.CornerRadius = UDim.new(1, 0)
     sCorner.Parent = sliderBg
 
+    -- THÊM: Viền CYAN cho slider
+    local sStroke = Instance.new("UIStroke")
+    sStroke.Color = Color3.fromRGB(0, 200, 255)
+    sStroke.Thickness = 1
+    sStroke.Transparency = 0.3
+    sStroke.Parent = sliderBg
+
     local sliderFill = Instance.new("Frame")
     sliderFill.Size = UDim2.new((defaultVal - minVal) / (maxVal - minVal), 0, 1, 0)
     sliderFill.BackgroundColor3 = Color3.fromRGB(110, 80, 255)
@@ -39,19 +46,35 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     fCorner.CornerRadius = UDim.new(1, 0)
     fCorner.Parent = sliderFill
 
+    -- THÊM: Hình tròn CYAN để kéo
+    local circle = Instance.new("Frame")
+    circle.Size = UDim2.new(0, 15, 0, 15)
+    circle.Position = UDim2.new((defaultVal - minVal) / (maxVal - minVal), -7.5, 0.5, -7.5)
+    circle.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+    circle.BorderSizePixel = 0
+    circle.ZIndex = 3
+    circle.Parent = sliderBg
+
+    local cCorner = Instance.new("UICorner")
+    cCorner.CornerRadius = UDim.new(1, 0)
+    cCorner.Parent = circle
+
     local sliding = false
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, 0, 1, 0)
     btn.BackgroundTransparency = 1
     btn.Text = ""
+    btn.ZIndex = 2
     btn.Parent = sliderBg
 
     local function update(input)
         if not input or not input.Position then return end
         local rawPos = (input.Position.X - sliderBg.AbsolutePosition.X) / sliderBg.AbsoluteSize.X
-        -- FIX: Thay math.clamp bằng math.max/math.min (Roblox Lua compatible)
+        -- FIX: Thay math.clamp bằng math.max/math.min
         local pos = math.max(0, math.min(1, rawPos))
         sliderFill.Size = UDim2.new(pos, 0, 1, 0)
+        -- THÊM: Cập nhật vị trí circle
+        circle.Position = UDim2.new(pos, -7.5, 0.5, -7.5)
         local val = math.floor(minVal + (maxVal - minVal) * pos)
         lbl.Text = titleText .. ": " .. tostring(val)
         callback(val)
@@ -113,14 +136,6 @@ function Elements.CreateToggleRow(parent, posY, titleText, callback)
     cCorner.Parent = circle
 
     local active = false
-    
-    -- FIX: Thêm hàm reset trạng thái toggle
-    local function resetToggle()
-        active = false
-        circle:TweenPosition(UDim2.new(0, 2, 0.5, -9), "Out", "Quad", 0.15, true)
-        toggleBox.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
-    end
-    
     toggleBox.MouseButton1Click:Connect(function()
         active = not active
         if active then
@@ -132,13 +147,6 @@ function Elements.CreateToggleRow(parent, posY, titleText, callback)
         end
         callback(active)
     end)
-    
-    -- FIX: Return resetToggle function để có thể reset từ bên ngoài
-    return {
-        box = box,
-        toggle = toggleBox,
-        reset = resetToggle
-    }
 end
 
 function Elements.CreateDropdown(parent, posY, title, optionsList, callback)
