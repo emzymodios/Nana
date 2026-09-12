@@ -54,6 +54,7 @@ local UI = {}
 UI.Notify = Notification
 
 local BACKGROUND_ID = (Config and Config.BackgroundImageId) or "rbxassetid://116222439691339"
+local ICON_ID = (Config and Config.IconImageId) or "rbxassetid://130473788814906"
 
 function UI.Init()
     -- Xóa UI cũ
