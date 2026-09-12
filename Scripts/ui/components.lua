@@ -1,4 +1,4 @@
--- Nana Hub Components (components.lua)
+-- Nana Hub Components (components.lua đã sửa lỗi viền đen)
 local Components = {}
 
 function Components.CreateFrameBox(parent, posY, height, titleText)
@@ -13,18 +13,11 @@ function Components.CreateFrameBox(parent, posY, height, titleText)
     boxCorner.CornerRadius = UDim.new(0, 8)
     boxCorner.Parent = box
 
-    -- Cyan border
+    -- Chỉ giữ lại viền Cyan duy nhất để tránh bị đè nét đen
     local boxStroke = Instance.new("UIStroke")
     boxStroke.Color = Color3.fromRGB(0, 200, 255)
     boxStroke.Thickness = 1.5
     boxStroke.Parent = box
-
-    -- Dark shadow
-    local boxShadow = Instance.new("UIStroke")
-    boxShadow.Color = Color3.fromRGB(0, 0, 0)
-    boxShadow.Thickness = 2
-    boxShadow.Transparency = 0.7
-    boxShadow.Parent = box
 
     -- Dark gradient
     local gradient = Instance.new("UIGradient")
@@ -53,4 +46,3 @@ function Components.CreateFrameBox(parent, posY, height, titleText)
 end
 
 return Components
-
