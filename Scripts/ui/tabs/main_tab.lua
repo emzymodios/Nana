@@ -1,4 +1,3 @@
-
 local Elements = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua"))()
 
 local MainTab = {}
@@ -8,6 +7,9 @@ function MainTab.Create(mainContainer, UI)
     -- =========================================================
     -- MAIN - NANA HUB CYAN STYLE
     -- =========================================================
+
+    -- Store toggle references for reset
+    local toggles = {}
 
     Elements.CreateSlider(mainContainer, 10, "Run", 16, 700, 16, function(val)
         if UI.OnSpeedChanged then
@@ -21,37 +23,37 @@ function MainTab.Create(mainContainer, UI)
         end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 160, "Speed Mode", function(state)
+    toggles.speedMode = Elements.CreateToggleRow(mainContainer, 160, "Speed Mode", function(state)
         if UI.OnSpeedToggled then
             UI.OnSpeedToggled(state)
         end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 215, "Fly Mode", function(state)
+    toggles.flyMode = Elements.CreateToggleRow(mainContainer, 215, "Fly Mode", function(state)
         if UI.OnFlyToggled then
             UI.OnFlyToggled(state)
         end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 270, "NoClip Mode", function(state)
+    toggles.noClip = Elements.CreateToggleRow(mainContainer, 270, "NoClip Mode", function(state)
         if UI.OnNoClipToggled then
             UI.OnNoClipToggled(state)
         end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 325, "Infinite Jump", function(state)
+    toggles.infiniteJump = Elements.CreateToggleRow(mainContainer, 325, "Infinite Jump", function(state)
         if UI.OnJumpToggled then
             UI.OnJumpToggled(state)
         end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 380, "Soru (Click Tele)", function(state)
+    toggles.soru = Elements.CreateToggleRow(mainContainer, 380, "Soru (Click Tele)", function(state)
         if UI.OnSoruToggled then
             UI.OnSoruToggled(state)
         end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 435, "FPS Boost", function(state)
+    toggles.fpsBoost = Elements.CreateToggleRow(mainContainer, 435, "FPS Boost", function(state)
         if UI.OnFPSBoostToggled then
             UI.OnFPSBoostToggled(state)
         end
@@ -106,6 +108,14 @@ function MainTab.Create(mainContainer, UI)
     end)
 
     resetBtn.MouseButton1Click:Connect(function()
+        -- Reset tất cả toggles
+        for _, toggleData in pairs(toggles) do
+            if toggleData and toggleData.reset then
+                toggleData.reset()
+            end
+        end
+        
+        -- Call callback nếu có
         if UI.OnResetClicked then
             UI.OnResetClicked()
         end
@@ -113,3 +123,4 @@ function MainTab.Create(mainContainer, UI)
 end
 
 return MainTab
+
