@@ -7,7 +7,9 @@ local soruEnabled = false
 local mouseConnection = nil
 local oldZoom = nil
 local firstClickTime = 0
-local RESET_TIME = 2 -- 2 giây không bấm lần 2 thì reset
+local RESET_TIME = 2
+local lastEventTime = 0
+local DEBOUNCE = 0.05 -- chặn event trùng
 
 function SoruModule.Toggle(state)
     if soruEnabled == state then return end
@@ -19,11 +21,12 @@ function SoruModule.Toggle(state)
     end
 
     if soruEnabled then
-        -- Tăng zoom khi bật soru
         oldZoom = player.CameraMaxZoomDistance
         player.CameraMaxZoomDistance = 2000
 
-        firstClickTime = 0 -- reset khi bật
+        -- 👈 QUAN TRỌNG: reset sạch mỗi lần bật
+        firstClickTime = 0
+        lastEventTime = 0
 
         local mouse = player:GetMouse()
         mouseConnection = mouse.Button1Down:Connect(function()
@@ -31,14 +34,18 @@ function SoruModule.Toggle(state)
 
             local now = tick()
 
-            -- Lần bấm đầu tiên (hoặc đã quá 2s)
+            -- 👈 Chặn event fire trùng trong 0.05s
+            if now - lastEventTime < DEBOUNCE then return end
+            lastEventTime = now
+
+            -- Lần bấm đầu (hoặc đã quá 2s) → chờ
             if firstClickTime == 0 or (now - firstClickTime) > RESET_TIME then
                 firstClickTime = now
-                return -- chờ lần bấm thứ 2
+                return
             end
 
-            -- Đã bấm lần 2 trong vòng 2s → teleport
-            firstClickTime = 0 -- reset để lần sau bấm lại từ đầu
+            -- Lần bấm thứ 2 trong 2s → soru
+            firstClickTime = 0
 
             local character = player.Character
             if character and character:FindFirstChild("HumanoidRootPart") then
