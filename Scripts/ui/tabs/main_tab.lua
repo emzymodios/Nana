@@ -5,52 +5,52 @@ local MainTab = {}
 function MainTab.Create(mainContainer, UI)
 
     -- =========================================================
-    -- MAIN - NANA HUB CYAN STYLE
+    -- MAIN - NANA HUB CYAN STYLE (Đã đẩy posY xuống tránh đè viền)
     -- =========================================================
 
-    Elements.CreateSlider(mainContainer, 10, "Run", 16, 700, 16, function(val)
+    Elements.CreateSlider(mainContainer, 45, "Run", 16, 700, 16, function(val)
         if UI.OnSpeedChanged then
             UI.OnSpeedChanged(val)
         end
     end)
 
-    Elements.CreateSlider(mainContainer, 85, "Fly", 10, 800, 50, function(val)
+    Elements.CreateSlider(mainContainer, 120, "Fly", 10, 800, 50, function(val)
         if UI.OnFlySpeedChanged then
             UI.OnFlySpeedChanged(val)
         end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 160, "Speed Mode", function(state)
+    Elements.CreateToggleRow(mainContainer, 195, "Speed Mode", function(state)
         if UI.OnSpeedToggled then
             UI.OnSpeedToggled(state)
         end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 215, "Fly Mode", function(state)
+    Elements.CreateToggleRow(mainContainer, 250, "Fly Mode", function(state)
         if UI.OnFlyToggled then
             UI.OnFlyToggled(state)
         end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 270, "NoClip Mode", function(state)
+    Elements.CreateToggleRow(mainContainer, 305, "NoClip Mode", function(state)
         if UI.OnNoClipToggled then
             UI.OnNoClipToggled(state)
         end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 325, "Infinite Jump", function(state)
+    Elements.CreateToggleRow(mainContainer, 360, "Infinite Jump", function(state)
         if UI.OnJumpToggled then
             UI.OnJumpToggled(state)
         end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 380, "Soru (Click Tele)", function(state)
+    Elements.CreateToggleRow(mainContainer, 415, "Soru (Click Tele)", function(state)
         if UI.OnSoruToggled then
             UI.OnSoruToggled(state)
         end
     end)
 
-    Elements.CreateToggleRow(mainContainer, 435, "FPS Boost", function(state)
+    Elements.CreateToggleRow(mainContainer, 470, "FPS Boost", function(state)
         if UI.OnFPSBoostToggled then
             UI.OnFPSBoostToggled(state)
         end
@@ -63,7 +63,7 @@ function MainTab.Create(mainContainer, UI)
     local resetBtn = Instance.new("TextButton")
     resetBtn.Name = "ResetConfig"
     resetBtn.Size = UDim2.new(0.9, 0, 0, 35)
-    resetBtn.Position = UDim2.new(0.05, 0, 0, 490)
+    resetBtn.Position = UDim2.new(0.05, 0, 0, 535)
 
     -- Nền xanh đậm giống UI
     resetBtn.BackgroundColor3 = Color3.fromRGB(20, 30, 45)
