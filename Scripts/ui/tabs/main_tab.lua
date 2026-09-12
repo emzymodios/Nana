@@ -1,4 +1,4 @@
-```lua
+
 local Elements = loadstring(game:HttpGet(
     "https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua"
 ))()
@@ -115,16 +115,3 @@ function MainTab.Create(mainContainer, UI)
 end
 
 return MainTab
-```
-
-Màu chính mình đồng bộ theo UI hiện tại:
-
-* **Nền:** `RGB(20, 30, 45)`
-* **Chữ:** `RGB(200, 240, 255)`
-* **Viền:** `RGB(0, 200, 255)`
-* **Hover:** `RGB(25, 45, 65)`
-* **Hover viền:** `RGB(0, 255, 220)`
-
-Các màu này khớp với style của tab Nana Hub hiện tại.
-
-**Lưu ý:** phần Slider và Toggle không nên đổi ở `main_tab.lua`, vì chúng được tạo bởi `Elements.CreateSlider` và `Elements.CreateToggleRow`. Muốn **toàn bộ Slider + Toggle + Reset Config** cùng một màu, cần sửa `elements.lua` nữa.
