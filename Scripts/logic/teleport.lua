@@ -38,7 +38,7 @@ function TeleportModule.StartContinuousFly(speed)
     isFlyingToTarget = true
     rootPart.Anchored = true -- Khóa trọng lực để bay mượt mà
     
-    local flySpeed = speed or 100
+    local flySpeed = speed or 500
 
     flyConnection = RunService.Heartbeat:Connect(function(deltaTime)
         if not isFlyingToTarget then 
