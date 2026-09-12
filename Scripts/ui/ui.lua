@@ -1,5 +1,5 @@
 -- Nana Hub Main - Shadow Glade UI Style
--- Giữ nguyên các tab/chức năng của Nana Hub, thay toàn bộ layout sang phong cách Shadow Glade
+-- Giữ nguyên các tab/chức năng của Nana Hub, sửa drag + scroll ổn định
 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -7,7 +7,6 @@ local CoreGui = game:GetService("CoreGui")
 
 local player = Players.LocalPlayer
 
--- Tìm parent GUI phù hợp
 local function getGuiParent()
     local success = pcall(function()
         local test = Instance.new("Folder")
@@ -24,7 +23,6 @@ end
 
 local TargetParent = getGuiParent()
 
--- Các module của Nana Hub giữ nguyên
 local function safeLoad(url)
     local success, result = pcall(function()
         return loadstring(game:HttpGet(url))()
@@ -44,7 +42,6 @@ local Elements = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/ref
 local Notification = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/notification.lua")
 local HUD = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/hud.lua")
 
--- CHỈ giữ các tab của Nana Hub
 local MainTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/main_tab.lua")
 local CombatTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/combat_tab.lua")
 local ESPTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/esp_tab.lua")
@@ -57,28 +54,22 @@ local BACKGROUND_ID = (Config and Config.BackgroundImageId) or "rbxassetid://116
 local ICON_ID = (Config and Config.IconImageId) or "rbxassetid://130473788814906"
 
 function UI.Init()
-    -- Xóa UI cũ
     local oldGui = TargetParent:FindFirstChild("NanaHubUI")
     if oldGui then
         oldGui:Destroy()
     end
 
-    -- ScreenGui
     local gui = Instance.new("ScreenGui")
     gui.Name = "NanaHubUI"
     gui.ResetOnSpawn = false
     gui.Parent = TargetParent
 
-    -- HUD Nana giữ nguyên
     if HUD and HUD.Init then
         pcall(function()
             HUD.Init(gui)
         end)
     end
 
-    -- =========================================================
-    -- NÚT ICON TRÒN - STYLE FILE 1
-    -- =========================================================
     local openBtn = Instance.new("ImageButton")
     openBtn.Name = "OpenButton"
     openBtn.Size = UDim2.new(0, 50, 0, 50)
@@ -101,9 +92,6 @@ function UI.Init()
     btnStroke.Thickness = 2.5
     btnStroke.Parent = openBtn
 
-    -- =========================================================
-    -- MAIN FRAME - STYLE FILE 1
-    -- =========================================================
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
     mainFrame.Size = UDim2.new(0, 580, 0, 380)
@@ -114,8 +102,6 @@ function UI.Init()
     mainFrame.ClipsDescendants = true
     mainFrame.Visible = false
     mainFrame.Active = true
-    -- Không dùng Draggable trên toàn MainFrame vì có thể cướp input của button/scroll.
-    -- Kéo menu sẽ được xử lý riêng bằng vùng tiêu đề bên dưới.
     mainFrame.Draggable = false
     mainFrame.ZIndex = 1
     mainFrame.Parent = gui
@@ -129,11 +115,9 @@ function UI.Init()
     frameStroke.Thickness = 1.8
     frameStroke.Parent = mainFrame
 
-    -- Background giống file 1
     local panelBackground = Instance.new("ImageLabel")
     panelBackground.Name = "PanelBackground"
     panelBackground.Size = UDim2.new(1, 0, 1, 0)
-    panelBackground.Position = UDim2.new(0, 0, 0, 0)
     panelBackground.BackgroundTransparency = 1
     panelBackground.BorderSizePixel = 0
     panelBackground.ScaleType = Enum.ScaleType.Crop
@@ -146,9 +130,6 @@ function UI.Init()
     panelBgCorner.CornerRadius = UDim.new(0, 12)
     panelBgCorner.Parent = panelBackground
 
-    -- =========================================================
-    -- TIÊU ĐỀ
-    -- =========================================================
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, -20, 0, 35)
     titleLabel.Position = UDim2.new(0, 15, 0, 5)
@@ -161,14 +142,9 @@ function UI.Init()
     titleLabel.ZIndex = 5
     titleLabel.Parent = mainFrame
 
-    -- =========================================================
-    -- DRAG FIX
-    -- Chỉ vùng header kéo menu, không chặn button/scroll bên trong.
-    -- =========================================================
     local dragHandle = Instance.new("TextButton")
     dragHandle.Name = "DragHandle"
     dragHandle.Size = UDim2.new(1, 0, 0, 45)
-    dragHandle.Position = UDim2.new(0, 0, 0, 0)
     dragHandle.BackgroundTransparency = 1
     dragHandle.BorderSizePixel = 0
     dragHandle.Text = ""
@@ -178,8 +154,8 @@ function UI.Init()
     dragHandle.Parent = mainFrame
 
     local dragging = false
-    local dragStart = nil
-    local startPos = nil
+    local dragStart
+    local startPos
 
     dragHandle.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1
@@ -191,9 +167,7 @@ function UI.Init()
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-        if not dragging then
-            return
-        end
+        if not dragging then return end
 
         if input.UserInputType == Enum.UserInputType.MouseMovement
             or input.UserInputType == Enum.UserInputType.Touch then
@@ -214,9 +188,6 @@ function UI.Init()
         end
     end)
 
-    -- =========================================================
-    -- SIDEBAR - CHỈ ĐỔI STYLE, KHÔNG ĐỔI TAB NANA
-    -- =========================================================
     local sideBar = Instance.new("Frame")
     sideBar.Name = "SideBar"
     sideBar.Position = UDim2.new(0, 12, 0, 45)
@@ -246,7 +217,9 @@ function UI.Init()
     tabScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 200, 255)
     tabScroll.VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar
     tabScroll.ScrollingDirection = Enum.ScrollingDirection.Y
-    tabScroll.CanvasSize = UDim2.new(0, 0, 1, 0)
+    tabScroll.ScrollingEnabled = true
+    tabScroll.Active = true
+    tabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
     tabScroll.ZIndex = 3
     tabScroll.Parent = sideBar
 
@@ -261,25 +234,16 @@ function UI.Init()
     tabPadding.PaddingRight = UDim.new(0, 8)
     tabPadding.Parent = tabScroll
 
-    tabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        local h = tabLayout.AbsoluteContentSize.Y
-        local sh = tabScroll.AbsoluteSize.Y
+    local function updateTabCanvas()
+        task.defer(function()
+            local h = tabLayout.AbsoluteContentSize.Y + 16
+            tabScroll.CanvasSize = UDim2.new(0, 0, 0, math.max(h, tabScroll.AbsoluteSize.Y))
+        end)
+    end
 
-        if h > sh and sh > 0 then
-            tabScroll.CanvasSize = UDim2.new(0, 0, 0, h + 16)
-        else
-            tabScroll.CanvasSize = UDim2.new(0, 0, 1, 0)
-        end
-    end)
+    tabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateTabCanvas)
+    tabScroll:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateTabCanvas)
 
-    -- =========================================================
-    -- CONTENT AREA
-    -- =========================================================
-    -- =========================================================
-    -- CONTENT AREA - SCROLL FIX
-    -- Dùng ScrollingFrame để nội dung từng tab có thể cuộn xuống.
-    -- AutomaticCanvasSize giúp tự tính chiều cao nội dung.
-    -- =========================================================
     local contentFrame = Instance.new("ScrollingFrame")
     contentFrame.Name = "ContentFrame"
     contentFrame.Position = UDim2.new(0, 152, 0, 45)
@@ -295,48 +259,33 @@ function UI.Init()
     contentFrame.Selectable = false
     contentFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
     contentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-    contentFrame.CanvasPosition = Vector2.new(0, 0)
     contentFrame.ZIndex = 2
     contentFrame.Parent = mainFrame
 
-    -- =========================================================
-    -- RESIZE - GÓC PHẢI DƯỚI
-    -- MainFrame đứng yên, chỉ thanh kéo này mới resize được.
-    -- =========================================================
-   -- MainFrame đứng yên, chỉ vùng góc phải dưới mới resize được.
-local resizeBtn = Instance.new("TextButton")
-resizeBtn.Name = "ResizeButton"
-resizeBtn.Size = UDim2.new(0, 28, 0, 28)
-resizeBtn.AnchorPoint = Vector2.new(1, 1)
-resizeBtn.Position = UDim2.new(1, 0, 1, 0)
+    local contentPadding = Instance.new("UIPadding")
+    contentPadding.PaddingBottom = UDim.new(0, 12)
+    contentPadding.Parent = contentFrame
 
-resizeBtn.Text = ""
-resizeBtn.BackgroundTransparency = 1
-resizeBtn.BorderSizePixel = 0
-resizeBtn.AutoButtonColor = false
-resizeBtn.Active = true
-resizeBtn.ZIndex = 100
-resizeBtn.Parent = mainFrame
-
-
-    local resizeStroke = Instance.new("UIStroke")
-    resizeStroke.Color = Color3.fromRGB(0, 220, 255)
-    resizeStroke.Transparency = 1
-    resizeStroke.Thickness = 1
-    resizeStroke.Parent = resizeBtn
-
-    local resizeCorner = Instance.new("UICorner")
-    resizeCorner.CornerRadius = UDim.new(0, 5)
-    resizeCorner.Parent = resizeBtn
+    local resizeBtn = Instance.new("TextButton")
+    resizeBtn.Name = "ResizeButton"
+    resizeBtn.Size = UDim2.new(0, 28, 0, 28)
+    resizeBtn.AnchorPoint = Vector2.new(1, 1)
+    resizeBtn.Position = UDim2.new(1, 0, 1, 0)
+    resizeBtn.Text = ""
+    resizeBtn.BackgroundTransparency = 1
+    resizeBtn.BorderSizePixel = 0
+    resizeBtn.AutoButtonColor = false
+    resizeBtn.Active = true
+    resizeBtn.ZIndex = 100
+    resizeBtn.Parent = mainFrame
 
     local isResizing = false
-    local startInputPos = nil
-    local startFrameSize = nil
+    local startInputPos
+    local startFrameSize
 
     resizeBtn.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1
             or input.UserInputType == Enum.UserInputType.Touch then
-
             isResizing = true
             startInputPos = input.Position
             startFrameSize = mainFrame.AbsoluteSize
@@ -344,18 +293,13 @@ resizeBtn.Parent = mainFrame
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-        if not isResizing then
-            return
-        end
+        if not isResizing then return end
 
         if input.UserInputType == Enum.UserInputType.MouseMovement
             or input.UserInputType == Enum.UserInputType.Touch then
-
             local delta = input.Position - startInputPos
-
             local newWidth = math.max(450, startFrameSize.X + delta.X)
             local newHeight = math.max(280, startFrameSize.Y + delta.Y)
-
             mainFrame.Size = UDim2.new(0, newWidth, 0, newHeight)
         end
     end)
@@ -367,9 +311,6 @@ resizeBtn.Parent = mainFrame
         end
     end)
 
-    -- =========================================================
-    -- TAB NANA HUB - GIỮ NGUYÊN 4 MỤC
-    -- =========================================================
     local tabsData = {
         {Name = "Main", Module = MainTab},
         {Name = "Combat", Module = CombatTab},
@@ -377,8 +318,8 @@ resizeBtn.Parent = mainFrame
         {Name = "More", Module = MoreTab}
     }
 
-    local activeBtn = nil
-    local currentTab = nil
+    local activeBtn
+    local currentTab
 
     local function switchTab(tabModule)
         if currentTab and typeof(currentTab) == "Instance" then
@@ -388,7 +329,7 @@ resizeBtn.Parent = mainFrame
         end
 
         for _, child in ipairs(contentFrame:GetChildren()) do
-            if child:IsA("GuiObject") then
+            if child:IsA("GuiObject") and child ~= contentPadding then
                 pcall(function()
                     child:Destroy()
                 end)
@@ -396,11 +337,7 @@ resizeBtn.Parent = mainFrame
         end
 
         currentTab = nil
-
-        -- Reset scroll mỗi khi chuyển tab.
-        pcall(function()
-            contentFrame.CanvasPosition = Vector2.new(0, 0)
-        end)
+        contentFrame.CanvasPosition = Vector2.new(0, 0)
 
         if tabModule and tabModule.Create then
             local success, result = pcall(function()
@@ -409,13 +346,9 @@ resizeBtn.Parent = mainFrame
 
             if success then
                 currentTab = result
-
-                -- Cho phép Roblox cập nhật AutomaticCanvasSize sau khi tab tạo xong.
                 task.defer(function()
-                    if contentFrame and contentFrame.Parent then
-                        pcall(function()
-                            contentFrame.CanvasPosition = Vector2.new(0, 0)
-                        end)
+                    if contentFrame.Parent then
+                        contentFrame.CanvasPosition = Vector2.new(0, 0)
                     end
                 end)
             else
@@ -457,7 +390,6 @@ resizeBtn.Parent = mainFrame
             btn.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
             btn.TextColor3 = Color3.fromRGB(255, 255, 255)
             activeBtn = btn
-
             switchTab(tab.Module)
         end)
 
@@ -468,16 +400,13 @@ resizeBtn.Parent = mainFrame
         end
     end
 
-    -- Mở / đóng menu bằng icon
     openBtn.MouseButton1Click:Connect(function()
         mainFrame.Visible = not mainFrame.Visible
     end)
 
-    -- Mở Main mặc định
     switchTab(MainTab)
 end
 
--- Các callback của Nana giữ nguyên
 UI.OnSpeedToggled = nil
 UI.OnSpeedChanged = nil
 UI.OnFlySpeedChanged = nil
