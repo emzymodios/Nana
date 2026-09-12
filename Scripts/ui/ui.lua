@@ -1,29 +1,50 @@
--- Nana Hub Main (ui.lua) - AUTO RELOAD VERSION
+-- Nana Hub Main - Shadow Glade UI Style
+-- Giữ nguyên các tab/chức năng của Nana Hub, thay toàn bộ layout sang phong cách Shadow Glade
+
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
 
 local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
 
+-- Tìm parent GUI phù hợp
+local function getGuiParent()
+    local success = pcall(function()
+        local test = Instance.new("Folder")
+        test.Parent = CoreGui
+        test:Destroy()
+    end)
+
+    if success then
+        return CoreGui
+    end
+
+    return player:WaitForChild("PlayerGui")
+end
+
+local TargetParent = getGuiParent()
+
+-- Các module của Nana Hub giữ nguyên
 local function safeLoad(url)
     local success, result = pcall(function()
         return loadstring(game:HttpGet(url))()
     end)
-    if not success then
-        warn("NanaHub Load Error at: " .. url .. "\nDetails: " .. tostring(result))
-        return nil
+
+    if success and result then
+        return result
     end
-    return result
+
+    warn("[Nana Hub] Load Error: " .. tostring(url))
+    return nil
 end
 
--- Tải các module cơ bản và notification an toàn
 local Config = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/config.lua")
 local Components = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/components.lua")
 local Elements = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/elements.lua")
 local Notification = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/notification.lua")
 local HUD = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/hud.lua")
 
--- Tải các module tab con
+-- CHỈ giữ các tab của Nana Hub
 local MainTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/main_tab.lua")
 local CombatTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/combat_tab.lua")
 local ESPTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/tabs/esp_tab.lua")
@@ -32,62 +53,81 @@ local MoreTab = safeLoad("https://raw.githubusercontent.com/emzymodios/Nana/refs
 local UI = {}
 UI.Notify = Notification
 
+local ICON_ID = (Config and Config.IconImageId) or "rbxassetid://86285862396979"
+local BACKGROUND_ID = (Config and Config.BackgroundImageId) or "rbxassetid://116222439691339"
+
 function UI.Init()
-    if playerGui:FindFirstChild("NanaHubUI") then
-        playerGui.NanaHubUI:Destroy()
+    -- Xóa UI cũ
+    local oldGui = TargetParent:FindFirstChild("NanaHubUI")
+    if oldGui then
+        oldGui:Destroy()
     end
 
-    local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "NanaHubUI"
-    screenGui.ResetOnSpawn = false
-    screenGui.Parent = playerGui
+    -- ScreenGui
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "NanaHubUI"
+    gui.ResetOnSpawn = false
+    gui.Parent = TargetParent
 
-    -- Khởi tạo HUD
+    -- HUD Nana giữ nguyên
     if HUD and HUD.Init then
-        HUD.Init(screenGui)
+        pcall(function()
+            HUD.Init(gui)
+        end)
     end
 
-    local toggleBtn = Instance.new("ImageButton")
-    toggleBtn.Name = "ToggleBtn"
-    toggleBtn.Size = UDim2.new(0, 50, 0, 50)
-    toggleBtn.Position = UDim2.new(0.02, 0, 0.1, 0)
-    toggleBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    toggleBtn.Image = Config and Config.IconImageId or ""
-    toggleBtn.Draggable = true
-    toggleBtn.Active = true
-    toggleBtn.Parent = screenGui
+    -- =========================================================
+    -- NÚT ICON TRÒN - STYLE FILE 1
+    -- =========================================================
+    local openBtn = Instance.new("ImageButton")
+    openBtn.Name = "OpenButton"
+    openBtn.Size = UDim2.new(0, 50, 0, 50)
+    openBtn.Position = UDim2.new(0, 20, 0.5, -25)
+    openBtn.Image = ICON_ID
+    openBtn.BackgroundColor3 = Color3.fromRGB(15, 20, 30)
+    openBtn.BackgroundTransparency = 0.2
+    openBtn.BorderSizePixel = 0
+    openBtn.Active = true
+    openBtn.Draggable = true
+    openBtn.ZIndex = 100
+    openBtn.Parent = gui
 
-    local toggleCorner = Instance.new("UICorner")
-    toggleCorner.CornerRadius = UDim.new(0, 12)
-    toggleCorner.Parent = toggleBtn
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 25)
+    btnCorner.Parent = openBtn
 
-    local toggleStroke = Instance.new("UIStroke")
-    toggleStroke.Color = Color3.fromRGB(120, 80, 255)
-    toggleStroke.Thickness = 2
-    toggleStroke.Parent = toggleBtn
+    local btnStroke = Instance.new("UIStroke")
+    btnStroke.Color = Color3.fromRGB(0, 255, 220)
+    btnStroke.Thickness = 2.5
+    btnStroke.Parent = openBtn
 
+    -- =========================================================
+    -- MAIN FRAME - STYLE FILE 1
+    -- =========================================================
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
-    mainFrame.Size = UDim2.new(0, 540, 0, 360)
-    mainFrame.Position = UDim2.new(0.5, -270, 0.5, -180)
-    mainFrame.BackgroundColor3 = Color3.fromRGB(14, 14, 20)
-    mainFrame.BackgroundTransparency = 0.45
+    mainFrame.Size = UDim2.new(0, 580, 0, 380)
+    mainFrame.Position = UDim2.new(0.5, -290, 0.5, -190)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(12, 14, 22)
+    mainFrame.BackgroundTransparency = 0.65
     mainFrame.BorderSizePixel = 0
+    mainFrame.ClipsDescendants = true
+    mainFrame.Visible = false
     mainFrame.Active = true
     mainFrame.Draggable = true
-    mainFrame.Visible = false
-    mainFrame.Parent = screenGui
+    mainFrame.ZIndex = 1
+    mainFrame.Parent = gui
 
-    local mainCorner = Instance.new("UICorner")
-    mainCorner.CornerRadius = UDim.new(0, 12)
-    mainCorner.Parent = mainFrame
+    local frameCorner = Instance.new("UICorner")
+    frameCorner.CornerRadius = UDim.new(0, 12)
+    frameCorner.Parent = mainFrame
 
-    local mainStroke = Instance.new("UIStroke")
-    mainStroke.Color = Color3.fromRGB(70, 50, 120)
-    mainStroke.Thickness = 1.6
-    mainStroke.Parent = mainFrame
+    local frameStroke = Instance.new("UIStroke")
+    frameStroke.Color = Color3.fromRGB(0, 220, 255)
+    frameStroke.Thickness = 1.8
+    frameStroke.Parent = mainFrame
 
-    -- BACKGROUND IMAGE - fixed on script load
+    -- Background giống file 1
     local panelBackground = Instance.new("ImageLabel")
     panelBackground.Name = "PanelBackground"
     panelBackground.Size = UDim2.new(1, 0, 1, 0)
@@ -95,284 +135,249 @@ function UI.Init()
     panelBackground.BackgroundTransparency = 1
     panelBackground.BorderSizePixel = 0
     panelBackground.ScaleType = Enum.ScaleType.Crop
-    panelBackground.ZIndex = 0
-    panelBackground.Image = "rbxassetid://116222439691339"
-    panelBackground.ImageTransparency = 0.25
+    panelBackground.ZIndex = 1
+    panelBackground.Image = BACKGROUND_ID
+    panelBackground.ImageTransparency = 0.35
     panelBackground.Parent = mainFrame
 
     local panelBgCorner = Instance.new("UICorner")
     panelBgCorner.CornerRadius = UDim.new(0, 12)
     panelBgCorner.Parent = panelBackground
 
-    local topBar = Instance.new("Frame")
-    topBar.Size = UDim2.new(1, 0, 0, 40)
-    topBar.BackgroundColor3 = Color3.fromRGB(20, 20, 28)
-    topBar.BackgroundTransparency = 0.45
-    topBar.BorderSizePixel = 0
-    topBar.ZIndex = 1
-    topBar.Parent = mainFrame
-
-    local topCorner = Instance.new("UICorner")
-    topCorner.CornerRadius = UDim.new(0, 12)
-    topCorner.Parent = topBar
-
+    -- =========================================================
+    -- TIÊU ĐỀ
+    -- =========================================================
     local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(0.8, 0, 1, 0)
-    titleLabel.Position = UDim2.new(0.04, 0, 0, 0)
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.TextSize = 16
-    titleLabel.Font = Enum.Font.GothamBlack
-    titleLabel.Text = "NANA HUB 1.8"
+    titleLabel.Size = UDim2.new(1, -20, 0, 35)
+    titleLabel.Position = UDim2.new(0, 15, 0, 5)
+    titleLabel.Text = "ＳＨＡＤＯＷ ＧＬＡＤＥ HUB"
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 15
+    titleLabel.TextColor3 = Color3.fromRGB(0, 255, 230)
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    titleLabel.Parent = topBar
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.ZIndex = 5
+    titleLabel.Parent = mainFrame
 
-    local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0, 32, 0, 32)
-    closeBtn.Position = UDim2.new(1, -38, 0, 4)
-    closeBtn.BackgroundColor3 = Color3.fromRGB(40, 25, 30)
-    closeBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
-    closeBtn.TextSize = 15
-    closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.Text = "X"
-    closeBtn.Parent = topBar
-
-    local cBtnCorner = Instance.new("UICorner")
-    cBtnCorner.CornerRadius = UDim.new(0, 8)
-    cBtnCorner.Parent = closeBtn
-
-    closeBtn.MouseButton1Click:Connect(function()
-        mainFrame.Visible = false
-    end)
-
-    toggleBtn.MouseButton1Click:Connect(function()
-        mainFrame.Visible = not mainFrame.Visible
-    end)
-
+    -- =========================================================
+    -- SIDEBAR - CHỈ ĐỔI STYLE, KHÔNG ĐỔI TAB NANA
+    -- =========================================================
     local sideBar = Instance.new("Frame")
-    sideBar.Size = UDim2.new(0, 140, 1, -40)
-    sideBar.Position = UDim2.new(0, 0, 0, 40)
-    sideBar.BackgroundColor3 = Color3.fromRGB(17, 17, 24)
-    sideBar.BackgroundTransparency = 0.45
+    sideBar.Name = "SideBar"
+    sideBar.Position = UDim2.new(0, 12, 0, 45)
+    sideBar.Size = UDim2.new(0, 130, 1, -57)
+    sideBar.BackgroundColor3 = Color3.fromRGB(15, 20, 30)
+    sideBar.BackgroundTransparency = 0.5
     sideBar.BorderSizePixel = 0
-    sideBar.ZIndex = 1
+    sideBar.ZIndex = 2
     sideBar.Parent = mainFrame
 
-    local tabMainBtn = Instance.new("TextButton")
-    tabMainBtn.Size = UDim2.new(0.9, 0, 0, 38)
-    tabMainBtn.Position = UDim2.new(0.05, 0, 0.05, 0)
-    tabMainBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
-    tabMainBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tabMainBtn.TextSize = 13
-    tabMainBtn.Font = Enum.Font.GothamBold
-    tabMainBtn.Text = "Main"
-    tabMainBtn.Parent = sideBar
+    local sideCorner = Instance.new("UICorner")
+    sideCorner.CornerRadius = UDim.new(0, 8)
+    sideCorner.Parent = sideBar
 
-    local tmCorner = Instance.new("UICorner")
-    tmCorner.CornerRadius = UDim.new(0, 8)
-    tmCorner.Parent = tabMainBtn
+    local sideStroke = Instance.new("UIStroke")
+    sideStroke.Color = Color3.fromRGB(0, 180, 220)
+    sideStroke.Transparency = 0.5
+    sideStroke.Thickness = 1
+    sideStroke.Parent = sideBar
 
-    local tabCombatBtn = Instance.new("TextButton")
-    tabCombatBtn.Size = UDim2.new(0.9, 0, 0, 38)
-    tabCombatBtn.Position = UDim2.new(0.05, 0, 0.17, 0)
-    tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-    tabCombatBtn.TextSize = 13
-    tabCombatBtn.Font = Enum.Font.GothamBold
-    tabCombatBtn.Text = "Combat"
-    tabCombatBtn.Parent = sideBar
+    local tabScroll = Instance.new("ScrollingFrame")
+    tabScroll.Name = "TabsScroll"
+    tabScroll.Size = UDim2.new(1, 0, 1, 0)
+    tabScroll.BackgroundTransparency = 1
+    tabScroll.BorderSizePixel = 0
+    tabScroll.ScrollBarThickness = 3
+    tabScroll.ScrollBarImageColor3 = Color3.fromRGB(0, 200, 255)
+    tabScroll.VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar
+    tabScroll.ScrollingDirection = Enum.ScrollingDirection.Y
+    tabScroll.CanvasSize = UDim2.new(0, 0, 1, 0)
+    tabScroll.ZIndex = 3
+    tabScroll.Parent = sideBar
 
-    local tcCorner = Instance.new("UICorner")
-    tcCorner.CornerRadius = UDim.new(0, 8)
-    tcCorner.Parent = tabCombatBtn
+    local tabLayout = Instance.new("UIListLayout")
+    tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    tabLayout.Padding = UDim.new(0, 6)
+    tabLayout.Parent = tabScroll
 
-    local tabOtherBtn = Instance.new("TextButton")
-    tabOtherBtn.Size = UDim2.new(0.9, 0, 0, 38)
-    tabOtherBtn.Position = UDim2.new(0.05, 0, 0.29, 0)
-    tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-    tabOtherBtn.TextSize = 13
-    tabOtherBtn.Font = Enum.Font.GothamBold
-    tabOtherBtn.Text = "ESP"
-    tabOtherBtn.Parent = sideBar
+    local tabPadding = Instance.new("UIPadding")
+    tabPadding.PaddingTop = UDim.new(0, 8)
+    tabPadding.PaddingLeft = UDim.new(0, 8)
+    tabPadding.PaddingRight = UDim.new(0, 8)
+    tabPadding.Parent = tabScroll
 
-    local toCorner = Instance.new("UICorner")
-    toCorner.CornerRadius = UDim.new(0, 8)
-    toCorner.Parent = tabOtherBtn
+    tabLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        local h = tabLayout.AbsoluteContentSize.Y
+        local sh = tabScroll.AbsoluteSize.Y
 
-    local tabMoreBtn = Instance.new("TextButton")
-    tabMoreBtn.Size = UDim2.new(0.9, 0, 0, 38)
-    tabMoreBtn.Position = UDim2.new(0.05, 0, 0.41, 0)
-    tabMoreBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    tabMoreBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-    tabMoreBtn.TextSize = 13
-    tabMoreBtn.Font = Enum.Font.GothamBold
-    tabMoreBtn.Text = "More"
-    tabMoreBtn.Parent = sideBar
-
-    local tMoreCorner = Instance.new("UICorner")
-    tMoreCorner.CornerRadius = UDim.new(0, 8)
-    tMoreCorner.Parent = tabMoreBtn
-
-    local function setupScrollingFrame(container)
-        container.ScrollingEnabled = true
-        container.Selectable = true
-    end
-
-    local mainContainer = Instance.new("ScrollingFrame")
-    mainContainer.Name = "MainContainer"
-    mainContainer.Size = UDim2.new(1, -145, 1, -50)
-    mainContainer.Position = UDim2.new(0, 145, 0, 45)
-    mainContainer.BackgroundTransparency = 1
-    mainContainer.BorderSizePixel = 0
-    mainContainer.CanvasSize = UDim2.new(0, 0, 0, 560)
-    mainContainer.ScrollBarThickness = 4
-    mainContainer.Visible = true
-    mainContainer.ZIndex = 1
-    mainContainer.Parent = mainFrame
-    setupScrollingFrame(mainContainer)
-
-    local combatContainer = Instance.new("ScrollingFrame")
-    combatContainer.Name = "CombatContainer"
-    combatContainer.Size = UDim2.new(1, -145, 1, -50)
-    combatContainer.Position = UDim2.new(0, 145, 0, 45)
-    combatContainer.BackgroundTransparency = 1
-    combatContainer.BorderSizePixel = 0
-    combatContainer.CanvasSize = UDim2.new(0, 0, 0, 240)
-    combatContainer.ScrollBarThickness = 4
-    combatContainer.Visible = false
-    combatContainer.ZIndex = 1
-    combatContainer.Parent = mainFrame
-    setupScrollingFrame(combatContainer)
-
-    local otherContainer = Instance.new("ScrollingFrame")
-    otherContainer.Name = "OtherContainer"
-    otherContainer.Size = UDim2.new(1, -145, 1, -50)
-    otherContainer.Position = UDim2.new(0, 145, 0, 45)
-    otherContainer.BackgroundTransparency = 1
-    otherContainer.BorderSizePixel = 0
-    otherContainer.CanvasSize = UDim2.new(0, 0, 0, 150)
-    otherContainer.ScrollBarThickness = 4
-    otherContainer.Visible = false
-    otherContainer.ZIndex = 1
-    otherContainer.Parent = mainFrame
-    setupScrollingFrame(otherContainer)
-
-    local moreContainer = Instance.new("ScrollingFrame")
-    moreContainer.Name = "MoreContainer"
-    moreContainer.Size = UDim2.new(1, -145, 1, -50)
-    moreContainer.Position = UDim2.new(0, 145, 0, 45)
-    moreContainer.BackgroundTransparency = 1
-    moreContainer.BorderSizePixel = 0
-    moreContainer.CanvasSize = UDim2.new(0, 0, 0, 200)
-    moreContainer.ScrollBarThickness = 4
-    moreContainer.Visible = false
-    moreContainer.Active = true
-    moreContainer.ZIndex = 1
-    moreContainer.Parent = mainFrame
-    setupScrollingFrame(moreContainer)
-
-    tabMainBtn.MouseButton1Click:Connect(function()
-        mainContainer.Visible = true
-        combatContainer.Visible = false
-        otherContainer.Visible = false
-        moreContainer.Visible = false
-        tabMainBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
-        tabMainBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-        tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-        tabMoreBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        tabMoreBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-    end)
-
-    tabCombatBtn.MouseButton1Click:Connect(function()
-        mainContainer.Visible = false
-        combatContainer.Visible = true
-        otherContainer.Visible = false
-        moreContainer.Visible = false
-        tabCombatBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
-        tabCombatBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        tabMainBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        tabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-        tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-        tabMoreBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        tabMoreBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-    end)
-
-    tabOtherBtn.MouseButton1Click:Connect(function()
-        mainContainer.Visible = false
-        combatContainer.Visible = false
-        otherContainer.Visible = true
-        moreContainer.Visible = false
-        tabOtherBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
-        tabOtherBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        tabMainBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        tabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-        tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-        tabMoreBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        tabMoreBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-    end)
-
-    tabMoreBtn.MouseButton1Click:Connect(function()
-        mainContainer.Visible = false
-        combatContainer.Visible = false
-        otherContainer.Visible = false
-        moreContainer.Visible = true
-        tabMoreBtn.BackgroundColor3 = Color3.fromRGB(70, 50, 160)
-        tabMoreBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-        tabMainBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        tabMainBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-        tabCombatBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        tabCombatBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-        tabOtherBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-        tabOtherBtn.TextColor3 = Color3.fromRGB(180, 180, 200)
-    end)
-
-    -- Gọi khởi tạo các module tab con
-    if MainTab and MainTab.Create then MainTab.Create(mainContainer, UI) end
-    if CombatTab and CombatTab.Create then CombatTab.Create(combatContainer, UI) end
-    if ESPTab and ESPTab.Create then ESPTab.Create(otherContainer, UI) end
-    if MoreTab and MoreTab.Create then MoreTab.Create(moreContainer, UI, panelBackground) end
-
-    local resizeBtn = Instance.new("TextButton")
-    resizeBtn.Size = UDim2.new(0, 15, 0, 15)
-    resizeBtn.Position = UDim2.new(1, -15, 1, -15)
-    resizeBtn.BackgroundTransparency = 1
-    resizeBtn.Text = "◢"
-    resizeBtn.TextColor3 = Color3.fromRGB(150, 150, 150)
-    resizeBtn.TextSize = 12
-    resizeBtn.ZIndex = 5
-    resizeBtn.Parent = mainFrame
-
-    local resizing = false
-    local dragStart, startSize
-
-    resizeBtn.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            resizing = true
-            dragStart = input.Position
-            startSize = mainFrame.AbsoluteSize
+        if h > sh and sh > 0 then
+            tabScroll.CanvasSize = UDim2.new(0, 0, 0, h + 16)
+        else
+            tabScroll.CanvasSize = UDim2.new(0, 0, 1, 0)
         end
     end)
 
-    UserInputService.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            resizing = false
+    -- =========================================================
+    -- CONTENT AREA
+    -- =========================================================
+    local contentFrame = Instance.new("Frame")
+    contentFrame.Name = "ContentFrame"
+    contentFrame.Position = UDim2.new(0, 152, 0, 45)
+    contentFrame.Size = UDim2.new(1, -164, 1, -57)
+    contentFrame.BackgroundTransparency = 1
+    contentFrame.ZIndex = 2
+    contentFrame.Parent = mainFrame
+
+    -- =========================================================
+    -- RESIZE - STYLE FILE 1
+    -- Kéo góc phải dưới để phóng to/thu nhỏ
+    -- =========================================================
+    local resizeBtn = Instance.new("TextButton")
+    resizeBtn.Name = "ResizeButton"
+    resizeBtn.Size = UDim2.new(0, 25, 0, 25)
+    resizeBtn.Position = UDim2.new(1, -25, 1, -25)
+    resizeBtn.Text = ""
+    resizeBtn.BackgroundTransparency = 1
+    resizeBtn.TextTransparency = 1
+    resizeBtn.ZIndex = 10
+    resizeBtn.Parent = mainFrame
+
+    local isResizing = false
+    local startInputPos
+    local startFrameSize
+
+    resizeBtn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+
+            isResizing = true
+            startInputPos = input.Position
+            startFrameSize = mainFrame.AbsoluteSize
+            mainFrame.Draggable = false
+        end
+    end)
+
+    resizeBtn.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+
+            isResizing = false
+            mainFrame.Draggable = true
         end
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-        if resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = input.Position - dragStart
-            mainFrame.Size = UDim2.new(0, math.clamp(startSize.X + delta.X, 450, 800), 0, math.clamp(startSize.Y + delta.Y, 300, 600))
-        end 
+        if isResizing
+            and (input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch) then
+
+            local delta = input.Position - startInputPos
+
+            -- Giống file 1: không giới hạn max, chỉ có min
+            local newWidth = math.max(450, startFrameSize.X + delta.X)
+            local newHeight = math.max(280, startFrameSize.Y + delta.Y)
+
+            mainFrame.Size = UDim2.new(0, newWidth, 0, newHeight)
+        end
     end)
+
+    -- =========================================================
+    -- TAB NANA HUB - GIỮ NGUYÊN 4 MỤC
+    -- =========================================================
+    local tabsData = {
+        {Name = "Main", Module = MainTab},
+        {Name = "Combat", Module = CombatTab},
+        {Name = "ESP", Module = ESPTab},
+        {Name = "More", Module = MoreTab}
+    }
+
+    local activeBtn = nil
+    local currentTab = nil
+
+    local function switchTab(tabModule)
+        if currentTab and typeof(currentTab) == "Instance" then
+            pcall(function()
+                currentTab:Destroy()
+            end)
+        end
+
+        for _, child in ipairs(contentFrame:GetChildren()) do
+            if child:IsA("GuiObject") then
+                pcall(function()
+                    child:Destroy()
+                end)
+            end
+        end
+
+        currentTab = nil
+
+        if tabModule and tabModule.Create then
+            local success, result = pcall(function()
+                return tabModule.Create(contentFrame, UI, panelBackground)
+            end)
+
+            if success then
+                currentTab = result
+            else
+                warn("[Nana Hub] Tab error: " .. tostring(result))
+            end
+        end
+    end
+
+    for idx, tab in ipairs(tabsData) do
+        local btn = Instance.new("TextButton")
+        btn.Name = tab.Name .. "Tab"
+        btn.Size = UDim2.new(1, 0, 0, 34)
+        btn.Text = tab.Name
+        btn.Font = Enum.Font.GothamSemibold
+        btn.TextSize = 12
+        btn.BackgroundColor3 = Color3.fromRGB(20, 30, 45)
+        btn.BackgroundTransparency = 0.3
+        btn.TextColor3 = Color3.fromRGB(200, 240, 255)
+        btn.BorderSizePixel = 0
+        btn.ZIndex = 4
+        btn.Parent = tabScroll
+
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 6)
+        btnCorner.Parent = btn
+
+        local btnStroke = Instance.new("UIStroke")
+        btnStroke.Color = Color3.fromRGB(0, 200, 255)
+        btnStroke.Transparency = 0.6
+        btnStroke.Thickness = 1
+        btnStroke.Parent = btn
+
+        btn.MouseButton1Click:Connect(function()
+            if activeBtn then
+                activeBtn.BackgroundColor3 = Color3.fromRGB(20, 30, 45)
+                activeBtn.TextColor3 = Color3.fromRGB(200, 240, 255)
+            end
+
+            btn.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            activeBtn = btn
+
+            switchTab(tab.Module)
+        end)
+
+        if idx == 1 then
+            btn.BackgroundColor3 = Color3.fromRGB(0, 160, 220)
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            activeBtn = btn
+        end
+    end
+
+    -- Mở / đóng menu bằng icon
+    openBtn.MouseButton1Click:Connect(function()
+        mainFrame.Visible = not mainFrame.Visible
+    end)
+
+    -- Mở Main mặc định
+    switchTab(MainTab)
 end
 
+-- Các callback của Nana giữ nguyên
 UI.OnSpeedToggled = nil
 UI.OnSpeedChanged = nil
 UI.OnFlySpeedChanged = nil
@@ -391,4 +396,3 @@ UI.OnTeleportPlayerToggled = nil
 UI.OnGodmodeToggled = nil
 
 return UI
-
