@@ -1,6 +1,4 @@
--- Nana Hub Elements (elements.lua)
--- Cyan Neon Slider + Stable Input / ZIndex Fix
-
+-- Nana Hub Elements (elements.lua - Đã tinh chỉnh chuẩn xác không vệt title)
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 
@@ -11,17 +9,17 @@ local Components = loadstring(game:HttpGet(
 local Elements = {}
 
 --==================================================
--- SLIDER
+-- SLIDER (Giữ chữ thông số, không có title phụ)
 --==================================================
 
 function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultVal, callback)
 
-    local box = Components.CreateFrameBox(parent, posY, 65, titleText)
+    local box = Components.CreateFrameBox(parent, posY, 60, nil)
     box.ZIndex = 3
 
-    -- Label
+    -- Label hiển thị tên và số (Ví dụ: Run: 16)
     local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0.9, 0, 0, 20)
+    lbl.Size = UDim2.new(0.9, 0, 0, 18)
     lbl.Position = UDim2.new(0.05, 0, 0, 8)
     lbl.BackgroundTransparency = 1
     lbl.TextColor3 = Color3.fromRGB(220, 220, 240)
@@ -34,8 +32,8 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
 
     -- Slider background
     local sliderBg = Instance.new("Frame")
-    sliderBg.Size = UDim2.new(0.9, 0, 0, 10)
-    sliderBg.Position = UDim2.new(0.05, 0, 0, 32)
+    sliderBg.Size = UDim2.new(0.9, 0, 0, 8)
+    sliderBg.Position = UDim2.new(0.05, 0, 0, 34)
     sliderBg.BackgroundColor3 = Color3.fromRGB(20, 35, 45)
     sliderBg.BorderSizePixel = 0
     sliderBg.ClipsDescendants = false
@@ -80,8 +78,8 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
 
     -- Circle
     local circle = Instance.new("Frame")
-    circle.Size = UDim2.new(0, 15, 0, 15)
-    circle.Position = UDim2.new(initialPos, -7.5, 0.5, -7.5)
+    circle.Size = UDim2.new(0, 14, 0, 14)
+    circle.Position = UDim2.new(initialPos, -7, 0.5, -7)
     circle.BackgroundColor3 = Color3.fromRGB(0, 235, 255)
     circle.BorderSizePixel = 0
     circle.ZIndex = 7
@@ -99,8 +97,8 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
 
     -- Outer glow
     local outerGlow = Instance.new("Frame")
-    outerGlow.Size = UDim2.new(0, 25, 0, 25)
-    outerGlow.Position = UDim2.new(initialPos, -12.5, 0.5, -12.5)
+    outerGlow.Size = UDim2.new(0, 22, 0, 22)
+    outerGlow.Position = UDim2.new(initialPos, -11, 0.5, -11)
     outerGlow.BackgroundColor3 = Color3.fromRGB(0, 210, 255)
     outerGlow.BackgroundTransparency = 0.82
     outerGlow.BorderSizePixel = 0
@@ -126,101 +124,36 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     btn.ZIndex = 10
     btn.Parent = sliderBg
 
-    -- Drag effect
     local function startEffect()
-
-        circle:TweenSize(
-            UDim2.new(0, 19, 0, 19),
-            "Out",
-            "Quad",
-            0.12,
-            true
-        )
-
-        outerGlow:TweenSize(
-            UDim2.new(0, 32, 0, 32),
-            "Out",
-            "Quad",
-            0.12,
-            true
-        )
-
+        circle:TweenSize(UDim2.new(0, 18, 0, 18), "Out", "Quad", 0.12, true)
+        outerGlow:TweenSize(UDim2.new(0, 28, 0, 28), "Out", "Quad", 0.12, true)
         cGlow.Transparency = 0
         cGlow.Thickness = 3
-
         fillGlow.Transparency = 0.35
     end
 
     local function stopEffect()
-
-        circle:TweenSize(
-            UDim2.new(0, 15, 0, 15),
-            "Out",
-            "Quad",
-            0.12,
-            true
-        )
-
-        outerGlow:TweenSize(
-            UDim2.new(0, 25, 0, 25),
-            "Out",
-            "Quad",
-            0.12,
-            true
-        )
-
+        circle:TweenSize(UDim2.new(0, 14, 0, 14), "Out", "Quad", 0.12, true)
+        outerGlow:TweenSize(UDim2.new(0, 22, 0, 22), "Out", "Quad", 0.12, true)
         cGlow.Transparency = 0.15
         cGlow.Thickness = 2
-
         fillGlow.Transparency = 0.65
     end
 
-    -- Update slider
     local function update(input)
-
-        if not input or not input.Position then
-            return
-        end
-
+        if not input or not input.Position then return end
         local absoluteSize = sliderBg.AbsoluteSize.X
+        if absoluteSize <= 0 then return end
 
-        if absoluteSize <= 0 then
-            return
-        end
-
-        local rawPos =
-            (input.Position.X - sliderBg.AbsolutePosition.X)
-            / absoluteSize
-
+        local rawPos = (input.Position.X - sliderBg.AbsolutePosition.X) / absoluteSize
         local pos = math.max(0, math.min(1, rawPos))
 
-        sliderFill.Size = UDim2.new(
-            pos,
-            0,
-            1,
-            0
-        )
+        sliderFill.Size = UDim2.new(pos, 0, 1, 0)
+        circle.Position = UDim2.new(pos, -7, 0.5, -7)
+        outerGlow.Position = UDim2.new(pos, -11, 0.5, -11)
 
-        circle.Position = UDim2.new(
-            pos,
-            -7.5,
-            0.5,
-            -7.5
-        )
-
-        outerGlow.Position = UDim2.new(
-            pos,
-            -12.5,
-            0.5,
-            -12.5
-        )
-
-        local val = math.floor(
-            minVal + (maxVal - minVal) * pos + 0.5
-        )
-
-        lbl.Text =
-            titleText .. ": " .. tostring(val)
+        local val = math.floor(minVal + (maxVal - minVal) * pos + 0.5)
+        lbl.Text = titleText .. ": " .. tostring(val)
 
         if callback then
             callback(val)
@@ -228,34 +161,23 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     end
 
     btn.InputBegan:Connect(function(input)
-
         if input.UserInputType == Enum.UserInputType.MouseButton1
             or input.UserInputType == Enum.UserInputType.Touch then
-
             sliding = true
-
             startEffect()
             update(input)
         end
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-
-        if sliding
-            and (
-                input.UserInputType == Enum.UserInputType.MouseMovement
-                or input.UserInputType == Enum.UserInputType.Touch
-            ) then
-
+        if sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             update(input)
         end
     end)
 
     UserInputService.InputEnded:Connect(function(input)
-
         if input.UserInputType == Enum.UserInputType.MouseButton1
             or input.UserInputType == Enum.UserInputType.Touch then
-
             if sliding then
                 sliding = false
                 stopEffect()
@@ -266,14 +188,13 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     return box
 end
 
-
 --==================================================
--- TOGGLE
+-- TOGGLE (Giữ tên tính năng, khung sạch sẽ)
 --==================================================
 
 function Elements.CreateToggleRow(parent, posY, titleText, callback)
 
-    local box = Components.CreateFrameBox(parent, posY, 45, nil)
+    local box = Components.CreateFrameBox(parent, posY, 42, nil)
     box.ZIndex = 3
 
     local lbl = Instance.new("TextLabel")
@@ -290,8 +211,8 @@ function Elements.CreateToggleRow(parent, posY, titleText, callback)
 
     local toggleBox = Instance.new("TextButton")
     toggleBox.Name = "ToggleButton"
-    toggleBox.Size = UDim2.new(0, 45, 0, 22)
-    toggleBox.Position = UDim2.new(0.75, 0, 0.5, -11)
+    toggleBox.Size = UDim2.new(0, 42, 0, 20)
+    toggleBox.Position = UDim2.new(0.75, 0, 0.5, -10)
     toggleBox.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
     toggleBox.BorderSizePixel = 0
     toggleBox.Text = ""
@@ -307,8 +228,8 @@ function Elements.CreateToggleRow(parent, posY, titleText, callback)
 
     local circle = Instance.new("Frame")
     circle.Name = "ToggleCircle"
-    circle.Size = UDim2.new(0, 18, 0, 18)
-    circle.Position = UDim2.new(0, 2, 0.5, -9)
+    circle.Size = UDim2.new(0, 16, 0, 16)
+    circle.Position = UDim2.new(0, 2, 0.5, -8)
     circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     circle.BorderSizePixel = 0
     circle.ZIndex = 7
@@ -321,34 +242,14 @@ function Elements.CreateToggleRow(parent, posY, titleText, callback)
     local active = false
 
     toggleBox.MouseButton1Click:Connect(function()
-
         active = not active
 
         if active then
-
-            circle:TweenPosition(
-                UDim2.new(1, -20, 0.5, -9),
-                "Out",
-                "Quad",
-                0.15,
-                true
-            )
-
-            toggleBox.BackgroundColor3 =
-                Color3.fromRGB(0, 210, 110)
-
+            circle:TweenPosition(UDim2.new(1, -18, 0.5, -8), "Out", "Quad", 0.15, true)
+            toggleBox.BackgroundColor3 = Color3.fromRGB(0, 210, 110)
         else
-
-            circle:TweenPosition(
-                UDim2.new(0, 2, 0.5, -9),
-                "Out",
-                "Quad",
-                0.15,
-                true
-            )
-
-            toggleBox.BackgroundColor3 =
-                Color3.fromRGB(35, 35, 48)
+            circle:TweenPosition(UDim2.new(0, 2, 0.5, -8), "Out", "Quad", 0.15, true)
+            toggleBox.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
         end
 
         if callback then
@@ -359,139 +260,5 @@ function Elements.CreateToggleRow(parent, posY, titleText, callback)
     return box
 end
 
-
---==================================================
--- DROPDOWN
---==================================================
-
-function Elements.CreateDropdown(parent, posY, title, optionsList, callback)
-
-    local container =
-        Components.CreateFrameBox(parent, posY, 45, nil)
-
-    container.ZIndex = 3
-
-    local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.4, 0, 1, 0)
-    label.Position = UDim2.new(0.05, 0, 0, 0)
-    label.BackgroundTransparency = 1
-    label.TextColor3 = Color3.fromRGB(220, 220, 240)
-    label.TextSize = 12
-    label.Font = Enum.Font.GothamBold
-    label.Text = title
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.ZIndex = 4
-    label.Parent = container
-
-    local dropBtn = Instance.new("TextButton")
-    dropBtn.Name = "DropdownButton"
-    dropBtn.Size = UDim2.new(0.5, 0, 0, 28)
-    dropBtn.Position = UDim2.new(0.45, 0, 0.5, -14)
-    dropBtn.BackgroundColor3 = Color3.fromRGB(35, 35, 48)
-    dropBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    dropBtn.TextSize = 12
-    dropBtn.Font = Enum.Font.Gotham
-    dropBtn.Text = "Select Player ▾"
-    dropBtn.BorderSizePixel = 0
-    dropBtn.AutoButtonColor = false
-    dropBtn.Active = true
-    dropBtn.Selectable = false
-    dropBtn.ZIndex = 6
-    dropBtn.Parent = container
-
-    local dropCorner = Instance.new("UICorner")
-    dropCorner.CornerRadius = UDim.new(0, 6)
-    dropCorner.Parent = dropBtn
-
-    local listFrame = Instance.new("ScrollingFrame")
-    listFrame.Name = "DropdownList"
-    listFrame.Size = UDim2.new(0.5, 0, 0, 0)
-    listFrame.Position = UDim2.new(0.45, 0, 1, 2)
-    listFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
-    listFrame.BorderSizePixel = 0
-    listFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-    listFrame.ScrollBarThickness = 3
-    listFrame.ScrollingEnabled = true
-    listFrame.Active = true
-    listFrame.Visible = false
-    listFrame.ZIndex = 8
-    listFrame.Parent = container
-
-    local listLayout = Instance.new("UIListLayout")
-    listLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    listLayout.Parent = listFrame
-
-    local isOpen = false
-
-    local function updateOptions(items)
-
-        for _, v in ipairs(listFrame:GetChildren()) do
-            if v:IsA("TextButton") then
-                v:Destroy()
-            end
-        end
-
-        listFrame.CanvasSize =
-            UDim2.new(0, 0, 0, #items * 28)
-
-        listFrame.Size =
-            UDim2.new(
-                0.5,
-                0,
-                0,
-                math.min(#items * 28, 120)
-            )
-
-        for _, itemName in ipairs(items) do
-
-            local optBtn = Instance.new("TextButton")
-            optBtn.Name = "Option"
-            optBtn.Size = UDim2.new(1, 0, 0, 28)
-            optBtn.BackgroundColor3 =
-                Color3.fromRGB(35, 35, 50)
-            optBtn.TextColor3 =
-                Color3.fromRGB(240, 240, 240)
-            optBtn.TextSize = 12
-            optBtn.Font = Enum.Font.Gotham
-            optBtn.Text = itemName
-            optBtn.BorderSizePixel = 0
-            optBtn.AutoButtonColor = false
-            optBtn.Active = true
-            optBtn.Selectable = false
-            optBtn.ZIndex = 9
-            optBtn.Parent = listFrame
-
-            optBtn.MouseButton1Click:Connect(function()
-
-                dropBtn.Text =
-                    itemName .. " ▾"
-
-                isOpen = false
-                listFrame.Visible = false
-
-                if callback then
-                    callback(itemName)
-                end
-            end)
-        end
-    end
-
-    dropBtn.MouseButton1Click:Connect(function()
-
-        isOpen = not isOpen
-        listFrame.Visible = isOpen
-
-        if isOpen and optionsList then
-            updateOptions(optionsList)
-        end
-    end)
-
-    return container, updateOptions
-end
-
-
---==================================================
--- RETURN
---==================================================
-
 return Elements
+
