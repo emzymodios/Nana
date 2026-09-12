@@ -114,8 +114,9 @@ function UI.Init()
     mainFrame.ClipsDescendants = true
     mainFrame.Visible = false
     mainFrame.Active = true
-    -- Fix kéo menu: áp dụng cơ chế draggable như code 2.
-    mainFrame.Draggable = true
+    -- Không dùng Draggable trên toàn MainFrame vì có thể cướp input của button/scroll.
+    -- Kéo menu sẽ được xử lý riêng bằng vùng tiêu đề bên dưới.
+    mainFrame.Draggable = false
     mainFrame.ZIndex = 1
     mainFrame.Parent = gui
 
@@ -151,7 +152,7 @@ function UI.Init()
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Size = UDim2.new(1, -20, 0, 35)
     titleLabel.Position = UDim2.new(0, 15, 0, 5)
-    titleLabel.Text = "NANA HUB"
+    titleLabel.Text = "ＳＨＡＤＯＷ ＧＬＡＤＥ HUB"
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.TextSize = 15
     titleLabel.TextColor3 = Color3.fromRGB(0, 255, 230)
@@ -159,6 +160,59 @@ function UI.Init()
     titleLabel.BackgroundTransparency = 1
     titleLabel.ZIndex = 5
     titleLabel.Parent = mainFrame
+
+    -- =========================================================
+    -- DRAG FIX
+    -- Chỉ vùng header kéo menu, không chặn button/scroll bên trong.
+    -- =========================================================
+    local dragHandle = Instance.new("TextButton")
+    dragHandle.Name = "DragHandle"
+    dragHandle.Size = UDim2.new(1, 0, 0, 45)
+    dragHandle.Position = UDim2.new(0, 0, 0, 0)
+    dragHandle.BackgroundTransparency = 1
+    dragHandle.BorderSizePixel = 0
+    dragHandle.Text = ""
+    dragHandle.AutoButtonColor = false
+    dragHandle.Active = true
+    dragHandle.ZIndex = 6
+    dragHandle.Parent = mainFrame
+
+    local dragging = false
+    local dragStart = nil
+    local startPos = nil
+
+    dragHandle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = mainFrame.Position
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if not dragging then
+            return
+        end
+
+        if input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch then
+            local delta = input.Position - dragStart
+            mainFrame.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
 
     -- =========================================================
     -- SIDEBAR - CHỈ ĐỔI STYLE, KHÔNG ĐỔI TAB NANA
@@ -238,6 +292,7 @@ function UI.Init()
     contentFrame.ScrollingDirection = Enum.ScrollingDirection.Y
     contentFrame.ScrollingEnabled = true
     contentFrame.Active = true
+    contentFrame.Selectable = false
     contentFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
     contentFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
     contentFrame.CanvasPosition = Vector2.new(0, 0)
