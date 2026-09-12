@@ -45,5 +45,5 @@ end
 -- Cầu nối Reset cấu hình tổng thể
 UI.OnResetClicked = function() Logic.ResetConfig() end
 
-Notification.Show("NANA HUB", "Đã load! Chúc bạn bay acc:))", 5, "rbxassetid://93925828218201")
+Notification.Show("NANA HUB", "Đã load! Chúc bạn bay acc:))", 5, "rbxassetid://130473788814906")
 print("Nana Hub loaded successfully")
