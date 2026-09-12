@@ -1,4 +1,4 @@
--- Nana Hub Elements (elements.lua) - COMPLETE FIX V2
+-- Nana Hub Elements (elements.lua) - COMPLETE FINAL FIX
 local UserInputService = game:GetService("UserInputService")
 local Components = loadstring(game:HttpGet("https://raw.githubusercontent.com/emzymodios/Nana/refs/heads/main/Scripts/ui/components.lua"))()
 
@@ -29,16 +29,17 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     sCorner.CornerRadius = UDim.new(1, 0)
     sCorner.Parent = sliderBg
 
-    -- THÊM: Viền CYAN cho slider
+    -- Viền CYAN cho slider background
     local sStroke = Instance.new("UIStroke")
     sStroke.Color = Color3.fromRGB(0, 200, 255)
     sStroke.Thickness = 1
     sStroke.Transparency = 0.3
     sStroke.Parent = sliderBg
 
+    -- SliderFill TÍM (không phải CYAN)
     local sliderFill = Instance.new("Frame")
     sliderFill.Size = UDim2.new((defaultVal - minVal) / (maxVal - minVal), 0, 1, 0)
-    sliderFill.BackgroundColor3 = Color3.fromRGB(110, 80, 255)
+    sliderFill.BackgroundColor3 = Color3.fromRGB(110, 80, 255)  -- TÍM
     sliderFill.BorderSizePixel = 0
     sliderFill.Parent = sliderBg
 
@@ -46,11 +47,11 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     fCorner.CornerRadius = UDim.new(1, 0)
     fCorner.Parent = sliderFill
 
-    -- THÊM: Hình tròn CYAN để kéo
+    -- Hình tròn CYAN để kéo + hiệu ứng lấp lánh
     local circle = Instance.new("Frame")
     circle.Size = UDim2.new(0, 15, 0, 15)
     circle.Position = UDim2.new((defaultVal - minVal) / (maxVal - minVal), -7.5, 0.5, -7.5)
-    circle.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+    circle.BackgroundColor3 = Color3.fromRGB(0, 200, 255)  -- CYAN
     circle.BorderSizePixel = 0
     circle.ZIndex = 3
     circle.Parent = sliderBg
@@ -58,6 +59,13 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     local cCorner = Instance.new("UICorner")
     cCorner.CornerRadius = UDim.new(1, 0)
     cCorner.Parent = circle
+
+    -- THÊM: Hiệu ứng lấp lánh (glow) cho circle
+    local cGlow = Instance.new("UIStroke")
+    cGlow.Color = Color3.fromRGB(100, 200, 255)
+    cGlow.Thickness = 2
+    cGlow.Transparency = 0.4
+    cGlow.Parent = circle
 
     local sliding = false
     local btn = Instance.new("TextButton")
@@ -70,10 +78,10 @@ function Elements.CreateSlider(parent, posY, titleText, minVal, maxVal, defaultV
     local function update(input)
         if not input or not input.Position then return end
         local rawPos = (input.Position.X - sliderBg.AbsolutePosition.X) / sliderBg.AbsoluteSize.X
-        -- FIX: Thay math.clamp bằng math.max/math.min
+        -- FIX: Thay math.clamp bằng math.max/math.min (Roblox Lua compatible)
         local pos = math.max(0, math.min(1, rawPos))
         sliderFill.Size = UDim2.new(pos, 0, 1, 0)
-        -- THÊM: Cập nhật vị trí circle
+        -- Cập nhật vị trí circle
         circle.Position = UDim2.new(pos, -7.5, 0.5, -7.5)
         local val = math.floor(minVal + (maxVal - minVal) * pos)
         lbl.Text = titleText .. ": " .. tostring(val)
