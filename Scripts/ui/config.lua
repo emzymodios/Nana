@@ -2,7 +2,7 @@
 local Config = {}
 
 -- ID ảnh nút mở Hub
-Config.IconImageId = "rbxassetid://93925828218201"
+Config.IconImageId = "rbxassetid://130473788814906"
 
 -- = 0.45
 
